@@ -9,7 +9,7 @@ namespace MilkTeaBusinessObject.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TaskUser",
+                name: "Comments",
                 columns: table => new
                 {
                     TaskId = table.Column<int>(type: "int", nullable: false)
@@ -39,19 +39,19 @@ namespace MilkTeaBusinessObject.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskUser_OrderID",
-                table: "TaskUser",
+                table: "Comments",
                 column: "OrderID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskUser_UserID",
-                table: "TaskUser",
+                table: "Comments",
                 column: "UserID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TaskUser");
+                name: "Comments");
         }
     }
 }

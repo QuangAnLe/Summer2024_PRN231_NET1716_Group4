@@ -36,4 +36,8 @@
 	  <ProjectReference Include="..\MilkTeaServices\MilkTeaServices.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Controllers\CommentController\" />
+	</ItemGroup>
+
 </Project>
