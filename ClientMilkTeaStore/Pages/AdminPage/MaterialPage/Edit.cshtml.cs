@@ -1,76 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MilkTeaBusinessObject.BusinessObject;
+using MilkTeaStore.DTO.Update;
 
 namespace ClientMilkTeaStore.Pages.AdminPage.MaterialPage
 {
     public class EditModel : PageModel
     {
-        private readonly MilkTeaBusinessObject.BusinessObject.MilkTeaDeliveryDBContext _context;
+        private readonly HttpClient client = null!;
+        private string ApiUrl = "";
 
-        public EditModel(MilkTeaBusinessObject.BusinessObject.MilkTeaDeliveryDBContext context)
+        public EditModel()
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            ApiUrl = "https://localhost:7112/odata/Materiale";
         }
 
         [BindProperty]
-        public Material Material { get; set; } = default!;
+        public MaterialUpdateDTO Material { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Materials == null)
-            {
-                return NotFound();
-            }
+            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}/{id}");
+            string strData = await response.Content.ReadAsStringAsync();
 
-            var material =  await _context.Materials.FirstOrDefaultAsync(m => m.MaterialID == id);
-            if (material == null)
+            var options = new JsonSerializerOptions
             {
-                return NotFound();
-            }
-            Material = material;
+                PropertyNameCaseInsensitive = true
+            };
+            var _material = JsonSerializer.Deserialize<MaterialUpdateDTO>(strData, options)!;
+
+            Material = _material;
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Attach(Material).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                string strData = JsonSerializer.Serialize(Material);
+                var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PutAsync($"{ApiUrl}/{id}", contentData);
+                if (response.IsSuccessStatusCode)
+                {
+                    ViewData["Success"] = "Update Success";
+                    return RedirectToPage("./Index");
+                }
+                ViewData["Error"] = "Update Error";
+                return RedirectToPage("./Index");
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!MaterialExists(Material.MaterialID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                ViewData["Error"] = "Fail To Call API";
+                return RedirectToPage("/Error");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool MaterialExists(int id)
-        {
-          return (_context.Materials?.Any(e => e.MaterialID == id)).GetValueOrDefault();
         }
     }
 }

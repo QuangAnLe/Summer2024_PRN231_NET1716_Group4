@@ -54,7 +54,7 @@ namespace ClientMilkTeaStore.Pages.AdminPage.UserPage
             {
                 string strData = JsonSerializer.Serialize(User);
                 var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PutAsync($"{ApiUrl}?id={id}", contentData);
+                HttpResponseMessage response = await client.PutAsync($"{ApiUrl}/{id}", contentData);
                 if (response.IsSuccessStatusCode)
                 {
                     ViewData["Success"] = "Update Success";
