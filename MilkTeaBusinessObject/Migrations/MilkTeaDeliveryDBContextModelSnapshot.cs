@@ -216,6 +216,7 @@ namespace MilkTeaBusinessObject.Migrations
                 });
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.TaskUser", b =>
+            modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Comments", b =>
                 {
                     b.Property<int>("TaskId")
                         .ValueGeneratedOnAdd()
@@ -247,6 +248,7 @@ namespace MilkTeaBusinessObject.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("TaskUser", (string)null);
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Tea", b =>
@@ -404,6 +406,7 @@ namespace MilkTeaBusinessObject.Migrations
                 });
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.TaskUser", b =>
+            modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Comments", b =>
                 {
                     b.HasOne("MilkTeaBusinessObject.BusinessObject.Order", "Order")
                         .WithMany("TaskUsers")

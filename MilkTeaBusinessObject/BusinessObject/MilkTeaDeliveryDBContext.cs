@@ -29,8 +29,9 @@ namespace MilkTeaBusinessObject.BusinessObject
         public virtual DbSet<Tea>? Teas { get; set; }
 
         public virtual DbSet<User>? Users { get; set; }
+        public virtual DbSet<TaskUser>? TaskUsers { get; set; }
        
-
+        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

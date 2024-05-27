@@ -15,6 +15,7 @@ namespace MilkTeaBusinessObject.FluentAPI
         public void Configure(EntityTypeBuilder<TaskUser> builder)
         {
             builder.ToTable("TaskUser");
+            builder.ToTable("Comments");
             builder.HasKey(x => x.TaskId);
             builder.Property(x => x.WorkName);
             builder.Property(x => x.WorkDescription);

@@ -62,12 +62,18 @@ builder.Services.AddScoped<IMaterialRepo, MaterialRepo>();
 builder.Services.AddScoped<IMaterialServices, MaterialServices>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<ITaskUserRepo, ITaskUserRepo>();
+builder.Services.AddScoped<ITaskUserServices, TaskUserServices>();
+builder.Services.AddScoped<ICommentRepo, CommentRepo>();
+builder.Services.AddScoped<ICommentServices, CommentServices>();
 
 //Odata
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Tea>("Tea");
 modelBuilder.EntitySet<Material>("Material");
 modelBuilder.EntitySet<User>("User");
+modelBuilder.EntitySet<Comment>("Comment");
+modelBuilder.EntitySet<TaskUser>("TaskUser");
 builder.Services.AddControllers().AddOData(
     options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
         routePrefix: "odata",
