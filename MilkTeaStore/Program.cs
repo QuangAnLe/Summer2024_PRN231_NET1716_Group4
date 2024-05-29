@@ -59,9 +59,13 @@ builder.Services.AddAutoMapper(typeof(ApplicationMapper));
 builder.Services.AddScoped<ITeaRepo, TeaRepo>();
 builder.Services.AddScoped<ITeaServices, TeaServices>();
 builder.Services.AddScoped<IMaterialRepo, MaterialRepo>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IOrderDetailRepo, OrderDetailRepo>();
 builder.Services.AddScoped<IMaterialServices, MaterialServices>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 
 //Odata
 var modelBuilder = new ODataConventionModelBuilder();
