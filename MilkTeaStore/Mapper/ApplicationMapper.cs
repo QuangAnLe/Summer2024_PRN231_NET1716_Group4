@@ -26,7 +26,10 @@ namespace MilkTeaStore.Mapper
                                        opt => opt.MapFrom(src => src.District!.WardName));
             CreateMap<UserCreateDTO, User>().ReverseMap();
             CreateMap<UserUpdateDTO, User>().ReverseMap();
+            CreateMap<OrderDTO, Order>().ReverseMap();
+            CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
 
+            CreateMap<OrderDetailVM, OrderDetail>().ReverseMap().ForMember(o => o.TeaVM , od =>od.MapFrom(src =>src.Tea));
 
 
         }
