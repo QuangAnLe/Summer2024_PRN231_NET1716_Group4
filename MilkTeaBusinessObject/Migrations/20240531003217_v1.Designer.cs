@@ -12,7 +12,7 @@ using MilkTeaBusinessObject.BusinessObject;
 namespace MilkTeaBusinessObject.Migrations
 {
     [DbContext(typeof(MilkTeaDeliveryDBContext))]
-    [Migration("20240517162741_v1")]
+    [Migration("20240531003217_v1")]
     partial class v1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,8 +89,11 @@ namespace MilkTeaBusinessObject.Migrations
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.District", b =>
                 {
-                    b.Property<string>("DistrictID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DistrictID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DistrictID"), 1L, 1);
 
                     b.Property<string>("DistrictName")
                         .IsRequired()
@@ -126,12 +129,7 @@ namespace MilkTeaBusinessObject.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<int>("TeaID")
-                        .HasColumnType("int");
-
                     b.HasKey("MaterialID");
-
-                    b.HasIndex("TeaID");
 
                     b.ToTable("Material", (string)null);
                 });
@@ -222,6 +220,40 @@ namespace MilkTeaBusinessObject.Migrations
                     b.ToTable("Role", (string)null);
                 });
 
+            modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.TaskUser", b =>
+                {
+                    b.Property<int>("TaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"), 1L, 1);
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WorkDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WorkName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TaskId");
+
+                    b.HasIndex("OrderID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("TaskUser", (string)null);
+                });
+
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Tea", b =>
                 {
                     b.Property<int>("TeaID")
@@ -264,9 +296,8 @@ namespace MilkTeaBusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
-                    b.Property<string>("DistrictID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DistrictID")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -346,17 +377,6 @@ namespace MilkTeaBusinessObject.Migrations
                     b.Navigation("Tea");
                 });
 
-            modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Material", b =>
-                {
-                    b.HasOne("MilkTeaBusinessObject.BusinessObject.Tea", "Tea")
-                        .WithMany("Materials")
-                        .HasForeignKey("TeaID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Tea");
-                });
-
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Order", b =>
                 {
                     b.HasOne("MilkTeaBusinessObject.BusinessObject.User", "User")
@@ -385,6 +405,25 @@ namespace MilkTeaBusinessObject.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Tea");
+                });
+
+            modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.TaskUser", b =>
+                {
+                    b.HasOne("MilkTeaBusinessObject.BusinessObject.Order", "Order")
+                        .WithMany("TaskUsers")
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MilkTeaBusinessObject.BusinessObject.User", "User")
+                        .WithMany("TaskUsers")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.User", b =>
@@ -419,6 +458,8 @@ namespace MilkTeaBusinessObject.Migrations
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Order", b =>
                 {
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("TaskUsers");
                 });
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Role", b =>
@@ -432,8 +473,6 @@ namespace MilkTeaBusinessObject.Migrations
 
                     b.Navigation("DetailsMaterials");
 
-                    b.Navigation("Materials");
-
                     b.Navigation("OrderDetails");
                 });
 
@@ -442,6 +481,8 @@ namespace MilkTeaBusinessObject.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("TaskUsers");
                 });
 #pragma warning restore 612, 618
         }

@@ -87,8 +87,11 @@ namespace MilkTeaBusinessObject.Migrations
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.District", b =>
                 {
-                    b.Property<string>("DistrictID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DistrictID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DistrictID"), 1L, 1);
 
                     b.Property<string>("DistrictName")
                         .IsRequired()
@@ -291,9 +294,8 @@ namespace MilkTeaBusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
-                    b.Property<string>("DistrictID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DistrictID")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()

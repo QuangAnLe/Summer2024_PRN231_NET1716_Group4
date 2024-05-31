@@ -13,13 +13,30 @@ namespace MilkTeaBusinessObject.Migrations
                 name: "District",
                 columns: table => new
                 {
-                    DistrictID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DistrictID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DistrictName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WardName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_District", x => x.DistrictID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Material",
+                columns: table => new
+                {
+                    MaterialID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaterialName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Material", x => x.MaterialID);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,7 +83,7 @@ namespace MilkTeaBusinessObject.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     RoleID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DistrictID = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    DistrictID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,22 +101,26 @@ namespace MilkTeaBusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Material",
+                name: "DetailsMaterial",
                 columns: table => new
                 {
-                    MaterialID = table.Column<int>(type: "int", nullable: false)
+                    DetailsMaterialID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MaterialName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    TeaID = table.Column<int>(type: "int", nullable: false)
+                    Quanity = table.Column<int>(type: "int", nullable: false),
+                    DetailMaterialName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TeaID = table.Column<int>(type: "int", nullable: false),
+                    MaterialID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Material", x => x.MaterialID);
+                    table.PrimaryKey("PK_DetailsMaterial", x => x.DetailsMaterialID);
                     table.ForeignKey(
-                        name: "FK_Material_Tea_TeaID",
+                        name: "FK_DetailsMaterial_Material_MaterialID",
+                        column: x => x.MaterialID,
+                        principalTable: "Material",
+                        principalColumn: "MaterialID");
+                    table.ForeignKey(
+                        name: "FK_DetailsMaterial_Tea_TeaID",
                         column: x => x.TeaID,
                         principalTable: "Tea",
                         principalColumn: "TeaID");
@@ -157,32 +178,6 @@ namespace MilkTeaBusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DetailsMaterial",
-                columns: table => new
-                {
-                    DetailsMaterialID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Quanity = table.Column<int>(type: "int", nullable: false),
-                    DetailMaterialName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TeaID = table.Column<int>(type: "int", nullable: false),
-                    MaterialID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetailsMaterial", x => x.DetailsMaterialID);
-                    table.ForeignKey(
-                        name: "FK_DetailsMaterial_Material_MaterialID",
-                        column: x => x.MaterialID,
-                        principalTable: "Material",
-                        principalColumn: "MaterialID");
-                    table.ForeignKey(
-                        name: "FK_DetailsMaterial_Tea_TeaID",
-                        column: x => x.TeaID,
-                        principalTable: "Tea",
-                        principalColumn: "TeaID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderDetail",
                 columns: table => new
                 {
@@ -209,6 +204,35 @@ namespace MilkTeaBusinessObject.Migrations
                         principalColumn: "TeaID");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TaskUser",
+                columns: table => new
+                {
+                    TaskId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WorkName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WorkDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    OrderID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskUser", x => x.TaskId);
+                    table.ForeignKey(
+                        name: "FK_TaskUser_Order_OrderID",
+                        column: x => x.OrderID,
+                        principalTable: "Order",
+                        principalColumn: "OrderID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskUser_User_UserID",
+                        column: x => x.UserID,
+                        principalTable: "User",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_TeaID",
                 table: "Comment",
@@ -230,11 +254,6 @@ namespace MilkTeaBusinessObject.Migrations
                 column: "TeaID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Material_TeaID",
-                table: "Material",
-                column: "TeaID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Order_UserID",
                 table: "Order",
                 column: "UserID");
@@ -248,6 +267,16 @@ namespace MilkTeaBusinessObject.Migrations
                 name: "IX_OrderDetail_TeaID",
                 table: "OrderDetail",
                 column: "TeaID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskUser_OrderID",
+                table: "TaskUser",
+                column: "OrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskUser_UserID",
+                table: "TaskUser",
+                column: "UserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_DistrictID",
@@ -272,13 +301,16 @@ namespace MilkTeaBusinessObject.Migrations
                 name: "OrderDetail");
 
             migrationBuilder.DropTable(
+                name: "TaskUser");
+
+            migrationBuilder.DropTable(
                 name: "Material");
 
             migrationBuilder.DropTable(
-                name: "Order");
+                name: "Tea");
 
             migrationBuilder.DropTable(
-                name: "Tea");
+                name: "Order");
 
             migrationBuilder.DropTable(
                 name: "User");

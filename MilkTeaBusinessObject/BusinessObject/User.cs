@@ -19,7 +19,7 @@ namespace MilkTeaBusinessObject.BusinessObject
 
         public string RoleID { get; set; }
         public Role Role { get; set; }
-        public string DistrictID { get; set; }
+        public int DistrictID { get; set; }
         public District District { get; set; }
         public List<Comment> Comments { get; set; }
         public List<Order> Orders { get; set; }
