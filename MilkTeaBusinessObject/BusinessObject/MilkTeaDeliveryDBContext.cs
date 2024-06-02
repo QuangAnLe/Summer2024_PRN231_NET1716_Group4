@@ -24,6 +24,7 @@ namespace MilkTeaBusinessObject.BusinessObject
         public virtual DbSet<Comment>? Comments { get; set; }
         public virtual DbSet<District>? Districts { get; set; }
         public virtual DbSet<Material>? Materials { get; set; }
+        public virtual DbSet<DetailsMaterial>? DetailsMaterials { get; set; }
         public virtual DbSet<Order>? Orders { get; set; }
         public virtual DbSet<OrderDetail>? OrderDetails { get; set; }
         public virtual DbSet<Tea>? Teas { get; set; }
