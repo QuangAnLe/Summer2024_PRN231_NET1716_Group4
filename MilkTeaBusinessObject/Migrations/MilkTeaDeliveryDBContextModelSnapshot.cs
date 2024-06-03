@@ -87,8 +87,11 @@ namespace MilkTeaBusinessObject.Migrations
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.District", b =>
                 {
-                    b.Property<string>("DistrictID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DistrictID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DistrictID"), 1L, 1);
 
                     b.Property<string>("DistrictName")
                         .IsRequired()
@@ -293,7 +296,10 @@ namespace MilkTeaBusinessObject.Migrations
 
                     b.Property<string>("DistrictID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DistrictID1")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -328,7 +334,7 @@ namespace MilkTeaBusinessObject.Migrations
 
                     b.HasKey("UserID");
 
-                    b.HasIndex("DistrictID");
+                    b.HasIndex("DistrictID1");
 
                     b.HasIndex("RoleID");
 
@@ -426,7 +432,7 @@ namespace MilkTeaBusinessObject.Migrations
                 {
                     b.HasOne("MilkTeaBusinessObject.BusinessObject.District", "District")
                         .WithMany("Users")
-                        .HasForeignKey("DistrictID")
+                        .HasForeignKey("DistrictID1")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
