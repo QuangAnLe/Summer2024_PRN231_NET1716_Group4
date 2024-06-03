@@ -27,6 +27,9 @@ namespace MilkTeaStore.Mapper
             CreateMap<UserCreateDTO, User>().ReverseMap();
             CreateMap<UserUpdateDTO, User>().ReverseMap();
 
+            CreateMap<DistrictCreateDTO, District>().ReverseMap();
+            CreateMap<DistrictVM, District>().ReverseMap();
+            CreateMap<DistrictUpdateDTO, District>().ReverseMap();
 
 
         }
