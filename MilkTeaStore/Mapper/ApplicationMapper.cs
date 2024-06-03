@@ -33,7 +33,10 @@ namespace MilkTeaStore.Mapper
             CreateMap<DistrictCreateDTO, District>().ReverseMap();
             CreateMap<DistrictUpdateDTO, District>().ReverseMap();
 
-
+            //CreateMap DetailsMaterial
+            CreateMap<DetailsMaterialCreateDTO, DetailsMaterial>().ReverseMap();
+            CreateMap<DetailsMaterialUpdateDTO, DetailsMaterial>().ReverseMap();
+            CreateMap<DetailsMaterialVM, DetailsMaterial>().ReverseMap();
         }
     }
 }

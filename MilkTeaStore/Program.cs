@@ -65,15 +65,17 @@ builder.Services.AddScoped<IOrderDetailRepo, OrderDetailRepo>();
 builder.Services.AddScoped<IMaterialServices, MaterialServices>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserServices, UserServices>();
-builder.Services.AddScoped<IDistrictRepo, DistrictRepo>();
-builder.Services.AddScoped<IDistrictServices, DistrictServices>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+builder.Services.AddScoped<IDetailsMaterialRepo, DetailsMaterialRepo>();
+builder.Services.AddScoped<IDetailsMaterialService, DetailsMaterialService>();
 
 //Odata
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Tea>("Tea");
 modelBuilder.EntitySet<Material>("Material");
 modelBuilder.EntitySet<User>("User");
-modelBuilder.EntitySet<User>("District");
+modelBuilder.EntitySet<DetailsMaterial>("DetailsMaterial");
 builder.Services.AddControllers().AddOData(
     options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
         routePrefix: "odata",
