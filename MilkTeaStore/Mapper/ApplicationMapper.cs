@@ -29,7 +29,9 @@ namespace MilkTeaStore.Mapper
             CreateMap<OrderDTO, Order>().ReverseMap();
             CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
 
-            CreateMap<OrderDetailVM, OrderDetail>().ReverseMap().ForMember(o => o.TeaVM , od =>od.MapFrom(src =>src.Tea));
+            CreateMap<DistrictVM, District>().ReverseMap();
+            CreateMap<DistrictCreateDTO, District>().ReverseMap();
+            CreateMap<DistrictUpdateDTO, District>().ReverseMap();
 
 
         }

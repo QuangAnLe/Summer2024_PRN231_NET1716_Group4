@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
 using MilkTeaStore.DTO.Create;
@@ -10,9 +11,8 @@ using MilkTeaStore.ViewModels;
 
 namespace MilkTeaStore.Controllers.DistrictController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DistrictController : ControllerBase
+
+    public class DistrictController : ODataController
     {
         private readonly IDistrictServices _districtServices;
         private readonly IMapper _mapper;
@@ -52,7 +52,7 @@ namespace MilkTeaStore.Controllers.DistrictController
 
         }
 
-        [HttpPost]
+        [HttpPost("odata/District")]
         [EnableQuery]
         public IActionResult PostDistrict([FromBody] DistrictCreateDTO district)
         {

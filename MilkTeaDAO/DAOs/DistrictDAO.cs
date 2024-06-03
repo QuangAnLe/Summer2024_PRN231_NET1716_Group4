@@ -46,7 +46,7 @@ namespace MilkTeaDAO.DAOs
         {
             try
             {
-                var district = _context.Districts!.FirstOrDefault(c => c.DistrictID == id);
+                var district = _context.Districts!.FirstOrDefault(c => c.DistrictID.Equals(id));
                 return district;
             }
             catch (Exception ex)

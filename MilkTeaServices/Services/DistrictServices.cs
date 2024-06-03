@@ -1,5 +1,6 @@
 ﻿using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaRepository.IRepo;
+using MilkTeaServices.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MilkTeaServices.Services
 {
-    public class DistrictServices
+    public class DistrictServices: IDistrictServices
     {
         private readonly IDistrictRepo _districtRepo;
         public DistrictServices(IDistrictRepo districtRepo)
