@@ -1,6 +1,7 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.HomePageModel
 @{
+	var token = Request.Cookies["UserCookie"];
 }
 
 <!doctype html>
@@ -43,7 +44,29 @@
 					<li><a class="nav-link" href="about.html">About us</a></li>
 					<li><a class="nav-link" href="services.html">Services</a></li>
 					<li><a class="nav-link" href="blog.html">Blog</a></li>
-					<li><a class="nav-link" href="contact.html">Contact us</a></li>
+
+			</div>
+			<!-- login Log out -->
+			<div class="header-action">
+				@if (string.IsNullOrEmpty(token))
+				{
+					<button class="btn btn-primary" onclick="window.location.href='./Login'">
+						<span>Đăng nhập</span>
+						<ion-icon name="log-in-outline"></ion-icon>
+					</button>
+				}
+				else
+				{
+					<button class="btn btn-primary" onclick="window.location.href='./Logout'">
+						<span>Logout</span>
+						<ion-icon name="log-in-outline"></ion-icon>
+					</button>
+				}
+
+
+			</div>
+
+		</div>
 				</ul>
 
 				<!--Login-->
