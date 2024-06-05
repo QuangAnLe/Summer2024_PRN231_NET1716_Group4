@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using MilkTeaStore.ViewModels;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using MilkTeaBusinessObject.BusinessObject;
-using MilkTeaStore.ViewModels;
 
 namespace ClientMilkTeaStore.Pages.AdminPage.UserPage
 {
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null!;
-        private string ApiUrl = "";
+        private string ApiUrl = string.Empty;
         public IndexModel()
         {
             client = new HttpClient();
@@ -26,7 +22,7 @@ namespace ClientMilkTeaStore.Pages.AdminPage.UserPage
             ApiUrl = "https://localhost:7112/odata/User";
         }
 
-        public IList<UserVM> User { get;set; } = default!;
+        public IList<UserVM> User { get; set; } = default!;
 
         public string Admin { get; private set; } = default!;
 

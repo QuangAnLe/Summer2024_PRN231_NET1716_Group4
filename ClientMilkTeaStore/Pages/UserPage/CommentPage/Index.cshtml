@@ -1,0 +1,60 @@
+﻿@page
+@model ClientMilkTeaStore.Pages.UserPage.CommentPage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment[0].CommentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment[0].Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment[0].Rating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment[0].Tea)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment[0].User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Comment) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CommentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tea.Image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.DistrictID)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.CommentID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.CommentID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.CommentID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

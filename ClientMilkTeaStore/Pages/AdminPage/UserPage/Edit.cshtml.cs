@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using MilkTeaStore.DTO.Update;
+using System;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using MilkTeaBusinessObject.BusinessObject;
-using MilkTeaDAO.DAOs;
-using MilkTeaStore.DTO.Update;
-using MilkTeaStore.ViewModels;
 
 namespace ClientMilkTeaStore.Pages.AdminPage.UserPage
 {
     public class EditModel : PageModel
     {
         private readonly HttpClient client;
-        private string ApiUrl = "";
+        private string ApiUrl = string.Empty;
 
         public EditModel()
         {
