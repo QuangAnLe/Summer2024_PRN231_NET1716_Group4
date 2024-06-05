@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,7 +13,8 @@ using MilkTeaStore.ViewModels;
 
 namespace MilkTeaStore.Controllers.UserController
 {
-    public class UserController : ODataController
+	//[Authorize(Role = "Admin")]
+	public class UserController : ODataController
     {
         private readonly IUserServices _userServices;
         private readonly IMapper _mapper;

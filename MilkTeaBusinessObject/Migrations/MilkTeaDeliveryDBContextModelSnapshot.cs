@@ -294,11 +294,7 @@ namespace MilkTeaBusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
-                    b.Property<string>("DistrictID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DistrictID1")
+                    b.Property<int>("DistrictID")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
