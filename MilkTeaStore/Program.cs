@@ -16,15 +16,13 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-builder.Services.AddSwaggerGen(option =>
+// Configure Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
 {
-    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
@@ -33,7 +31,7 @@ builder.Services.AddSwaggerGen(option =>
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme.",
     });
-    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -49,14 +47,16 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddMvc()
-     .AddNewtonsoftJson(
-          options => { options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; }
-      );
+// Add JSON serialization settings
+builder.Services.AddMvc().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+});
 
-//Mapper
+// Add AutoMapper
 builder.Services.AddAutoMapper(typeof(ApplicationMapper));
 
+// Register repositories and services
 builder.Services.AddScoped<ITeaRepo, TeaRepo>();
 builder.Services.AddScoped<ITeaServices, TeaServices>();
 builder.Services.AddScoped<IMaterialRepo, MaterialRepo>();
@@ -65,28 +65,35 @@ builder.Services.AddScoped<IOrderDetailRepo, OrderDetailRepo>();
 builder.Services.AddScoped<IMaterialServices, MaterialServices>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<ITaskUserRepo, TaskUserRepo>();
+builder.Services.AddScoped<ITaskUserServices, TaskUserServices>();
+builder.Services.AddScoped<ICommentRepo, CommentRepo>();
+builder.Services.AddScoped<ICommentServices, CommentServices>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IDetailsMaterialRepo, DetailsMaterialRepo>();
 builder.Services.AddScoped<IDetailsMaterialService, DetailsMaterialService>();
 
-//Odata
+// Configure OData
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Tea>("Tea");
 modelBuilder.EntitySet<Material>("Material");
 modelBuilder.EntitySet<User>("User");
+modelBuilder.EntitySet<TaskUser>("TaskUser");
+modelBuilder.EntitySet<Comment>("Comment");
 modelBuilder.EntitySet<DetailsMaterial>("DetailsMaterial");
-builder.Services.AddControllers().AddOData(
-    options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
+
+builder.Services.AddControllers().AddOData(options =>
+    options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
         routePrefix: "odata",
         model: modelBuilder.GetEdmModel()));
 
-//Jwt
+// Configure JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters()
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -96,6 +103,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
+builder.Services.AddDbContext<MilkTeaDeliveryDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
 
 var app = builder.Build();
 
@@ -108,6 +117,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication(); // Ensure this is before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
