@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MilkTeaServices.Services
 {
-    public class CommentServices :ICommentServices
+    public class CommentServices : ICommentServices
     {
         private readonly ICommentRepo _commentRepo;
         public CommentServices(ICommentRepo commentRepo)

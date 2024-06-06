@@ -26,8 +26,6 @@ namespace MilkTeaStore.Mapper
                                        opt => opt.MapFrom(src => src.District!.WardName));
             CreateMap<UserCreateDTO, User>().ReverseMap();
             CreateMap<UserUpdateDTO, User>().ReverseMap();
-            CreateMap<OrderDTO, Order>().ReverseMap();
-            CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
 
             CreateMap<TaskUserVM, TaskUser>().ReverseMap();
             CreateMap<TaskUserCreateDTO, TaskUser>().ReverseMap();
@@ -37,14 +35,8 @@ namespace MilkTeaStore.Mapper
             CreateMap<CommentCreateDTO, Comment>().ReverseMap();
             CreateMap<CommentUpdateDTO, Comment>().ReverseMap();
 
-            CreateMap<DistrictVM, District>().ReverseMap();
-            CreateMap<DistrictCreateDTO, District>().ReverseMap();
-            CreateMap<DistrictUpdateDTO, District>().ReverseMap();
 
-            //CreateMap DetailsMaterial
-            CreateMap<DetailsMaterialCreateDTO, DetailsMaterial>().ReverseMap();
-            CreateMap<DetailsMaterialUpdateDTO, DetailsMaterial>().ReverseMap();
-            CreateMap<DetailsMaterialVM, DetailsMaterial>().ReverseMap();
+
         }
     }
 }

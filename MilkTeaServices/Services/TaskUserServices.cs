@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MilkTeaServices.Services
 {
-    public class TaskUserServices :ITaskUserServices
+    public class TaskUserServices : ITaskUserServices
     {
         private readonly ITaskUserRepo _taskUserRepo;
         public TaskUserServices(ITaskUserRepo taskUserRepo)

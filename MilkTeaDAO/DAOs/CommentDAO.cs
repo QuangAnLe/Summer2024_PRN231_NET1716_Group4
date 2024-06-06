@@ -35,7 +35,7 @@ namespace MilkTeaDAO.DAOs
         {
             try
             {
-                var comment = _context.Comments.Include(c=> c.Tea).Include(c => c.User)
+                var comment = _context.Comments.Include(c => c.Tea).Include(c => c.User)
                                            .SingleOrDefault(c => c.CommentID == id);
                 return comment;
             }

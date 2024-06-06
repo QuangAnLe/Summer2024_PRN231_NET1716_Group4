@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MilkTeaRepository.Repo
 {
-    public class CommentRepo :ICommentRepo
+    public class CommentRepo : ICommentRepo
     {
         CommentDAO dao = new CommentDAO();
         public void add(Comment comment)

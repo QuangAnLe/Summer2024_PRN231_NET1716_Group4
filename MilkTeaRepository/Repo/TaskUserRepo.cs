@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MilkTeaRepository.Repo
 {
-    public class TaskUserRepo :ITaskUserRepo
+    public class TaskUserRepo : ITaskUserRepo
     {
         TaskUserDAO dao = new TaskUserDAO();
         public void add(TaskUser taskUser)

@@ -294,11 +294,7 @@ namespace MilkTeaBusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
-                    b.Property<string>("DistrictID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DistrictID1")
+                    b.Property<int>("DistrictID")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -334,7 +330,7 @@ namespace MilkTeaBusinessObject.Migrations
 
                     b.HasKey("UserID");
 
-                    b.HasIndex("DistrictID1");
+                    b.HasIndex("DistrictID");
 
                     b.HasIndex("RoleID");
 
@@ -432,7 +428,7 @@ namespace MilkTeaBusinessObject.Migrations
                 {
                     b.HasOne("MilkTeaBusinessObject.BusinessObject.District", "District")
                         .WithMany("Users")
-                        .HasForeignKey("DistrictID1")
+                        .HasForeignKey("DistrictID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

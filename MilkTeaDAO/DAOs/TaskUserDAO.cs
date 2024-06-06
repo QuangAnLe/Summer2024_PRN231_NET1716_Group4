@@ -23,7 +23,7 @@ namespace MilkTeaDAO.DAOs
             try
             {
                 return _context.TaskUsers.Include(t => t.Order).Include(t => t.User)
-                        .ToList();      
+                        .ToList();
             }
             catch (Exception ex)
             {
