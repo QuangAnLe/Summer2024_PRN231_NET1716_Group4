@@ -5,7 +5,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpClient(); // Registers HttpClient
 
-builder.Services.AddRazorPages().AddRazorPagesOptions(options => { options.Conventions.AddPageRoute("/HomePage", ""); });
+builder.Services.AddRazorPages().AddRazorPagesOptions(options => { options.Conventions.AddPageRoute("/Login", ""); });
 
 var app = builder.Build();
 
@@ -25,5 +25,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
 
 app.Run();
