@@ -66,7 +66,10 @@ builder.Services.AddScoped<ITaskUserRepo, TaskUserRepo>();
 builder.Services.AddScoped<ITaskUserServices, TaskUserServices>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<ICommentServices, CommentServices>();
-
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IOrderDetailRepo, OrderDetailRepo>();
 //Odata
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Tea>("Tea");
