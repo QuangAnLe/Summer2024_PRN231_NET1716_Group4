@@ -8,8 +8,8 @@ namespace ClientMilkTeamPage.Pages
         public IActionResult OnGet()
         {
 
-			Response.Cookies.Delete("UserCookie");
-			return RedirectToPage("/HomePage");
-		}
+            Response.Cookies.Delete("UserCookie");
+            return RedirectToPage("/HomePage");
+        }
     }
 }

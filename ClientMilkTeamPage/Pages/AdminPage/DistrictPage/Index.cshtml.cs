@@ -4,35 +4,36 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
+namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
 {
-    public class DetailsModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly HttpClient client = null!;
         private string ApiUrl = "";
 
-        public DetailsModel()
+        public IndexModel()
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/TaskUser";
+            ApiUrl = "https://localhost:7112/odata/District";
         }
 
-        public TaskUser TaskUser { get; set; } = default!;
+        public IList<District> District { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}/{id}");
+            HttpResponseMessage response = await client.GetAsync(ApiUrl);
             string strData = await response.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _taskUser = JsonSerializer.Deserialize<TaskUser>(strData, options)!;
+            List<District> districts = JsonSerializer.Deserialize<List<District>>(strData, options)!;
 
-            TaskUser = _taskUser;
+            District = districts;
+
             return Page();
         }
     }

@@ -1,6 +1,6 @@
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MilkTeaStore.ViewModels;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
