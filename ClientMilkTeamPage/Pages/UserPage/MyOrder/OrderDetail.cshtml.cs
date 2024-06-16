@@ -1,7 +1,7 @@
+using ClientMilkTeamPage.DTO;
 using ClientMilkTeamPage.DTO.CommentDTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MilkTeaBusinessObject.BusinessObject;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
