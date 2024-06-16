@@ -1,10 +1,10 @@
-using ClientMilkTeamPage.DTO.MaterialDTO;
+using ClientMilkTeamPage.DTO.DistrictDTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
+namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
 {
     public class EditModel : PageModel
     {
@@ -16,14 +16,15 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/Material";
+            ApiUrl = "https://localhost:7112/odata/District";
         }
 
         [BindProperty]
-        public MaterialUpdateDTO Material { get; set; } = default!;
+        public DistrictUpdateDTO District { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}/{id}");
             string strData = await response.Content.ReadAsStringAsync();
 
@@ -31,19 +32,19 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _material = JsonSerializer.Deserialize<MaterialUpdateDTO>(strData, options)!;
+            var district = JsonSerializer.Deserialize<DistrictUpdateDTO>(strData, options)!;
 
-            Material = _material;
+            District = district;
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync(int? id)
         {
             try
             {
-                string strData = JsonSerializer.Serialize(Material);
+                string strData = JsonSerializer.Serialize(District);
                 var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await client.PutAsync($"{ApiUrl}/{id}", contentData);
                 if (response.IsSuccessStatusCode)
@@ -59,7 +60,6 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
                 ViewData["Error"] = "Fail To Call API";
                 return RedirectToPage("/Error");
             }
-
         }
     }
 }

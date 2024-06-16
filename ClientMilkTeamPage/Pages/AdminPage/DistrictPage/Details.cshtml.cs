@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
+namespace ClientMilkTeamPage.Pages.AdminPage.TeaPage
 {
     public class DetailsModel : PageModel
     {
@@ -16,10 +16,10 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/TaskUser";
+            ApiUrl = "https://localhost:7112/odata/Tea";
         }
 
-        public TaskUser TaskUser { get; set; } = default!;
+        public Tea Tea { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,9 +30,9 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _taskUser = JsonSerializer.Deserialize<TaskUser>(strData, options)!;
+            var _tea = JsonSerializer.Deserialize<Tea>(strData, options)!;
 
-            TaskUser = _taskUser;
+            Tea = _tea;
             return Page();
         }
     }

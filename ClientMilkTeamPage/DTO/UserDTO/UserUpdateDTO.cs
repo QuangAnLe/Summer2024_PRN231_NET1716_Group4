@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MilkTeaStore.DTO.Update
+namespace ClientMilkTeamPage.DTO.UserDTO
 {
     public class UserUpdateDTO
     {

@@ -1,10 +1,10 @@
+using ClientMilkTeamPage.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MilkTeaBusinessObject.BusinessObject;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace ClientMilkTeamPage.Pages.AdminPage.TeaPage
+namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
 {
     public class DetailsModel : PageModel
     {
@@ -16,10 +16,10 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TeaPage
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/Tea";
+            ApiUrl = "https://localhost:7112/odata/District";
         }
 
-        public Tea Tea { get; set; } = default!;
+        public District District { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,9 +30,9 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TeaPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _tea = JsonSerializer.Deserialize<Tea>(strData, options)!;
+            var district = JsonSerializer.Deserialize<District>(strData, options)!;
 
-            Tea = _tea;
+            District = district;
             return Page();
         }
     }
