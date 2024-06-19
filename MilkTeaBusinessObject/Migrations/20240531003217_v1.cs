@@ -43,7 +43,7 @@ namespace MilkTeaBusinessObject.Migrations
                 name: "Role",
                 columns: table => new
                 {
-                    RoleID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleID = table.Column<int>(type: "int", nullable: false),
                     RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -82,7 +82,7 @@ namespace MilkTeaBusinessObject.Migrations
                     UserAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
-                    RoleID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleID = table.Column<int>(type: "int", nullable: false),
                     DistrictID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

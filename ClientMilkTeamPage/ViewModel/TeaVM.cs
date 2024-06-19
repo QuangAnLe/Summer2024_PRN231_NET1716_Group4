@@ -1,4 +1,4 @@
-﻿namespace MilkTeaStore.ViewModels
+﻿namespace ClientMilkTeamPage.ViewModel
 {
     public class TeaVM
     {

@@ -1,7 +1,7 @@
+using ClientMilkTeamPage.DTO;
 using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MilkTeaBusinessObject.BusinessObject;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -50,6 +50,11 @@ namespace ClientMilkTeamPage.Pages
                         var roleClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
 
                         if (roleClaim?.Value == "1") //customer
+                        {
+                            HttpContext.Response.Cookies.Append("UserCookie", token);
+                            return RedirectToPage("./HomePage");
+                        }
+                        else if (roleClaim?.Value == "2") //customer
                         {
                             HttpContext.Response.Cookies.Append("UserCookie", token);
                             return RedirectToPage("./HomePage");

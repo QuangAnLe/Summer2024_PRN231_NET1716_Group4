@@ -1,4 +1,4 @@
-﻿namespace MilkTeaStore.DTO.Update
+﻿namespace ClientMilkTeamPage.DTO.MaterialDTO
 {
     public class MaterialUpdateDTO
     {

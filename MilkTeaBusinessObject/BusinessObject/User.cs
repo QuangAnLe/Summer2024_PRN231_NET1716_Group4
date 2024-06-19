@@ -17,7 +17,7 @@ namespace MilkTeaBusinessObject.BusinessObject
         public string Email { get; set; }
         public bool Status { get; set; }
 
-        public string RoleID { get; set; }
+        public int RoleID { get; set; }
         public Role Role { get; set; }
         public int DistrictID { get; set; }
         public District District { get; set; }

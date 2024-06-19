@@ -206,8 +206,8 @@ namespace MilkTeaBusinessObject.Migrations
 
             modelBuilder.Entity("MilkTeaBusinessObject.BusinessObject.Role", b =>
                 {
-                    b.Property<string>("RoleID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
 
                     b.Property<string>("RoleName")
                         .IsRequired()
@@ -313,9 +313,9 @@ namespace MilkTeaBusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleID")
+                    b.Property<int>("RoleID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("int");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");

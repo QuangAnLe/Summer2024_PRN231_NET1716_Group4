@@ -1,4 +1,4 @@
-﻿namespace MilkTeaStore.DTO.Create
+﻿namespace ClientMilkTeamPage.DTO.MaterialDTO
 {
     public class MaterialCreateDTO
     {

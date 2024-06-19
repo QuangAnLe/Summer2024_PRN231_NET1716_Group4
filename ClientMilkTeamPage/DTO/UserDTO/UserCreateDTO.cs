@@ -1,4 +1,4 @@
-﻿namespace MilkTeaStore.DTO.Create
+﻿namespace ClientMilkTeamPage.DTO.UserDTO
 {
     public class UserCreateDTO
     {
