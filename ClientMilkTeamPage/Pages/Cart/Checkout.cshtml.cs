@@ -82,7 +82,7 @@ namespace ClientMilkTeamPage.Pages.Cart
                 if (response1.IsSuccessStatusCode)
                 {
                     ViewData["Message"] = "Add Order successfully";
-                    return Redirect("/Cart/Index");
+                    return Redirect("/MyOrder/OrderDetail?id=" + reps.OrderID);
                 }
             }
             ViewData["Message"] = "Fail";
