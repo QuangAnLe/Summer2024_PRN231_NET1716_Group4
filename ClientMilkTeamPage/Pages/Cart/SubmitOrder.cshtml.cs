@@ -77,7 +77,7 @@ namespace ClientMilkTeamPage.Pages.Cart
                 if (response1.IsSuccessStatusCode)
                 {
                     ViewData["Message"] = "Add Order successfully";
-                    return Redirect("/Cart/Index");
+                    return Redirect("/UserPage/MyOrder/OrderDetail?id=" + reps.OrderID);
                 }
             }
             ViewData["Message"] = "Fail";
@@ -128,9 +128,8 @@ namespace ClientMilkTeamPage.Pages.Cart
                     var contentData1 = new StringContent(strData1, System.Text.Encoding.UTF8, "application/json");
                     HttpResponseMessage response1 = await client.PostAsync(ApiUrlDetail, contentData1);
                 }
-
                 ViewData["Message"] = "Add Order successfully";
-                return Redirect("/Cart/Index");
+                return Redirect("/UserPage/MyOrder/OrderDetail?id=" + reps.OrderID);
             }
             ViewData["Message"] = "Fail";
             return Redirect("/Cart/Index");

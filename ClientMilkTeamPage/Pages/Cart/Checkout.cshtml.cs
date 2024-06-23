@@ -85,9 +85,14 @@ namespace ClientMilkTeamPage.Pages.Cart
                     return Redirect("/MyOrder/OrderDetail?id=" + reps.OrderID);
                 }
             }
+            else
+            {
+                ViewData["Message"] = "Fail";
+                return Redirect("/Cart/Index");
+            }
+
             ViewData["Message"] = "Fail";
             return Redirect("/Cart/Index");
-
         }
 
         public void OnGet()
