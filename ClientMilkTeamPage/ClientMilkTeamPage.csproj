@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\Cart\Checkout.cshtml" />
+  </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.29" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.29" />
@@ -17,5 +21,14 @@
 	<ItemGroup>
 	  <Folder Include="wwwroot\css2\" />
 	  <Folder Include="wwwroot\scss\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Pages\Cart\Checkout.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Pages\Cart\Checkout.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="Pages\Cart\Checkout.cshtml" />
 	</ItemGroup>
 </Project>

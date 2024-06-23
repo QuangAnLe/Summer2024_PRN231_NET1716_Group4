@@ -20,6 +20,6 @@ namespace MilkTeaServices.Services
         public Order get(int id) => _OrderRepo.get(id);
         public void delete(int id) => _OrderRepo.delete(id);
         public void update(Order order) => _OrderRepo.update(order);
-        public void add(Order order) => _OrderRepo.add(order);
+        public Order add(Order order) => _OrderRepo.add(order);
     }
 }

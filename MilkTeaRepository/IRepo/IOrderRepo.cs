@@ -13,6 +13,6 @@ namespace MilkTeaRepository.IRepo
         public Order get(int id);
         public void delete(int id);
         public void update(Order order);
-        public void add(Order order);
+        public Order add(Order order);
     }
 }

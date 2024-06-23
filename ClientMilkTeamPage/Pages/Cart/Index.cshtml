@@ -1,0 +1,42 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.Cart.IndexModel
+@{
+}
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h2>Your Cart</h2>
+
+<table>
+    <tr>
+        <th>Tea Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var item in Model.CartItems)
+    {
+        <tr>
+            <td>@item.TeaName</td>
+            <td>@item.Price</td>
+            <td>@item.Quantity</td>
+            <td>@item.TotalPrice</td>
+            <td>
+                <a href="/Cart/Delete?teaID=@item.TeaID">Delete</a>
+            </td>
+        </tr>
+    }
+</table>
+
+<p>Total: @Model.CartItems.Sum(item => item.TotalPrice)</p>
+<form action="/Cart/SubmitOrder" method="get">
+    <h1>Checkout</h1>
+    <label>Note:</label>
+    <input type="text" name="content"/>
+    <label>Address:</label>
+    <input type="text" name="address"/>
+    <p>@ViewData["Message"]</p>
+    <button type="submit">Checkout</button>
+</form>

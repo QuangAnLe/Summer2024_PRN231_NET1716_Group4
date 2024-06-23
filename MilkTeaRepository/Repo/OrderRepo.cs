@@ -13,9 +13,9 @@ namespace MilkTeaRepository.Repo
     {
 
         OrderDAO dao = new OrderDAO();
-        public void add(Order order)
+        public Order add(Order order)
         {
-            dao.Add(order);
+          return  dao.Add(order);
         }
 
         public void delete(int id)
