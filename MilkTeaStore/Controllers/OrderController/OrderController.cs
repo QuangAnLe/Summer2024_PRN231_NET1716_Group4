@@ -60,8 +60,8 @@ namespace MilkTeaStore.Controllers.OrderController
             try
             {
                 var order = _mapper.Map<Order>(orderDTO);
-                _orderService.add(order);
-                return Ok();
+                Order newo= _orderService.add(order);
+                return Ok(newo);
             }
             catch (Exception ex)
             {

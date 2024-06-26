@@ -45,7 +45,7 @@
 					</li>
 					<li><a class="nav-link" href="shop.html">Shop</a></li>
 					<li><a class="nav-link" asp-page="/UserProfile">Profile</a></li>
-					<li><a class="nav-link" href="services.html">Services</a></li>
+					<li><a class="nav-link" asp-page="/Cart/Index">Cart</a></li>
 					<li><a class="nav-link" href="blog.html">Blog</a></li>
 				</ul>
 			</div>
@@ -115,7 +115,9 @@
 									<img src="@item.Image" class="img-fluid product-thumbnail">
 									<h3 class="product-title">@item.TeaName</h3>
 									<strong class="product-price">@item.Price</strong>
+
 								</a>
+								<a class="btn btn-info" href="/Cart/Add?teaID=@item.TeaID&quantity=1">Add cart</a>
 							</div>
 						}
 					</div>
