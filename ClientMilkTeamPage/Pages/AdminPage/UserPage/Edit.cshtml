@@ -51,12 +51,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="User.RoleID" class="control-label"></label>
-                <input asp-for="User.RoleID" class="form-control" />
+                <select asp-for="User.RoleID" asp-items="@Model.Roles" class="form-control"></select>
                 <span asp-validation-for="User.RoleID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="User.DistrictID" class="control-label"></label>
-                <input asp-for="User.DistrictID" class="form-control" />
+                <select asp-for="User.DistrictID" asp-items="@Model.Districts" class="form-control"></select>
                 <span asp-validation-for="User.DistrictID" class="text-danger"></span>
             </div>
             <div class="form-group">
