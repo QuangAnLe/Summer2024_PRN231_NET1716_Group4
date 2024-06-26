@@ -1,6 +1,9 @@
+﻿using ClientMilkTeamPage.DTO;
 using ClientMilkTeamPage.DTO.UserDTO;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -22,6 +25,12 @@ namespace ClientMilkTeamPage.Pages.AdminPage.UserPage
         [BindProperty]
         public UserUpdateDTO User { get; set; } = default!;
 
+        public List<SelectListItem> Roles { get; set; }
+        public IList<RoleVM> Role { get; set; } = default!;
+
+        public List<SelectListItem> Districts { get; set; }
+        public IList<DistrictVM> District { get; set; } = default!;
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}/{id}");
@@ -34,6 +43,36 @@ namespace ClientMilkTeamPage.Pages.AdminPage.UserPage
             var _user = JsonSerializer.Deserialize<UserUpdateDTO>(strData, options)!;
 
             User = _user;
+
+            //Role
+            HttpResponseMessage roleResponse = await client.GetAsync("https://localhost:7112/api/Role");
+            if (roleResponse.IsSuccessStatusCode)
+            {
+                string roleData = await roleResponse.Content.ReadAsStringAsync();
+                List<RoleVM> roles = JsonSerializer.Deserialize<List<RoleVM>>(roleData, options);
+
+                Roles = new List<SelectListItem>();
+                foreach (var role in roles)
+                {
+                    Roles.Add(new SelectListItem { Value = role.RoleID.ToString(), Text = role.RoleName });
+                }
+            }
+
+            //District
+            HttpResponseMessage districtResponse = await client.GetAsync("https://localhost:7112/odata/District");
+            if (roleResponse.IsSuccessStatusCode)
+            {
+                string districtData = await districtResponse.Content.ReadAsStringAsync();
+                List<DistrictVM> districts = JsonSerializer.Deserialize<List<DistrictVM>>(districtData, options);
+
+                Districts = new List<SelectListItem>();
+                foreach (var district in districts)
+                {
+                    Districts.Add(new SelectListItem { Value = district.DistrictID.ToString(), Text = district.DistrictName + " - " + district.WardName });
+                }
+            }
+
+
             return Page();
         }
 
