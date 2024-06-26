@@ -1,4 +1,4 @@
-﻿namespace ClientMilkTeamPage.DTO.TeaDTO
+s﻿namespace ClientMilkTeamPage.DTO.TeaDTO
 {
     public class TeaCreateDTO
     {
