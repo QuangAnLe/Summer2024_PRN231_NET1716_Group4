@@ -1,12 +1,7 @@
-<<<<<<<< HEAD:ClientMilkTeamPage/Pages/AdminPage/TeaPage/Details.cshtml.cs
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using MilkTeaBusinessObject.BusinessObject;
-========
+
 using ClientMilkTeamPage.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
->>>>>>>> main:ClientMilkTeamPage/Pages/AdminPage/DistrictPage/Details.cshtml.cs
 using System.Net.Http.Headers;
 using System.Text.Json;
 
