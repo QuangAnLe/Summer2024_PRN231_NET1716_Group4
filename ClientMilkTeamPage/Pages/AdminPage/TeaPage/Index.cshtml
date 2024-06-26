@@ -1,0 +1,71 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.AdminPage.TeaPage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+    <a href="./UserPage">UserPage</a> ||  <a href="./MaterialPage">MaterialPage</a>
+    <button class="btn btn-primary" onclick="window.location.href='/Logout'">
+        <span>Logout</span>
+        <ion-icon name="log-in-outline"></ion-icon>
+    </button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tea[0].TeaName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tea[0].Estimation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tea[0].Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tea[0].TeaDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tea[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tea[0].Image)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Tea)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeaName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estimation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeaDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Image)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.TeaID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.TeaID">Details</a> |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
