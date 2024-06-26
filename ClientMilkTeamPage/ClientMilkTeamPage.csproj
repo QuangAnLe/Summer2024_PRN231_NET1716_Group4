@@ -30,5 +30,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Include="Pages\Cart\Checkout.cshtml" />
+	  <None Include="Pages\Shipper\ShipperPage.cshtml" />
 	</ItemGroup>
 </Project>
