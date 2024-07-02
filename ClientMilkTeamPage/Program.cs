@@ -7,7 +7,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpClient(); // Registers HttpClient
 
-builder.Services.AddRazorPages().AddRazorPagesOptions(options => { options.Conventions.AddPageRoute("/Login", ""); });
+builder.Services.AddRazorPages().AddRazorPagesOptions(options => { options.Conventions.AddPageRoute("/HomePage", ""); });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

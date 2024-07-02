@@ -1,3 +1,4 @@
+
 using ClientMilkTeamPage.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -5,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
+
 {
     public class DetailsModel : PageModel
     {

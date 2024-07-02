@@ -9,18 +9,18 @@
             <th>
                 OrderID
             </th>
-           <th>
+            <th>
                 ReasonContent
             </th>
-           <th>
+            <th>
                 TypeOrder
             </th>
-           <th>
+            <th>
                 Status
             </th>
-           <th>
+            <th>
                 Order Date
-            </th> 
+            </th>
             <th>
                 ShipAddress
             </th>
@@ -41,7 +41,14 @@
                     @Html.DisplayFor(modelItem => item.TypeOrder)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Status)
+                    @if (!item.Status)
+                    {
+                        <span style="color: orange;">Processing</span>
+                    }
+                    else
+                    {
+                        <span style="color: green;">Completed</span>
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.StartDate)
@@ -51,7 +58,7 @@
                 </td>
 
                 <td>
-                    <a asp-page="./OrderDetail" asp-route-id="@item.OrderID">Detail</a> |
+                    <a asp-page="./OrderDetail" asp-route-id="@item.OrderID">Detail</a>
                 </td>
             </tr>
         }
