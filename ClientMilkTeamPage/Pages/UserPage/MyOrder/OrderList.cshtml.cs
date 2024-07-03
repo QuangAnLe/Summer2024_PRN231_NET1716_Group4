@@ -8,31 +8,34 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
 {
     public class OrderListModel : PageModel
     {
-        private readonly HttpClient client = null!;
-        private string ApiUrl = "";
+        private readonly HttpClient client;
+        private readonly string ApiUrl = "https://localhost:7112/odata/Order";
 
         public OrderListModel()
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/Order";
         }
 
-        public IList<Order> orders { get; set; } = default!;
+        public IList<Order> orders { get; set; } = new List<Order>();
 
         public async Task<IActionResult> OnGetAsync()
         {
             HttpResponseMessage response = await client.GetAsync(ApiUrl);
-            string strData = await response.Content.ReadAsStringAsync();
-
-            var options = new JsonSerializerOptions
+            if (response.IsSuccessStatusCode)
             {
-                PropertyNameCaseInsensitive = true
-            };
-            List<Order> ordersList = JsonSerializer.Deserialize<List<Order>>(strData, options)!;
-
-            orders = ordersList;
+                string strData = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                orders = JsonSerializer.Deserialize<List<Order>>(strData, options) ?? new List<Order>();
+            }
+            else
+            {
+                orders = new List<Order>(); // Initialize to an empty list if the API call fails
+            }
 
             return Page();
         }
