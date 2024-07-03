@@ -124,6 +124,7 @@ namespace ClientMilkTeamPage.Pages.Cart
                     orderDetailDTO.TotalPrice = item.TotalPrice;
                     orderDetailDTO.CostsIncurred = "100d";
                     orderDetailDTO.TeaID = item.TeaID;
+                    _cartService.RemoveFromCart(item.TeaID);
                     string strData1 = JsonSerializer.Serialize(orderDetailDTO);
                     var contentData1 = new StringContent(strData1, System.Text.Encoding.UTF8, "application/json");
                     HttpResponseMessage response1 = await client.PostAsync(ApiUrlDetail, contentData1);
