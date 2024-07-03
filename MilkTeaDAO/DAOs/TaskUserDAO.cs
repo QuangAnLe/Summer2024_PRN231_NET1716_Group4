@@ -3,14 +3,11 @@ using MilkTeaBusinessObject.BusinessObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MilkTeaDAO.DAOs
 {
     public class TaskUserDAO
     {
-
         private readonly MilkTeaDeliveryDBContext _context;
 
         public TaskUserDAO()
@@ -100,6 +97,33 @@ namespace MilkTeaDAO.DAOs
                 throw new Exception(ex.Message);
             }
         }
+
+        public void UpdateTaskStatus(int taskId, bool status)
+        {
+            try
+            {
+                var existingTask = _context.TaskUsers.Include(t => t.Order).SingleOrDefault(t => t.TaskId == taskId);
+                if (existingTask != null)
+                {
+                    existingTask.Status = status;
+
+                    // Update the associated order's status
+                    if (existingTask.Order != null)
+                    {
+                        existingTask.Order.Status = status;
+                    }
+
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("Task not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
-

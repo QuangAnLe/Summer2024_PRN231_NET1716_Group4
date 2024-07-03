@@ -1,130 +1,114 @@
-using ClientMilkTeamPage.DTO.TaskUserDTO;
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.DTO.CommentDTO;
+using ClientMilkTeamPage.DTO.TaskUserDTO;
 using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using ClientMilkTeamPage.DTO.CommentDTO;
 
 namespace ClientMilkTeamPage.Pages.Shipper
 {
     public class ShipperPageModel : PageModel
     {
-        private readonly HttpClient client = null!;
-        private string TaskApiUrl = "";
-        private string CommentApiUrl = "";
+        private readonly HttpClient client;
 
         public ShipperPageModel()
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            TaskApiUrl = "https://localhost:7112/odata/TaskUser";
-            CommentApiUrl = "https://localhost:7112/odata/Comment";
+            TaskUserVM = new List<TaskUserVM>(); // Initialize to avoid null reference
         }
 
-        public IList<TaskUserVM> TaskUserVM { get; set; } = default!;
-
-        [BindProperty]
+        public IList<TaskUserVM> TaskUserVM { get; set; }
         public bool ShowModal { get; set; } = false;
 
         [BindProperty]
-        public int CurrentTaskId { get; set; }
+        public int TaskId { get; set; }
 
         [BindProperty]
-        public int CurrentTeaID { get; set; }
+        public string Status { get; set; }
 
         [BindProperty]
-        public int CurrentUserID { get; set; }
+        public string FailureReason { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            HttpResponseMessage response = await client.GetAsync(TaskApiUrl);
-            string strData = await response.Content.ReadAsStringAsync();
+            string apiUrl = "https://localhost:7112/odata/TaskUser";
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
 
-            var options = new JsonSerializerOptions
+            if (response.IsSuccessStatusCode)
             {
-                PropertyNameCaseInsensitive = true
-            };
-            List<TaskUser> taskUsers = JsonSerializer.Deserialize<List<TaskUser>>(strData, options)!;
-
-            TaskUserVM = taskUsers.Select(t => new TaskUserVM
+                string strData = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                TaskUserVM = JsonSerializer.Deserialize<List<TaskUserVM>>(strData, options) ?? new List<TaskUserVM>();
+            }
+            else
             {
-                TaskId = t.TaskId,
-                WorkName = t.WorkName,
-                WorkDescription = t.WorkDescription,
-                Status = t.Status,
-                UserID = t.UserID,
-                OrderID = t.OrderID
-            }).ToList();
+                TaskUserVM = new List<TaskUserVM>(); // Initialize to an empty list if the API call fails
+            }
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostUpdateStatus(int TaskId, string Status, int TeaID, int UserID)
+        public async Task<IActionResult> OnPostUpdateStatusAsync()
         {
             if (Status == "Failed")
             {
                 ShowModal = true;
-                CurrentTaskId = TaskId;
-                CurrentTeaID = TeaID;
-                CurrentUserID = UserID;
-            }
-            else
-            {
-                // Handle success update immediately
-                var taskUserUpdate = new TaskUserUpdateDTO
-                {
-                    TaskId = TaskId,
-                    Status = true // Assuming true for success
-                };
-                await UpdateTaskStatus(taskUserUpdate);
+                return Page();
             }
 
-            return RedirectToPage();
+            await UpdateTaskStatusAsync(TaskId, Status == "Success");
+            return RedirectToPage("/UserPage/MyOrder/OrderList");
         }
 
-        public async Task<IActionResult> OnPostSubmitFailureReason(string FailureReason)
+        public async Task<IActionResult> OnPostSubmitFailureReasonAsync()
         {
-            var taskUserUpdate = new TaskUserUpdateDTO
-            {
-                TaskId = CurrentTaskId,
-                Status = false, // Assuming false for failure
-            };
-
-            await UpdateTaskStatus(taskUserUpdate);
-
-            // Create a new comment without TaskId
             var commentCreateDTO = new CommentCreateDTO
             {
                 Content = FailureReason,
                 CommentDate = DateTime.UtcNow,
-                Rating = 0, // Assuming rating is not applicable here
-                TeaID = CurrentTeaID,
-                UserID = CurrentUserID
+                Rating = 0, // Adjust as necessary
+                TeaID = 0, // Adjust as necessary
+                UserID = 0 // Adjust as necessary
             };
 
-            await CreateComment(commentCreateDTO);
+            string apiUrl = "https://localhost:7112/odata/Comment";
+            string strData = JsonSerializer.Serialize(commentCreateDTO);
+            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage commentResponse = await client.PostAsync(apiUrl, contentData);
 
-            ShowModal = false;
-            return RedirectToPage();
+            if (commentResponse.IsSuccessStatusCode)
+            {
+                await UpdateTaskStatusAsync(TaskId, false);
+            }
+
+            return RedirectToPage("/UserPage/MyOrder/OrderList");
         }
 
-        private async Task UpdateTaskStatus(TaskUserUpdateDTO taskUserUpdate)
+        private async Task UpdateTaskStatusAsync(int taskId, bool status)
         {
-            var json = JsonSerializer.Serialize(taskUserUpdate);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            var taskUpdateStatusDTO = new TaskUserUpdateStatusDTO
+            {
+                TaskId = taskId,
+                Status = status
+            };
 
-            await client.PutAsync($"{TaskApiUrl}/{taskUserUpdate.TaskId}", content);
-        }
+            string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}";
+            string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
+            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+            var response = await client.PatchAsync(apiUrl, contentData);
 
-        private async Task CreateComment(CommentCreateDTO commentCreateDTO)
-        {
-            var json = JsonSerializer.Serialize(commentCreateDTO);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            await client.PostAsync(CommentApiUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                // Fetch the updated data
+                await OnGetAsync();
+            }
         }
     }
 }
