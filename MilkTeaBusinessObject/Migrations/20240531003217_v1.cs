@@ -161,7 +161,7 @@ namespace MilkTeaBusinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReasonContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TypeOrder = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ShipAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),

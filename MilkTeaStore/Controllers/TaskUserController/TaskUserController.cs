@@ -6,10 +6,10 @@ using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
 using MilkTeaStore.DTO.Create;
 using MilkTeaStore.DTO.Update;
+using MilkTeaStore.DTO;
 using MilkTeaStore.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MilkTeaStore.Controllers
 {
@@ -105,6 +105,34 @@ namespace MilkTeaStore.Controllers
                 }
                 _taskUserServices.delete(id);
                 return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPatch("{id}")]
+        [EnableQuery]
+        public IActionResult UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
+        {
+            try
+            {
+                if (taskUserUpdateStatusDTO.TaskId != id)
+                {
+                    return BadRequest("ID in the route does not match the ID in the request body.");
+                }
+
+                var taskUser = _taskUserServices.get(id);
+                if (taskUser == null)
+                {
+                    return NotFound();
+                }
+
+                taskUser.Status = taskUserUpdateStatusDTO.Status;
+                _taskUserServices.update(taskUser);
+
+                return Ok("Update Successfully");
             }
             catch (Exception ex)
             {
