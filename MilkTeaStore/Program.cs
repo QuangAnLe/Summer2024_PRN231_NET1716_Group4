@@ -83,6 +83,7 @@ builder.Services.AddScoped<IPaymentServices, PaymentServices>();
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Tea>("Tea");
 modelBuilder.EntitySet<Material>("Material");
+modelBuilder.EntitySet<DetailsMaterial>("DetailsMaterial");
 modelBuilder.EntitySet<User>("User");
 modelBuilder.EntitySet<TaskUser>("TaskUser");
 modelBuilder.EntitySet<Comment>("Comment");

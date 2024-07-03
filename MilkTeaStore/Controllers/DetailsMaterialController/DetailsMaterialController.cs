@@ -1,16 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
+using MilkTeaServices.Services;
 using MilkTeaStore.DTO.Create;
+using MilkTeaStore.DTO.Update;
 using MilkTeaStore.ViewModels;
 
 namespace MilkTeaStore.Controllers.DetailsMaterialController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DetailsMaterialController : ControllerBase
+
+    public class DetailsMaterialController : ODataController
     {
         private readonly IDetailsMaterialServices _detailServices;
         private readonly IMapper _mapper;
@@ -67,7 +69,8 @@ namespace MilkTeaStore.Controllers.DetailsMaterialController
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("odata/DetailsMaterial/{id}")]
+        [EnableQuery]
         public IActionResult Delete(int id)
         {
             try
@@ -81,6 +84,25 @@ namespace MilkTeaStore.Controllers.DetailsMaterialController
             }
         }
 
+        [HttpPut("odata/DetailsMaterial/{id}")]
+        [EnableQuery]
+        public IActionResult Put([FromBody] DetailsMaterialUpdateDTO detail, [FromRoute] int id)
+        {
+            try
+            {
+               
+                var _detail = _mapper.Map<DetailsMaterial>(detail);
+                _detail.DetailsMaterialID = id;
+                _detailServices.UpdateDetailsMaterial(_detail);
+
+                return Ok("Update Successfully");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }

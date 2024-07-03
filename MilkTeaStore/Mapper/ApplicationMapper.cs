@@ -22,6 +22,7 @@ namespace MilkTeaStore.Mapper
                                                                            .ForMember(dest => dest.MaterialName,
                                           opt => opt.MapFrom(src => src.Material!.MaterialName));
             CreateMap<DetailsMaterialCreateDTO, DetailsMaterial>().ReverseMap();
+            CreateMap<DetailsMaterialUpdateDTO, DetailsMaterial>().ReverseMap();
             CreateMap<UserVM, User>().ReverseMap().ForMember(dest => dest.RoleName,
                                        opt => opt.MapFrom(src => src.Role!.RoleName))
                                                     .ForMember(dest => dest.DistrictName,

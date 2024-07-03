@@ -1,10 +1,10 @@
-using ClientMilkTeamPage.DTO.MaterialDTO;
+using ClientMilkTeamPage.DTO.DetailMaterialDTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
+namespace ClientMilkTeamPage.Pages.AdminPage.DetailMaterialPage
 {
     public class EditModel : PageModel
     {
@@ -16,11 +16,11 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/Material";
+            ApiUrl = "https://localhost:7112/odata/DetailsMaterial";
         }
 
         [BindProperty]
-        public DetailMateriaUpdateDTO Material { get; set; } = default!;
+        public DetailMaterialUpdateDTO DetailMaterial { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -31,9 +31,9 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _material = JsonSerializer.Deserialize<DetailMateriaUpdateDTO>(strData, options)!;
+            var _material = JsonSerializer.Deserialize<DetailMaterialUpdateDTO>(strData, options)!;
 
-            Material = _material;
+            DetailMaterial = _material;
             return Page();
         }
 
@@ -43,7 +43,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
         {
             try
             {
-                string strData = JsonSerializer.Serialize(Material);
+                string strData = JsonSerializer.Serialize(DetailMaterial);
                 var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await client.PutAsync($"{ApiUrl}/{id}", contentData);
                 if (response.IsSuccessStatusCode)

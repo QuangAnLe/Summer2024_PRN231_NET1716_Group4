@@ -1,10 +1,11 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
+namespace ClientMilkTeamPage.Pages.AdminPage.DetailMaterialPage
 {
     public class DetailsModel : PageModel
     {
@@ -16,10 +17,10 @@ namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/District";
+            ApiUrl = "https://localhost:7112/odata/DetailsMaterial";
         }
 
-        public District District { get; set; } = default!;
+        public DetailsMaterialVM DetailMaterial { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,9 +31,9 @@ namespace ClientMilkTeamPage.Pages.AdminPage.DistrictPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _tea = JsonSerializer.Deserialize<District>(strData, options)!;
+            var _material = JsonSerializer.Deserialize<DetailsMaterialVM>(strData, options)!;
 
-            District = _tea;
+            DetailMaterial = _material;
             return Page();
         }
     }
