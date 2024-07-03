@@ -70,6 +70,7 @@ namespace ClientMilkTeamPage.Pages.Cart
                     orderDetailDTO.CostsIncurred = "100d";
                     orderDetailDTO.TeaID = item.TeaID;
                     orderDetailDTOs.Add(orderDetailDTO);
+                    _cartService.RemoveFromCart(item.TeaID);
                 }
                 string strData1 = JsonSerializer.Serialize(orderDetailDTOs);
                 var contentData1 = new StringContent(strData1, System.Text.Encoding.UTF8, "application/json");
