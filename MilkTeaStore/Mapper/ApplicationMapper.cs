@@ -17,7 +17,11 @@ namespace MilkTeaStore.Mapper
             CreateMap<MaterialVM, Material>().ReverseMap();
             CreateMap<MaterialCreateDTO, Material>().ReverseMap();
             CreateMap<MaterialUpdateDTO, Material>().ReverseMap();
-
+            CreateMap<DetailsMaterialVM, DetailsMaterial>().ReverseMap().ForMember(dest => dest.TeaName,
+                                          opt => opt.MapFrom(src => src.Tea!.TeaName))
+                                                                           .ForMember(dest => dest.MaterialName,
+                                          opt => opt.MapFrom(src => src.Material!.MaterialName));
+            CreateMap<DetailsMaterialCreateDTO, DetailsMaterial>().ReverseMap();
             CreateMap<UserVM, User>().ReverseMap().ForMember(dest => dest.RoleName,
                                        opt => opt.MapFrom(src => src.Role!.RoleName))
                                                     .ForMember(dest => dest.DistrictName,
@@ -41,7 +45,7 @@ namespace MilkTeaStore.Mapper
             CreateMap<DistrictVM, District>().ReverseMap();
             CreateMap<DistrictCreateDTO, District>().ReverseMap();
             CreateMap<DistrictUpdateDTO, District>().ReverseMap();
-
+            CreateMap<RoleVM, Role>().ReverseMap();
         }
     }
 }

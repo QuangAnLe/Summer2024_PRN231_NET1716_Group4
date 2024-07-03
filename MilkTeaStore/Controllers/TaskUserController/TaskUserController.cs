@@ -7,11 +7,8 @@ using MilkTeaServices.IServices;
 using MilkTeaStore.DTO.Create;
 using MilkTeaStore.DTO.Update;
 using MilkTeaStore.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace MilkTeaStore.Controllers
+namespace MilkTeaStore.Controllers.TaskUserController
 {
     [ApiController]
     [Route("odata/[controller]")]

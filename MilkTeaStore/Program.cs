@@ -60,8 +60,12 @@ builder.Services.AddScoped<ITeaRepo, TeaRepo>();
 builder.Services.AddScoped<ITeaServices, TeaServices>();
 builder.Services.AddScoped<IMaterialRepo, MaterialRepo>();
 builder.Services.AddScoped<IMaterialServices, MaterialServices>();
+builder.Services.AddScoped<IDetailsMaterialRepo, DetailsMaterialRepo>();
+builder.Services.AddScoped<IDetailsMaterialServices, DetailsMaterialServices>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<IRoleRepo, RoleRepo>();
+builder.Services.AddScoped<IRoleServices, RoleServices>();
 builder.Services.AddScoped<ITaskUserRepo, TaskUserRepo>();
 builder.Services.AddScoped<ITaskUserServices, TaskUserServices>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
@@ -72,6 +76,8 @@ builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderDetailRepo, OrderDetailRepo>();
 builder.Services.AddScoped<IDistrictRepo, DistrictRepo>();
 builder.Services.AddScoped<IDistrictServices, DistrictServices>();
+builder.Services.AddScoped<IPaymentRepo, PaymentRepo>();
+builder.Services.AddScoped<IPaymentServices, PaymentServices>();
 
 //Odata
 var modelBuilder = new ODataConventionModelBuilder();

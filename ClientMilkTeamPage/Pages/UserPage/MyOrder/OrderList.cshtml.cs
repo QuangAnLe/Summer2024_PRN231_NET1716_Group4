@@ -8,7 +8,6 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
 {
     public class OrderListModel : PageModel
     {
-
         private readonly HttpClient client = null!;
         private string ApiUrl = "";
 
@@ -19,11 +18,11 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
             client.DefaultRequestHeaders.Accept.Add(contentType);
             ApiUrl = "https://localhost:7112/odata/Order";
         }
+
         public IList<Order> orders { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync()
         {
-
             HttpResponseMessage response = await client.GetAsync(ApiUrl);
             string strData = await response.Content.ReadAsStringAsync();
 
@@ -31,9 +30,9 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
             {
                 PropertyNameCaseInsensitive = true
             };
-            List<Order> repsList = JsonSerializer.Deserialize<List<Order>>(strData, options)!;
+            List<Order> ordersList = JsonSerializer.Deserialize<List<Order>>(strData, options)!;
 
-            orders = repsList;
+            orders = ordersList;
 
             return Page();
         }

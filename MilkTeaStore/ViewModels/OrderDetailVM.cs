@@ -1,6 +1,4 @@
-﻿using MilkTeaBusinessObject.BusinessObject;
-
-namespace MilkTeaStore.ViewModels
+﻿namespace MilkTeaStore.ViewModels
 {
     public class OrderDetailVM
     {

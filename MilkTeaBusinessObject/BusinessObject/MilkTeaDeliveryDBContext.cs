@@ -1,13 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace MilkTeaBusinessObject.BusinessObject
 {
@@ -15,7 +8,7 @@ namespace MilkTeaBusinessObject.BusinessObject
     {
         public MilkTeaDeliveryDBContext()
         {
-            
+
         }
 
         public MilkTeaDeliveryDBContext(DbContextOptions<MilkTeaDeliveryDBContext> opt) : base(opt) { }
@@ -24,13 +17,14 @@ namespace MilkTeaBusinessObject.BusinessObject
         public virtual DbSet<Comment>? Comments { get; set; }
         public virtual DbSet<District>? Districts { get; set; }
         public virtual DbSet<Material>? Materials { get; set; }
+        public virtual DbSet<DetailsMaterial>? DetailsMaterials { get; set; }
         public virtual DbSet<Order>? Orders { get; set; }
         public virtual DbSet<OrderDetail>? OrderDetails { get; set; }
         public virtual DbSet<Tea>? Teas { get; set; }
         public virtual DbSet<TaskUser>? TaskUsers { get; set; }
 
         public virtual DbSet<User>? Users { get; set; }
-       
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)
