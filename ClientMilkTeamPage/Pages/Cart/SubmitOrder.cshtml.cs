@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ClientMilkTeamPage.Pages.Cart
 {
@@ -86,32 +87,33 @@ namespace ClientMilkTeamPage.Pages.Cart
         }
         public async Task<IActionResult> OnGetAsync(string content, string address)
         {
-            //var token = HttpContext.Request.Cookies["UserCookie"];
+            var token = HttpContext.Request.Cookies["UserCookie"];
 
-            //if (string.IsNullOrEmpty(token))
-            //{
-            //    return RedirectToPage("/Login");
-            //}
-            //var handler = new JwtSecurityTokenHandler();
-            //var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
-            //var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
+            var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
             List<CartItem> CartItems = _cartService.GetCart();
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.ShipAddress = address;
             orderDTO.ReasonContent = content;
-            orderDTO.StartDate =  DateTime.Now;
-            orderDTO.Status = false;
+            orderDTO.StartDate = DateTime.Now;
             orderDTO.TypeOrder = "Online";
-            //   orderDTO.UserID = int.Parse(userIdClaim);
-            orderDTO.UserID = 1;
-            string strData = JsonSerializer.Serialize(orderDTO);
-            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync(ApiUrl, contentData);
+            orderDTO.UserID = int.Parse(userIdClaim);
+
             var options = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
+            string strData = JsonSerializer.Serialize(orderDTO, options);
+            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync(ApiUrl, contentData);
+            
             if (response.IsSuccessStatusCode)
             {
                 string Data = await response.Content.ReadAsStringAsync();

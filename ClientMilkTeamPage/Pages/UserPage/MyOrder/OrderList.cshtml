@@ -41,14 +41,11 @@
                     @Html.DisplayFor(modelItem => item.TypeOrder)
                 </td>
                 <td>
-                    @if (!item.Status)
-                    {
-                        <span style="color: orange;">Processing</span>
+                    @{
+                        var status = item.Status.HasValue ? (item.Status.Value ? "Success" : "Failed") : "Processing";
+                        var color = item.Status.HasValue ? (item.Status.Value ? "green" : "red") : "orange";
                     }
-                    else
-                    {
-                        <span style="color: green;">Completed</span>
-                    }
+                    <span style="color: @color;">@status</span>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.StartDate)
