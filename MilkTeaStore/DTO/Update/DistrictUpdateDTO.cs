@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace MilkTeaStore.DTO.Update
-{ 
+﻿namespace MilkTeaStore.DTO.Update
+{
     public class DistrictUpdateDTO
     {
         public int DistrictID { get; set; }

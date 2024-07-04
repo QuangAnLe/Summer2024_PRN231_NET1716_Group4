@@ -1,6 +1,6 @@
 ﻿namespace ClientMilkTeamPage.DTO.MaterialDTO
 {
-    public class MaterialUpdateDTO
+    public class DetailMateriaUpdateDTO
     {
         public int MaterialID { get; set; }
         public string MaterialName { get; set; }

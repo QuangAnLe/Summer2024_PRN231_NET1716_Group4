@@ -31,25 +31,24 @@ namespace ClientMilkTeamPage.Pages.Cart
 
         public async Task<IActionResult> OnPostAsync(string content, string address)
         {
-            //var token = HttpContext.Request.Cookies["UserCookie"];
+            var token = HttpContext.Request.Cookies["UserCookie"];
 
-            //if (string.IsNullOrEmpty(token))
-            //{
-            //    return RedirectToPage("/Login");
-            //}
-            //var handler = new JwtSecurityTokenHandler();
-            //var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
-            //var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
+            var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
             List<CartItem> CartItems = _cartService.GetCart();
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.ShipAddress = address;
             orderDTO.ReasonContent = content;
             orderDTO.StartDate = new DateTime();
-            orderDTO.Status = false;
+            orderDTO.Status = null;
             orderDTO.TypeOrder = "Online";
-            //   orderDTO.UserID = int.Parse(userIdClaim);
-            orderDTO.UserID = 1;
+            orderDTO.UserID = int.Parse(userIdClaim);
             string strData = JsonSerializer.Serialize(orderDTO);
             var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync(ApiUrl, contentData);
@@ -102,6 +101,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             orderDTO.ShipAddress = address;
             orderDTO.ReasonContent = content;
             orderDTO.StartDate = DateTime.Now;
+            orderDTO.Status = null;
             orderDTO.TypeOrder = "Online";
             orderDTO.UserID = int.Parse(userIdClaim);
 
@@ -113,7 +113,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             string strData = JsonSerializer.Serialize(orderDTO, options);
             var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync(ApiUrl, contentData);
-
+            
             if (response.IsSuccessStatusCode)
             {
                 string Data = await response.Content.ReadAsStringAsync();

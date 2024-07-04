@@ -110,7 +110,7 @@ namespace MilkTeaDAO.DAOs
                     // Update the associated order's status
                     if (existingTask.Order != null)
                     {
-                        existingTask.Order.Status = status; // Assuming Order has a Status property
+                        existingTask.Order.Status = status;
                     }
 
                     _context.SaveChanges();
