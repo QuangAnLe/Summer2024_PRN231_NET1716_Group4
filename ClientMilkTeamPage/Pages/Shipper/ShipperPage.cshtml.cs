@@ -79,8 +79,9 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
             var taskId = TaskId;
             var status = Status == "Success";
-            await UpdateTaskStatusAsync(taskId, status); // Ensure this method updates TaskUserVM
-            await RefreshTaskList(); // Ensure TaskUserVM reflects the latest from the server
+            await UpdateTaskStatusAsync(taskId, status);
+            RemoveTaskFromList(taskId);
+            await RefreshTaskList();
             return RedirectToPage("/UserPage/MyOrder/OrderList");
         }
 
@@ -116,17 +117,39 @@ namespace ClientMilkTeamPage.Pages.Shipper
         {
             try
             {
-                string apiUrl = "https://localhost:7112/odata/TaskUser";
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                string taskApiUrl = "https://localhost:7112/odata/TaskUser";
+                HttpResponseMessage taskResponse = await client.GetAsync(taskApiUrl);
 
-                if (response.IsSuccessStatusCode)
+                if (taskResponse.IsSuccessStatusCode)
                 {
-                    string strData = await response.Content.ReadAsStringAsync();
+                    string taskData = await taskResponse.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     };
-                    TaskUserVM = JsonSerializer.Deserialize<List<TaskUserVM>>(strData, options);
+                    var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(taskData, options) ?? new List<TaskUserVM>();
+
+                    // Fetch orders and filter tasks based on order status
+                    var filteredTasks = new List<TaskUserVM>();
+                    foreach (var task in taskUserList)
+                    {
+                        string orderApiUrl = $"https://localhost:7112/odata/Order/{task.OrderID}";
+                        HttpResponseMessage orderResponse = await client.GetAsync(orderApiUrl);
+
+                        if (orderResponse.IsSuccessStatusCode)
+                        {
+                            string orderData = await orderResponse.Content.ReadAsStringAsync();
+                            var order = JsonSerializer.Deserialize<OrderDTO>(orderData, options);
+
+                            // Filter out tasks with order status "Success" or "Failed"
+                            if (order != null && order.Status != true && order.Status != false)
+                            {
+                                filteredTasks.Add(task);
+                            }
+                        }
+                    }
+
+                    TaskUserVM = filteredTasks;
                 }
                 else
                 {
@@ -138,5 +161,28 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 Console.WriteLine($"Error refreshing TaskUser list: {ex.Message}");
             }
         }
+
+
+        private void RemoveTaskFromList(int taskId)
+        {
+            try
+            {
+                var taskToRemove = TaskUserVM.FirstOrDefault(t => t.TaskId == taskId);
+                if (taskToRemove != null)
+                {
+                    TaskUserVM.Remove(taskToRemove);
+                    Console.WriteLine($"Task removed from TaskUserVM: {taskId}");
+                }
+                else
+                {
+                    Console.WriteLine($"Task not found in TaskUserVM: {taskId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error removing task from TaskUserVM: {ex.Message}");
+            }
+        }
+
     }
 }
