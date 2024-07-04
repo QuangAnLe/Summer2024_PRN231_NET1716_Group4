@@ -1,6 +1,4 @@
-﻿using MilkTeaBusinessObject.BusinessObject;
-
-namespace MilkTeaStore.DTO.Create
+﻿namespace MilkTeaStore.DTO.Create
 {
     public class OrderDetailDTO
     {

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace MilkTeaStore.DTO.Create
+﻿namespace MilkTeaStore.DTO.Create
 {
     public class DistrictCreateDTO
     {

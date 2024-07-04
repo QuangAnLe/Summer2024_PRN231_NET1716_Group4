@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MilkTeaBusinessObject.BusinessObject;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MilkTeaBusinessObject.FluentAPI
 {
@@ -17,7 +12,7 @@ namespace MilkTeaBusinessObject.FluentAPI
             builder.HasKey(x => x.DetailsMaterialID);
             builder.Property(x => x.Quanity);
             builder.Property(x => x.DetailMaterialName);
-            
+
         }
     }
 }
