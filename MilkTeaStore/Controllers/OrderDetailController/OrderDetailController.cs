@@ -26,7 +26,7 @@ namespace MilkTeaStore.Controllers.OrderDetailController
             try
             {
                 var orders = _orderDetailService.getList(oid);
-             //   var orderDTOs = _mapper.Map<IEnumerable<OrderDetailVM>>(orders);
+                //   var orderDTOs = _mapper.Map<IEnumerable<OrderDetailVM>>(orders);
                 return Ok(orders.AsQueryable());
             }
             catch (Exception ex)

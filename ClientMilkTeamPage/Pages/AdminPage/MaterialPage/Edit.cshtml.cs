@@ -20,7 +20,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
         }
 
         [BindProperty]
-        public MaterialUpdateDTO Material { get; set; } = default!;
+        public DetailMateriaUpdateDTO Material { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -31,7 +31,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.MaterialPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var _material = JsonSerializer.Deserialize<MaterialUpdateDTO>(strData, options)!;
+            var _material = JsonSerializer.Deserialize<DetailMateriaUpdateDTO>(strData, options)!;
 
             Material = _material;
             return Page();

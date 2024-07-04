@@ -6,18 +6,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+﻿using MilkTeaBusinessObject.BusinessObject;
+using MilkTeaDAO.ZaloPayHelper;
+using MilkTeaDAO.ZaloPayHelper.Crypto;
+using Newtonsoft.Json;
 
 namespace MilkTeaDAO.DAOs
 {
     public class PaymentDAO
     {
+        private OrderDAO orderDAO = new OrderDAO();
         private readonly string app_id = "2553";
         private readonly string key1 = "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL";
         private readonly string create_order_url = "https://sb-openapi.zalopay.vn/v2/create";
         private readonly string redirectUrl = "https://localhost:7170/api/Product/GetAllProducts";
-        public async Task CreateOrder()
+        public async Task<Dictionary<string, object>> CreateOrder()
         {
-
             Random rnd = new Random();
             var embed_data = new { redirecturl = redirectUrl };
             var items = new[] { new { } };
@@ -39,7 +43,7 @@ namespace MilkTeaDAO.DAOs
             param.Add("mac", HmacHelper.Compute(ZaloPayHMAC.HMACSHA256, key1, data));
 
             var result = await HttpHelper.PostFormAsync(create_order_url, param);
-            return Ok(result);
+            return result;
         }
     }
 }

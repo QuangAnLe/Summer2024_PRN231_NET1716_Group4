@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MilkTeaBusinessObject.BusinessObject;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MilkTeaDAO.DAOs
 {
@@ -20,7 +17,7 @@ namespace MilkTeaDAO.DAOs
             try
             {
                 return _context.OrderDetails.Include(od => od.Order)
-                                            .Include(od => od.Tea).Where(o=>o.OrderID == oid)
+                                            .Include(od => od.Tea).Where(o => o.OrderID == oid)
                                             .ToList();
             }
             catch (Exception ex)

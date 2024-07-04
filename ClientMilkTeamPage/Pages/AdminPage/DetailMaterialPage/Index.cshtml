@@ -1,0 +1,60 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.AdminPage.DetailMaterialPage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+    <a href="./TeaPage">Teapage</a> ||  <a href="./UserPage">UserPage</a>
+    <button class="btn btn-primary" onclick="window.location.href='/Logout'">
+        <span>Logout</span>
+        <ion-icon name="log-in-outline"></ion-icon>
+    </button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DetailMaterial[0].DetailMaterialName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DetailMaterial[0].Quanity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DetailMaterial[0].TeaName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DetailMaterial[0].MaterialName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.DetailMaterial)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DetailMaterialName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quanity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeaName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaterialName)
+                </td>
+
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.DetailsMaterialID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.DetailsMaterialID">Details</a> |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

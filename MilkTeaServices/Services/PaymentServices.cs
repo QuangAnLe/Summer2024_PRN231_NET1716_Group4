@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MilkTeaRepository.IRepo;
+using MilkTeaServices.IServices;
 
 namespace MilkTeaServices.Services
 {
-    public class PaymentServices
+    public class PaymentServices : IPaymentServices
     {
-        public async Task CreateOrder(int id)
+        private readonly IPaymentRepo _repo;
+        public PaymentServices(IPaymentRepo repo)
         {
-
+            _repo = repo;
+        }
+        public async Task<Dictionary<string, object>> CreateOrder()
+        {
+            return await _repo.CreateOrder();
         }
     }
 }

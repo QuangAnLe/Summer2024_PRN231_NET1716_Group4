@@ -11,7 +11,7 @@ using MilkTeaStore.ViewModels;
 using System;
 using System.Collections.Generic;
 
-namespace MilkTeaStore.Controllers
+namespace MilkTeaStore.Controllers.TaskUserController
 {
     [ApiController]
     [Route("odata/[controller]")]

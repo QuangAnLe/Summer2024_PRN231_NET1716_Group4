@@ -1,11 +1,6 @@
 ﻿using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaDAO.DAOs;
 using MilkTeaRepository.IRepo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MilkTeaRepository.Repo
 {
@@ -15,7 +10,7 @@ namespace MilkTeaRepository.Repo
         OrderDAO dao = new OrderDAO();
         public Order add(Order order)
         {
-          return  dao.Add(order);
+            return dao.Add(order);
         }
 
         public void delete(int id)
@@ -25,7 +20,7 @@ namespace MilkTeaRepository.Repo
 
         public Order get(int id)
         {
-           return dao.Get(id);  
+            return dao.Get(id);
         }
 
         public List<Order> getList()
@@ -35,7 +30,7 @@ namespace MilkTeaRepository.Repo
 
         public void update(Order order)
         {
-          dao.Update(order);
+            dao.Update(order);
         }
     }
 }

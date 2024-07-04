@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
 using MilkTeaStore.DTO.Create;
 using MilkTeaStore.DTO.Update;
 using MilkTeaStore.ViewModels;
-using System;
 
 namespace MilkTeaStore.Controllers.TeaController
 {

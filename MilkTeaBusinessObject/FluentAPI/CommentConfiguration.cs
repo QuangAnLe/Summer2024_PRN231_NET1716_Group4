@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MilkTeaBusinessObject.BusinessObject;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MilkTeaBusinessObject.FluentAPI
 {
@@ -18,7 +13,7 @@ namespace MilkTeaBusinessObject.FluentAPI
             builder.Property(x => x.CommentDate);
             builder.Property(x => x.Content);
             builder.Property(x => x.Rating);
-            
+
         }
     }
 }
