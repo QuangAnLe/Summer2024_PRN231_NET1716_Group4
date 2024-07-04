@@ -96,6 +96,12 @@ namespace MilkTeaDAO.DAOs
                 var order = _context.Orders.SingleOrDefault(o => o.OrderID == id);
                 if (order != null)
                 {
+                    var orderDetails = _context.OrderDetails.Where(od => od.OrderID == id).ToList();
+                    if (orderDetails.Any())
+                    {
+                        _context.OrderDetails.RemoveRange(orderDetails);
+                    }
+
                     _context.Orders.Remove(order);
                     _context.SaveChanges();
                 }
