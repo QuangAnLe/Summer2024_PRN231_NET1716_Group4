@@ -1,56 +1,57 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.UserPage.MyOrder.OrderDetailModel
 @{
+    decimal totalProductValue = Model.orderdetails.Sum(od => Convert.ToDecimal(od.TotalPrice));
+    decimal totalCostsIncurred = Model.orderdetails.Sum(od =>
+        decimal.TryParse(od.CostsIncurred.TrimEnd('d'), out decimal costs) ? costs : 0m);
+    decimal totalOrderValue = totalProductValue + totalCostsIncurred;
 }
-
 <h1>Order detail</h1>
+
+<div class="order-summary">
+    <p><strong>Order ID:</strong> @Model.OrderSummary.OrderID</p>
+    <p><strong>Shipping Address:</strong> @Model.OrderSummary.ShipAddress</p>
+    <p><strong>Order Date:</strong> @Model.OrderSummary.StartDate.ToString("yyyy-MM-dd HH:mm")</p>
+    <p><strong>Order Type:</strong> @Model.OrderSummary.TypeOrder</p>
+    <p>
+        <strong>Status:</strong>
+        @{
+            string statusMessage = Model.OrderSummary.Status switch
+            {
+                null => "Processing",
+                true => "Success",
+                false => "Failed"
+            };
+        }
+        @statusMessage
+    </p>
+    <p><strong>Total Product Value:</strong> @totalProductValue.ToString("N0") VND</p>
+    <p><strong>Total Costs Incurred:</strong> @totalCostsIncurred.ToString("N0") VND</p>
+    <p><strong>Total Order Value:</strong> @totalOrderValue.ToString("N0") VND</p>
+</div>
+
+<h2>Order Items</h2>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                OrderDetailID
-            </th>
-            <th>
-                TeaName
-            </th>
-            <th>
-                Image
-            </th>
-           <th>
-                TotalPrice
-            </th>
-           <th>
-                Quantity
-            </th>
-           <th>
-                CostsIncurred
-            </th>
-           
+            <th>OrderDetailID</th>
+            <th>TeaName</th>
+            <th>Image</th>
+            <th>TotalPrice</th>
+            <th>Quantity</th>
+            <th>CostsIncurred</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.orderdetails)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderDetailID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tea.TeaName)
-                </td>
-                <td>
-                    <img width="150px" src="@item.Tea.TeaName" alt="Tea Image">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CostsIncurred)
-                </td>
-
+                <td>@Html.DisplayFor(modelItem => item.OrderDetailID)</td>
+                <td>@Html.DisplayFor(modelItem => item.Tea.TeaName)</td>
+                <td><img width="150px" src="@item.Tea.TeaName" alt="Tea Image"></td>
+                <td>@Html.DisplayFor(modelItem => item.TotalPrice)</td>
+                <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.CostsIncurred)</td>
             </tr>
         }
     </tbody>

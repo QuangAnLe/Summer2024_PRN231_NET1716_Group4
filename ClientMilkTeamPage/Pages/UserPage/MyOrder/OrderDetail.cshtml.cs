@@ -11,6 +11,7 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
     {
         private readonly HttpClient client = null!;
         private string ApiUrl = "";
+        public Order OrderSummary { get; set; } = default!;
 
         public OrderDetailModel()
         {
@@ -24,16 +25,21 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
         public async Task<IActionResult> OnGetAsync(int? id)
         {
 
+            // Fetch order details
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}/{id}");
             string strData = await response.Content.ReadAsStringAsync();
-
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
             var orderResp = JsonSerializer.Deserialize<List<OrderDetail>>(strData, options)!;
-
             orderdetails = orderResp;
+
+            // Fetch order summary
+            HttpResponseMessage summaryResponse = await client.GetAsync($"https://localhost:7112/odata/Order/{id}");
+            string summaryData = await summaryResponse.Content.ReadAsStringAsync();
+            OrderSummary = JsonSerializer.Deserialize<Order>(summaryData, options)!;
+
             return Page();
         }
     }

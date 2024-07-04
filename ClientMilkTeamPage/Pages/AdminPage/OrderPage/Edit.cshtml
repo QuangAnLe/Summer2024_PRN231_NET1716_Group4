@@ -1,0 +1,73 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.AdminPage.OrderPage.EditModel
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<h1>Edit Order</h1>
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Order.OrderID" />
+
+            <div class="form-group">
+                <label asp-for="Order.UserID" class="control-label"></label>
+                <input asp-for="Order.UserID" class="form-control" />
+                <span asp-validation-for="Order.UserID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Order.StartDate" class="control-label"></label>
+                <input asp-for="Order.StartDate" class="form-control" type="date" />
+                <span asp-validation-for="Order.StartDate" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Order.ShipAddress" class="control-label"></label>
+                <input asp-for="Order.ShipAddress" class="form-control" />
+                <span asp-validation-for="Order.ShipAddress" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Order.Status" class="control-label"></label>
+                <select asp-for="Order.Status" class="form-control">
+                    <option value="">Processing</option>
+                    <option value="true">Success</option>
+                    <option value="false">Failed</option>
+                </select>
+                <span asp-validation-for="Order.Status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Order.TypeOrder" class="control-label"></label>
+                <input asp-for="Order.TypeOrder" class="form-control" />
+                <span asp-validation-for="Order.TypeOrder" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Order.ReasonContent" class="control-label"></label>
+                <textarea asp-for="Order.ReasonContent" class="form-control"></textarea>
+                <span asp-validation-for="Order.ReasonContent" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
