@@ -1,42 +1,55 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.Cart.IndexModel
 @{
-}
-@{
     ViewData["Title"] = "Cart";
 }
-
 <h2>Your Cart</h2>
-
-<table>
-    <tr>
-        <th>Tea Name</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Total Price</th>
-        <th>Action</th>
-    </tr>
-    @foreach (var item in Model.CartItems)
-    {
+<form method="post">
+    <table>
         <tr>
-            <td>@item.TeaName</td>
-            <td>@item.Price</td>
-            <td>@item.Quantity</td>
-            <td>@item.TotalPrice</td>
-            <td>
-                <a href="/Cart/Delete?teaID=@item.TeaID">Delete</a>
-            </td>
+            <th>Tea Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Additional Materials</th>
+            <th>Total Price</th>
+            <th>Action</th>
         </tr>
-    }
-</table>
+        @for (int i = 0; i < Model.CartItems.Count; i++)
+        {
+            var item = Model.CartItems[i];
+            <tr>
+                <td>@item.TeaName</td>
+                <td>@item.Price</td>
+                <td>@item.Quantity</td>
+                <td>
+                    @foreach (var material in Model.Materials)
+                    {
+                        <div>
+                            <input type="checkbox"
+                                   name="SelectedMaterials[@i]"
+                                   value="@material.MaterialID"
+                            @(item.SelectedMaterials.Any(sm => sm.MaterialID == material.MaterialID) ? "checked" : "") />
+                            @material.MaterialName - $@material.Price
+                        </div>
+                    }
+                </td>
+                <td>@item.TotalPrice</td>
+                <td>
+                    <a href="/Cart/Delete?teaID=@item.TeaID">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    <p>Total: @Model.CartItems.Sum(item => item.TotalPrice)</p>
+    <button type="submit">Update Cart</button>
+</form>
 
-<p>Total: @Model.CartItems.Sum(item => item.TotalPrice)</p>
 <form action="/Cart/SubmitOrder" method="get">
     <h1>Checkout</h1>
     <label>Note:</label>
-    <input type="text" name="content"/>
+    <input type="text" name="content" />
     <label>Address:</label>
-    <input type="text" name="address"/>
+    <input type="text" name="address" />
     <p>@ViewData["Message"]</p>
     <button type="submit">Checkout</button>
 </form>
