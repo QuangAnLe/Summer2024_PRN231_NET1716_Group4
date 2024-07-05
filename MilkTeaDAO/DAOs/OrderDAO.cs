@@ -23,8 +23,19 @@ namespace MilkTeaDAO.DAOs
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                try
+                {
+                    return _context.Orders.Include(o => o.OrderDetails)
+                                          .ThenInclude(od => od.Tea)
+                                          .ToList();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
             }
+
+           
         }
 
         public Order Get(int id)
@@ -85,6 +96,12 @@ namespace MilkTeaDAO.DAOs
                 var order = _context.Orders.SingleOrDefault(o => o.OrderID == id);
                 if (order != null)
                 {
+                    var orderDetails = _context.OrderDetails.Where(od => od.OrderID == id).ToList();
+                    if (orderDetails.Any())
+                    {
+                        _context.OrderDetails.RemoveRange(orderDetails);
+                    }
+
                     _context.Orders.Remove(order);
                     _context.SaveChanges();
                 }

@@ -1,12 +1,14 @@
 ﻿using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaDAO.DAOs;
 using MilkTeaRepository.IRepo;
+using System.Collections.Generic;
 
 namespace MilkTeaRepository.Repo
 {
     public class TaskUserRepo : ITaskUserRepo
     {
         TaskUserDAO dao = new TaskUserDAO();
+
         public void add(TaskUser taskUser)
         {
             dao.Add(taskUser);
@@ -31,6 +33,12 @@ namespace MilkTeaRepository.Repo
         {
             dao.Update(taskUser);
         }
+
+        public void UpdateTaskStatus(int taskId, bool status)
+        {
+            dao.UpdateTaskStatus(taskId, status);
+        }
+
+        
     }
 }
-

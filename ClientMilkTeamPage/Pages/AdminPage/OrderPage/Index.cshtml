@@ -1,0 +1,69 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.AdminPage.OrderPage.IndexModel
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .status-processing {
+        color: #6c757d;
+    }
+
+    .status-success {
+        color: #28a745;
+    }
+
+    .status-failed {
+        color: #dc3545;
+    }
+</style>
+
+@functions {
+    public string GetStatusDisplay(bool? status)
+    {
+        return status switch
+        {
+            null => "Processing",
+            true => "Success",
+            false => "Failed"
+        };
+    }
+}
+
+<h1>Orders</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].UserID)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].StartDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].ShipAddress)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].Status)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].TypeOrder)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Orders)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.UserID)</td>
+                <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.ShipAddress)</td>
+                <td class="@($"status-{GetStatusDisplay(item.Status).ToLower()}")">@GetStatusDisplay(item.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.TypeOrder)</td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.OrderID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.OrderID">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.OrderID">Delete</a> |
+                    <form method="post" asp-page-handler="SetStatus" asp-route-id="@item.OrderID" asp-route-status="true" class="d-inline">
+                        <button type="submit" class="btn btn-sm" style="background-color: #28a745; color: #fff;">Set Success</button>
+                    </form>
+                    |
+                    <form method="post" asp-page-handler="SetStatus" asp-route-id="@item.OrderID" asp-route-status="false" class="d-inline">
+                        <button type="submit" class="btn btn-sm" style="background-color: #dc3545; color: #fff;">Set Failed</button>
+                    </form>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

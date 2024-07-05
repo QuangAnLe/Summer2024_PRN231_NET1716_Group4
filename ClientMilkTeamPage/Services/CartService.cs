@@ -16,27 +16,27 @@ namespace ClientMilkTeamPage.Services
 
         private ISession Session => _httpContextAccessor.HttpContext.Session;
 
-        public void AddToCart(Tea tea, int quantity)
+        public void AddToCart(CartItem item)
         {
-            List<CartItem> cart = GetCart();
-            var existingCartItem = cart.FirstOrDefault(c => c.TeaID == tea.TeaID);
-
-            if (existingCartItem != null)
+            var cart = GetCart();
+            var existingItem = cart.FirstOrDefault(i => i.TeaID == item.TeaID);
+            if (existingItem != null)
             {
-                existingCartItem.Quantity += quantity;
+                existingItem.Quantity += item.Quantity;
+                existingItem.SelectedMaterials = item.SelectedMaterials;
             }
             else
             {
-                cart.Add(new CartItem
-                {
-                    TeaID = tea.TeaID,
-                    TeaName = tea.TeaName,
-                    Price = tea.Price,
-                    Quantity = quantity
-                });
+                cart.Add(item);
             }
-
             SaveCart(cart);
+        }
+
+        public void UpdateCart(List<CartItem> cart)
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            string cartJson = JsonConvert.SerializeObject(cart);
+            session.SetString("Cart", cartJson);
         }
 
         public void RemoveFromCart(int teaID)

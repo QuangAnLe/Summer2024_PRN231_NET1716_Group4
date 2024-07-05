@@ -6,7 +6,10 @@ using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
 using MilkTeaStore.DTO.Create;
 using MilkTeaStore.DTO.Update;
+using MilkTeaStore.DTO;
 using MilkTeaStore.ViewModels;
+using System;
+using System.Collections.Generic;
 
 namespace MilkTeaStore.Controllers.TaskUserController
 {
@@ -15,11 +18,13 @@ namespace MilkTeaStore.Controllers.TaskUserController
     public class TaskUserController : ODataController
     {
         private readonly ITaskUserServices _taskUserServices;
+        private readonly IOrderService _orderServices;
         private readonly IMapper _mapper;
 
-        public TaskUserController(ITaskUserServices taskUserServices, IMapper mapper)
+        public TaskUserController(ITaskUserServices taskUserServices, IOrderService orderServices, IMapper mapper)
         {
             _taskUserServices = taskUserServices;
+            _orderServices = orderServices;
             _mapper = mapper;
         }
 
@@ -102,6 +107,50 @@ namespace MilkTeaStore.Controllers.TaskUserController
                 }
                 _taskUserServices.delete(id);
                 return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPatch("{id}")]
+        [EnableQuery]
+        public IActionResult UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
+        {
+            try
+            {
+                if (taskUserUpdateStatusDTO.TaskId != id)
+                {
+                    return BadRequest("ID in the route does not match the ID in the request body.");
+                }
+
+                var taskUser = _taskUserServices.get(id);
+                if (taskUser == null)
+                {
+                    return NotFound();
+                }
+
+                // Update TaskUser status
+                taskUser.Status = taskUserUpdateStatusDTO.Status;
+                _taskUserServices.update(taskUser);
+
+                // Check if there is an associated Order and update its status
+                if (taskUser.OrderID > 0)
+                {
+                    var order = _orderServices.get(taskUser.OrderID); // Assuming _orderServices provides access to Order CRUD operations
+                    if (order != null)
+                    {
+                        order.Status = taskUserUpdateStatusDTO.Status; // Update Order status based on TaskUser status
+                        _orderServices.update(order);
+                    }
+                    else
+                    {
+                        return NotFound("Associated Order not found.");
+                    }
+                }
+
+                return Ok("Update Successfully");
             }
             catch (Exception ex)
             {

@@ -1,0 +1,38 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.AdminPage.OrderPage.DetailsModel
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h1>Order Details</h1>
+
+<div>
+    <h4>Order</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.OrderID)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Order.OrderID)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.UserID)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Order.UserID)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.StartDate)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Order.StartDate)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.ShipAddress)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Order.ShipAddress)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.Status)</dt>
+        <dd class="col-sm-10">@Model.GetStatusDisplay(Model.Order.Status)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.TypeOrder)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Order.TypeOrder)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Order.ReasonContent)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Order.ReasonContent)</dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Order.OrderID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

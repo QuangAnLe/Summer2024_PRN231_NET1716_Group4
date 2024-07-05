@@ -34,7 +34,12 @@ namespace ClientMilkTeamPage.Pages.Cart
 
             if (tea != null)
             {
-                _cartService.AddToCart(tea, quantity);
+                CartItem item = new CartItem();
+                item.TeaID = tea.TeaID;
+                item.TeaName = tea.TeaName;
+                item.Quantity = quantity;
+                item.Price = tea.Price;
+                _cartService.AddToCart(item);
             }
 
             return Redirect("/HomePage"); 

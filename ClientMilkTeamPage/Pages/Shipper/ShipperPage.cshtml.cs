@@ -1,130 +1,188 @@
+using ClientMilkTeamPage.DTO.CommentDTO;
 using ClientMilkTeamPage.DTO.TaskUserDTO;
-using ClientMilkTeamPage.DTO;
 using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
-using ClientMilkTeamPage.DTO.CommentDTO;
+using System.Threading.Tasks;
 
 namespace ClientMilkTeamPage.Pages.Shipper
 {
     public class ShipperPageModel : PageModel
     {
-        private readonly HttpClient client = null!;
-        private string TaskApiUrl = "";
-        private string CommentApiUrl = "";
+        private readonly HttpClient client;
 
         public ShipperPageModel()
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            TaskApiUrl = "https://localhost:7112/odata/TaskUser";
-            CommentApiUrl = "https://localhost:7112/odata/Comment";
+            TaskUserVM = new List<TaskUserVM>(); // Initialize to avoid null reference
         }
 
-        public IList<TaskUserVM> TaskUserVM { get; set; } = default!;
-
-        [BindProperty]
+        public IList<TaskUserVM> TaskUserVM { get; set; }
         public bool ShowModal { get; set; } = false;
 
         [BindProperty]
-        public int CurrentTaskId { get; set; }
+        public int TaskId { get; set; }
 
         [BindProperty]
-        public int CurrentTeaID { get; set; }
+        public string Status { get; set; }
 
         [BindProperty]
-        public int CurrentUserID { get; set; }
+        public string FailureReason { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            HttpResponseMessage response = await client.GetAsync(TaskApiUrl);
-            string strData = await response.Content.ReadAsStringAsync();
-
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            List<TaskUser> taskUsers = JsonSerializer.Deserialize<List<TaskUser>>(strData, options)!;
-
-            TaskUserVM = taskUsers.Select(t => new TaskUserVM
-            {
-                TaskId = t.TaskId,
-                WorkName = t.WorkName,
-                WorkDescription = t.WorkDescription,
-                Status = t.Status,
-                UserID = t.UserID,
-                OrderID = t.OrderID
-            }).ToList();
-
+            await RefreshTaskList(); // Ensure TaskUserVM reflects the latest from the server
             return Page();
         }
 
-        public async Task<IActionResult> OnPostUpdateStatus(int TaskId, string Status, int TeaID, int UserID)
+        public async Task<IActionResult> OnPostSubmitFailureReasonAsync()
         {
-            if (Status == "Failed")
-            {
-                ShowModal = true;
-                CurrentTaskId = TaskId;
-                CurrentTeaID = TeaID;
-                CurrentUserID = UserID;
-            }
-            else
-            {
-                // Handle success update immediately
-                var taskUserUpdate = new TaskUserUpdateDTO
-                {
-                    TaskId = TaskId,
-                    Status = true // Assuming true for success
-                };
-                await UpdateTaskStatus(taskUserUpdate);
-            }
-
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostSubmitFailureReason(string FailureReason)
-        {
-            var taskUserUpdate = new TaskUserUpdateDTO
-            {
-                TaskId = CurrentTaskId,
-                Status = false, // Assuming false for failure
-            };
-
-            await UpdateTaskStatus(taskUserUpdate);
-
-            // Create a new comment without TaskId
             var commentCreateDTO = new CommentCreateDTO
             {
                 Content = FailureReason,
                 CommentDate = DateTime.UtcNow,
-                Rating = 0, // Assuming rating is not applicable here
-                TeaID = CurrentTeaID,
-                UserID = CurrentUserID
+                Rating = 0, // Adjust as necessary
+                TeaID = 0, // Adjust as necessary
+                UserID = 0 // Adjust as necessary
             };
 
-            await CreateComment(commentCreateDTO);
+            string apiUrl = "https://localhost:7112/odata/Comment";
+            string strData = JsonSerializer.Serialize(commentCreateDTO);
+            var contentData = new StringContent(strData, Encoding.UTF8, "application/json");
+            HttpResponseMessage commentResponse = await client.PostAsync(apiUrl, contentData);
 
-            ShowModal = false;
-            return RedirectToPage();
+            if (commentResponse.IsSuccessStatusCode)
+            {
+                await UpdateTaskStatusAsync(TaskId, false);
+                await RefreshTaskList(); // Refresh the list after updating status
+            }
+
+            return RedirectToPage("/UserPage/MyOrder/OrderList");
         }
 
-        private async Task UpdateTaskStatus(TaskUserUpdateDTO taskUserUpdate)
+        public async Task<IActionResult> OnPostUpdateStatusAsync()
         {
-            var json = JsonSerializer.Serialize(taskUserUpdate);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            if (Status == "Failed")
+            {
+                ShowModal = true;
+                return Page();
+            }
 
-            await client.PutAsync($"{TaskApiUrl}/{taskUserUpdate.TaskId}", content);
+            var taskId = TaskId;
+            var status = Status == "Success";
+            await UpdateTaskStatusAsync(taskId, status);
+            RemoveTaskFromList(taskId);
+            await RefreshTaskList();
+            return RedirectToPage("/UserPage/MyOrder/OrderList");
         }
 
-        private async Task CreateComment(CommentCreateDTO commentCreateDTO)
+        private async Task UpdateTaskStatusAsync(int taskId, bool status)
         {
-            var json = JsonSerializer.Serialize(commentCreateDTO);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            try
+            {
+                var taskUpdateStatusDTO = new TaskUserUpdateStatusDTO
+                {
+                    TaskId = taskId,
+                    Status = status
+                };
 
-            await client.PostAsync(CommentApiUrl, content);
+                string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}";
+                string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
+                var contentData = new StringContent(strData, Encoding.UTF8, "application/json");
+
+                // Send PATCH request
+                var response = await client.PatchAsync(apiUrl, contentData);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Failed to update TaskUser status for Task: {taskId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating Task status: {ex.Message}");
+            }
         }
+
+        private async Task RefreshTaskList()
+        {
+            try
+            {
+                string taskApiUrl = "https://localhost:7112/odata/TaskUser";
+                HttpResponseMessage taskResponse = await client.GetAsync(taskApiUrl);
+
+                if (taskResponse.IsSuccessStatusCode)
+                {
+                    string taskData = await taskResponse.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(taskData, options) ?? new List<TaskUserVM>();
+
+                    // Fetch orders and filter tasks based on order status
+                    var filteredTasks = new List<TaskUserVM>();
+                    foreach (var task in taskUserList)
+                    {
+                        string orderApiUrl = $"https://localhost:7112/odata/Order/{task.OrderID}";
+                        HttpResponseMessage orderResponse = await client.GetAsync(orderApiUrl);
+
+                        if (orderResponse.IsSuccessStatusCode)
+                        {
+                            string orderData = await orderResponse.Content.ReadAsStringAsync();
+                            var order = JsonSerializer.Deserialize<OrderDTO>(orderData, options);
+
+                            // Filter out tasks with order status "Success" or "Failed"
+                            if (order != null && order.Status != true && order.Status != false)
+                            {
+                                filteredTasks.Add(task);
+                            }
+                        }
+                    }
+
+                    TaskUserVM = filteredTasks;
+                }
+                else
+                {
+                    TaskUserVM = new List<TaskUserVM>(); // Initialize to an empty list if the API call fails
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error refreshing TaskUser list: {ex.Message}");
+            }
+        }
+
+
+        private void RemoveTaskFromList(int taskId)
+        {
+            try
+            {
+                var taskToRemove = TaskUserVM.FirstOrDefault(t => t.TaskId == taskId);
+                if (taskToRemove != null)
+                {
+                    TaskUserVM.Remove(taskToRemove);
+                    Console.WriteLine($"Task removed from TaskUserVM: {taskId}");
+                }
+                else
+                {
+                    Console.WriteLine($"Task not found in TaskUserVM: {taskId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error removing task from TaskUserVM: {ex.Message}");
+            }
+        }
+
     }
 }
