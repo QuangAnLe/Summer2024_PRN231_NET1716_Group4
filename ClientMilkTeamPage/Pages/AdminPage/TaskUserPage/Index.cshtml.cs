@@ -1,38 +1,64 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
 {
     public class IndexModel : PageModel
     {
-        private readonly HttpClient client = null!;
-        private string ApiUrl = "";
+        private readonly HttpClient _client;
+        private readonly string _apiUrl = "https://localhost:7112/odata/TaskUser";
+        private readonly string _userApiUrl = "https://localhost:7112/odata/User"; // Assuming User API endpoint
 
-        public IndexModel()
+        public IndexModel(HttpClient client)
         {
-            client = new HttpClient();
-            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
-            client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/TaskUser";
+            _client = client;
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public IList<TaskUser> TaskUser { get; set; } = default!;
+        public IList<TaskUser> TaskUser { get; set; } = new List<TaskUser>();
 
         public async Task<IActionResult> OnGetAsync()
         {
-            HttpResponseMessage response = await client.GetAsync(ApiUrl);
-            string strData = await response.Content.ReadAsStringAsync();
-
-            var options = new JsonSerializerOptions
+            HttpResponseMessage response = await _client.GetAsync(_apiUrl);
+            if (response.IsSuccessStatusCode)
             {
-                PropertyNameCaseInsensitive = true
-            };
-            List<TaskUser> taskUsers = JsonSerializer.Deserialize<List<TaskUser>>(strData, options)!;
+                string strData = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                TaskUser = JsonSerializer.Deserialize<List<TaskUser>>(strData, options) ?? new List<TaskUser>();
 
-            TaskUser = taskUsers;
+                foreach (var taskUser in TaskUser)
+                {
+                    HttpResponseMessage userResponse = await _client.GetAsync($"{_userApiUrl}/{taskUser.UserID}");
+                    if (userResponse.IsSuccessStatusCode)
+                    {
+                        string userData = await userResponse.Content.ReadAsStringAsync();
+                        var userVM = JsonSerializer.Deserialize<UserVM>(userData, options);
+
+                        // Mapping UserVM to User
+                        taskUser.User = new User
+                        {
+                            UserID = userVM.UserID,
+                            UserName = userVM.UserName,
+                            // Add any other properties you need to map from UserVM to User
+                        };
+                    }
+                }
+            }
+            else
+            {
+                // Handle error response here
+                ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+            }
 
             return Page();
         }
