@@ -1,0 +1,35 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.Shipper.TaskHistoryModel
+@{
+    ViewData["Title"] = "Task History";
+}
+
+<h1>Task History</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Work Name</th>
+            <th>Work Description</th>
+            <th>User Name</th>
+            <th>Order ID</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var taskUser in Model.TaskUserVM)
+        {
+            <tr>
+                <td>@taskUser.WorkName</td>
+                <td>@taskUser.WorkDescription</td>
+                <td>@taskUser.UserID</td>
+                <td>@taskUser.OrderID</td>
+                <td>@(taskUser.Status.HasValue ? (taskUser.Status.Value ? "Success" : "Failed") : "Unknown")</td>
+               
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="./Shipper/ShipperPage">Back to List</a>
