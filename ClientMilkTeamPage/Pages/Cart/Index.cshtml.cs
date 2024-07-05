@@ -55,10 +55,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             }
 
             CartItems = _cartService.GetCart();
-            var response = await _httpClient.GetAsync(_apiUrl);
-            response.EnsureSuccessStatusCode();
-            var jsonString = await response.Content.ReadAsStringAsync();
-            Materials = JsonSerializer.Deserialize<List<Material>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            Materials = await GetMaterialsAsync();
 
             for (int i = 0; i < CartItems.Count; i++)
             {
@@ -70,6 +67,12 @@ namespace ClientMilkTeamPage.Pages.Cart
                         var material = Materials.FirstOrDefault(m => m.MaterialID == materialId);
                         if (material != null)
                         {
+                            if (material.Quantity < CartItems[i].Quantity)
+                            {
+                                ModelState.AddModelError("", $"Not enough {material.MaterialName} for {CartItems[i].TeaName}.");
+                                return Page();
+                            }
+
                             CartItems[i].SelectedMaterials.Add(new SelectedMaterial
                             {
                                 MaterialID = material.MaterialID,
@@ -81,8 +84,21 @@ namespace ClientMilkTeamPage.Pages.Cart
                 }
             }
 
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             _cartService.UpdateCart(CartItems);
             return RedirectToPage();
+        }
+
+        private async Task<List<Material>> GetMaterialsAsync()
+        {
+            var response = await _httpClient.GetAsync(_apiUrl);
+            response.EnsureSuccessStatusCode();
+            var jsonString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<Material>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
     }
 }
