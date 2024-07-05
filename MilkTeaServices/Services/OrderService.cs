@@ -7,9 +7,9 @@ namespace MilkTeaServices.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepo _OrderRepo;
-        public OrderService(IOrderRepo OrderRepo)
+        public OrderService(IOrderRepo orderRepo)
         {
-            _OrderRepo = OrderRepo;
+            _OrderRepo = orderRepo;
         }
         public List<Order> getList() => _OrderRepo.getList();
         public Order get(int id) => _OrderRepo.get(id);

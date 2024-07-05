@@ -1,42 +1,57 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.Cart.IndexModel
 @{
-}
-@{
     ViewData["Title"] = "Cart";
 }
-
-<h2>Your Cart</h2>
-
-<table>
-    <tr>
-        <th>Tea Name</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Total Price</th>
-        <th>Action</th>
-    </tr>
-    @foreach (var item in Model.CartItems)
-    {
-        <tr>
-            <td>@item.TeaName</td>
-            <td>@item.Price</td>
-            <td>@item.Quantity</td>
-            <td>@item.TotalPrice</td>
-            <td>
-                <a href="/Cart/Delete?teaID=@item.TeaID">Delete</a>
-            </td>
-        </tr>
-    }
-</table>
-
-<p>Total: @Model.CartItems.Sum(item => item.TotalPrice)</p>
-<form action="/Cart/SubmitOrder" method="get">
-    <h1>Checkout</h1>
-    <label>Note:</label>
-    <input type="text" name="content"/>
-    <label>Address:</label>
-    <input type="text" name="address"/>
-    <p>@ViewData["Message"]</p>
-    <button type="submit">Checkout</button>
-</form>
+<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;">
+    <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">Your Cart</h2>
+    <form method="post">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; background-color: #fff; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+            <tr>
+                <th style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #3498db; color: #fff; font-weight: bold;">Tea Name</th>
+                <th style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #3498db; color: #fff; font-weight: bold;">Price</th>
+                <th style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #3498db; color: #fff; font-weight: bold;">Quantity</th>
+                <th style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #3498db; color: #fff; font-weight: bold;">Additional Materials</th>
+                <th style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #3498db; color: #fff; font-weight: bold;">Total Price</th>
+                <th style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd; background-color: #3498db; color: #fff; font-weight: bold;">Action</th>
+            </tr>
+            @for (int i = 0; i < Model.CartItems.Count; i++)
+            {
+                var item = Model.CartItems[i];
+                <tr style="transition: background-color 0.3s;">
+                    <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd;">@item.TeaName</td>
+                    <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd;">@item.Price</td>
+                    <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd;">@item.Quantity</td>
+                    <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd;">
+                        @foreach (var material in Model.Materials)
+                        {
+                            <div>
+                                <input type="checkbox"
+                                       name="SelectedMaterials[@i]"
+                                       value="@material.MaterialID"
+                                       style="margin-right: 5px;"
+                                @(item.SelectedMaterials.Any(sm => sm.MaterialID == material.MaterialID) ? "checked" : "") />
+                                @material.MaterialName - @material.Price
+                            </div>
+                        }
+                    </td>
+                    <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd;">@item.TotalPrice</td>
+                    <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ddd;">
+                        <a href="/Cart/Delete?teaID=@item.TeaID" style="color: #e74c3c; text-decoration: none;">Delete</a>
+                    </td>
+                </tr>
+            }
+        </table>
+        <p style="font-weight: bold; color: #2c3e50;">Total: @Model.CartItems.Sum(item => item.TotalPrice)</p>
+        <button type="submit" style="background-color: #2ecc71; color: #fff; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">Update Cart</button>
+    </form>
+    <form action="/Cart/SubmitOrder" method="get" style="background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); margin-top: 30px;">
+        <h1 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">Checkout</h1>
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Note:</label>
+        <input type="text" name="content" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Address:</label>
+        <input type="text" name="address" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
+        <p style="font-weight: bold; color: #2c3e50;">@ViewData["Message"]</p>
+        <button type="submit" style="background-color: #2ecc71; color: #fff; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">Checkout</button>
+    </form>
+</div>

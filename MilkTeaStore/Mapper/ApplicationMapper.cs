@@ -36,6 +36,9 @@ namespace MilkTeaStore.Mapper
             CreateMap<TaskUserCreateDTO, TaskUser>().ReverseMap();
             CreateMap<TaskUserUpdateDTO, TaskUser>().ReverseMap();
 
+            CreateMap<OrderUpdateDTO, Order>().ReverseMap();
+            CreateMap<TaskUserUpdateStatusDTO, TaskUser>().ReverseMap();
+
             CreateMap<CommentVM, Comment>().ReverseMap();
             CreateMap<CommentCreateDTO, Comment>().ReverseMap();
             CreateMap<CommentUpdateDTO, Comment>().ReverseMap();

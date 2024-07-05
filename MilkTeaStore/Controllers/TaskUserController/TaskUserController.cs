@@ -18,11 +18,13 @@ namespace MilkTeaStore.Controllers.TaskUserController
     public class TaskUserController : ODataController
     {
         private readonly ITaskUserServices _taskUserServices;
+        private readonly IOrderService _orderServices;
         private readonly IMapper _mapper;
 
-        public TaskUserController(ITaskUserServices taskUserServices, IMapper mapper)
+        public TaskUserController(ITaskUserServices taskUserServices, IOrderService orderServices, IMapper mapper)
         {
             _taskUserServices = taskUserServices;
+            _orderServices = orderServices;
             _mapper = mapper;
         }
 
@@ -129,8 +131,24 @@ namespace MilkTeaStore.Controllers.TaskUserController
                     return NotFound();
                 }
 
+                // Update TaskUser status
                 taskUser.Status = taskUserUpdateStatusDTO.Status;
                 _taskUserServices.update(taskUser);
+
+                // Check if there is an associated Order and update its status
+                if (taskUser.OrderID > 0)
+                {
+                    var order = _orderServices.get(taskUser.OrderID); // Assuming _orderServices provides access to Order CRUD operations
+                    if (order != null)
+                    {
+                        order.Status = taskUserUpdateStatusDTO.Status; // Update Order status based on TaskUser status
+                        _orderServices.update(order);
+                    }
+                    else
+                    {
+                        return NotFound("Associated Order not found.");
+                    }
+                }
 
                 return Ok("Update Successfully");
             }

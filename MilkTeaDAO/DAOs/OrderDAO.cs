@@ -29,82 +29,13 @@ namespace MilkTeaDAO.DAOs
                                           .ThenInclude(od => od.Tea)
                                           .ToList();
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    throw new Exception(ex.Message);
+                    throw new Exception(e.Message);
                 }
             }
 
-            public Order Get(int id)
-            {
-                try
-                {
-                    var order = _context.Orders.Include(o => o.OrderDetails)
-                                               .ThenInclude(od => od.Tea)
-                                               .SingleOrDefault(o => o.OrderID == id);
-                    return order;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
-
-            public Order Add(Order order)
-            {
-                try
-                {
-                    _context.Orders.Add(order);
-                    _context.SaveChanges();
-                return _context.Orders.Take(1).OrderByDescending(o => o.StartDate).FirstOrDefault();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
-
-            public void Update(Order order)
-            {
-                try
-                {
-                    var existingOrder = _context.Orders.SingleOrDefault(o => o.OrderID == order.OrderID);
-                    if (existingOrder != null)
-                    {
-                        _context.Entry(existingOrder).CurrentValues.SetValues(order);
-                        _context.SaveChanges();
-                    }
-                    else
-                    {
-                        throw new Exception("Order not found");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
-
-            public void Delete(int id)
-            {
-                try
-                {
-                    var order = _context.Orders.SingleOrDefault(o => o.OrderID == id);
-                    if (order != null)
-                    {
-                        _context.Orders.Remove(order);
-                        _context.SaveChanges();
-                    }
-                    else
-                    {
-                        throw new Exception("Order not found");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
+           
         }
 
         public Order Get(int id)
@@ -165,6 +96,12 @@ namespace MilkTeaDAO.DAOs
                 var order = _context.Orders.SingleOrDefault(o => o.OrderID == id);
                 if (order != null)
                 {
+                    var orderDetails = _context.OrderDetails.Where(od => od.OrderID == id).ToList();
+                    if (orderDetails.Any())
+                    {
+                        _context.OrderDetails.RemoveRange(orderDetails);
+                    }
+
                     _context.Orders.Remove(order);
                     _context.SaveChanges();
                 }
