@@ -30,6 +30,14 @@ namespace ClientMilkTeamPage.Pages.Cart
 
         public async Task<IActionResult> OnGetAsync(int teaID, int quantity)
         {
+
+            var token = HttpContext.Request.Cookies["UserCookie"];
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login");
+            }
+
             Tea tea = await GetTeaByIdAsync(teaID); 
 
             if (tea != null)

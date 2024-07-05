@@ -101,6 +101,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             orderDTO.ShipAddress = address;
             orderDTO.ReasonContent = content;
             orderDTO.StartDate = DateTime.Now;
+            orderDTO.EndDate = orderDTO.StartDate.AddDays(7);
             orderDTO.Status = null;
             orderDTO.TypeOrder = "Online";
             orderDTO.UserID = int.Parse(userIdClaim);

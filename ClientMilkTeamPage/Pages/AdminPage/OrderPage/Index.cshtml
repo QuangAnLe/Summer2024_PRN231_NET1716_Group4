@@ -35,6 +35,7 @@
         <tr>
             <th>@Html.DisplayNameFor(model => model.Orders[0].UserID)</th>
             <th>@Html.DisplayNameFor(model => model.Orders[0].StartDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].EndDate)</th>
             <th>@Html.DisplayNameFor(model => model.Orders[0].ShipAddress)</th>
             <th>@Html.DisplayNameFor(model => model.Orders[0].Status)</th>
             <th>@Html.DisplayNameFor(model => model.Orders[0].TypeOrder)</th>
@@ -47,6 +48,7 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.UserID)</td>
                 <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.ShipAddress)</td>
                 <td class="@($"status-{GetStatusDisplay(item.Status).ToLower()}")">@GetStatusDisplay(item.Status)</td>
                 <td>@Html.DisplayFor(modelItem => item.TypeOrder)</td>

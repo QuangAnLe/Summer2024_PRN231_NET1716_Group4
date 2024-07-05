@@ -44,8 +44,13 @@
 						<a class="nav-link" href="index.html">Home</a>
 					</li>
 					<li><a class="nav-link" href="shop.html">Shop</a></li>
-					<li><a class="nav-link" asp-page="/UserProfile">Profile</a></li>
-					<li><a class="nav-link" asp-page="/Cart/Index">Cart</a></li>
+					@if (!string.IsNullOrEmpty(token))
+					{
+						<li><a class="nav-link" asp-page="/UserProfile">Profile</a></li>
+						<li><a class="nav-link" asp-page="/Cart/Index">Cart</a></li>
+						<li><a class="nav-link" asp-page="/UserPage/OrderHistory">Order History</a></li>
+					}
+					
 					<li><a class="nav-link" href="blog.html">Blog</a></li>
 				</ul>
 			</div>

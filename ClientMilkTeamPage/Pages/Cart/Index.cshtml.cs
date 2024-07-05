@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+
 namespace ClientMilkTeamPage.Pages.Cart
 {
     public class IndexModel : PageModel
@@ -23,18 +24,36 @@ namespace ClientMilkTeamPage.Pages.Cart
 
         public List<CartItem> CartItems { get; private set; }
         public List<Material> Materials { get; private set; }
+        public bool IsAuthenticated { get; private set; }
 
         public async Task OnGetAsync()
         {
-            CartItems = _cartService.GetCart();
-            var response = await _httpClient.GetAsync(_apiUrl);
-            response.EnsureSuccessStatusCode();
-            var jsonString = await response.Content.ReadAsStringAsync();
-            Materials = JsonSerializer.Deserialize<List<Material>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var token = HttpContext.Request.Cookies["UserCookie"];
+            IsAuthenticated = !string.IsNullOrEmpty(token);
+
+            if (IsAuthenticated)
+            {
+                CartItems = _cartService.GetCart();
+                var response = await _httpClient.GetAsync(_apiUrl);
+                response.EnsureSuccessStatusCode();
+                var jsonString = await response.Content.ReadAsStringAsync();
+                Materials = JsonSerializer.Deserialize<List<Material>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            else
+            {
+                CartItems = new List<CartItem>();
+                Materials = new List<Material>();
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(List<List<int>> SelectedMaterials)
         {
+            var token = HttpContext.Request.Cookies["UserCookie"];
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Login");
+            }
+
             CartItems = _cartService.GetCart();
             var response = await _httpClient.GetAsync(_apiUrl);
             response.EnsureSuccessStatusCode();
@@ -66,5 +85,4 @@ namespace ClientMilkTeamPage.Pages.Cart
             return RedirectToPage();
         }
     }
-
 }
