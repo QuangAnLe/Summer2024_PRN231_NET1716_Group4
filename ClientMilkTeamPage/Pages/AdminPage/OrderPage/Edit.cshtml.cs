@@ -136,7 +136,6 @@ namespace ClientMilkTeamPage.Pages.AdminPage.OrderPage
         [Required(ErrorMessage = "End date is required")]
         [DataType(DataType.Date)]
         [Display(Name = "End Date")]
-        [CustomValidation(typeof(OrderEditViewModel), nameof(ValidateEndDate))]
         public DateTime EndDate { get; set; }
 
         [Required(ErrorMessage = "Ship address is required")]
@@ -147,14 +146,6 @@ namespace ClientMilkTeamPage.Pages.AdminPage.OrderPage
         [Required(ErrorMessage = "User is required")]
         public int UserID { get; set; }
 
-        public static ValidationResult ValidateEndDate(DateTime endDate, ValidationContext context)
-        {
-            var instance = (OrderEditViewModel)context.ObjectInstance;
-            if (endDate < instance.StartDate)
-            {
-                return new ValidationResult("End date must be after start date");
-            }
-            return ValidationResult.Success;
-        }
+       
     }
 }
