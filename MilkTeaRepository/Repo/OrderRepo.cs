@@ -32,5 +32,9 @@ namespace MilkTeaRepository.Repo
         {
             dao.Update(order);
         }
+        public void UpdatePaymentSuccess(int id)
+        {
+            dao.UpdatePaymentSuccess(id);
+        }
     }
 }

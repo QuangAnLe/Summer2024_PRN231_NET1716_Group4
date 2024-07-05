@@ -16,5 +16,6 @@ namespace MilkTeaServices.Services
         public void delete(int id) => _OrderRepo.delete(id);
         public void update(Order order) => _OrderRepo.update(order);
         public Order add(Order order) => _OrderRepo.add(order);
+        public void UpdatePaymentSuccess(int id) => _OrderRepo.UpdatePaymentSuccess(id);
     }
 }

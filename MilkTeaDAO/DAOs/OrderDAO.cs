@@ -44,6 +44,7 @@ namespace MilkTeaDAO.DAOs
             {
                 var order = _context.Orders.Include(o => o.OrderDetails)
                                            .ThenInclude(od => od.Tea)
+                                           .Include(p => p.User)
                                            .SingleOrDefault(o => o.OrderID == id);
                 return order;
             }
@@ -103,6 +104,28 @@ namespace MilkTeaDAO.DAOs
                     }
 
                     _context.Orders.Remove(order);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("Order not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public void UpdatePaymentSuccess(int id)
+        {
+            try
+            {
+                var existingOrder = _context.Orders.SingleOrDefault(o => o.OrderID == id);
+                if (existingOrder != null)
+                {
+                    existingOrder.Status = true;
+                    _context.Update(existingOrder);
                     _context.SaveChanges();
                 }
                 else

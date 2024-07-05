@@ -108,5 +108,20 @@ namespace MilkTeaStore.Controllers.OrderController
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("odata/OrderSuccess/{id}")]
+        [EnableQuery]
+        public IActionResult UpdatePaymentSuccess([FromRoute] int id)
+        {
+            try
+            {
+               
+                _orderService.UpdatePaymentSuccess(id);
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
