@@ -34,9 +34,9 @@
                 <span asp-validation-for="TaskUser.OrderID" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TaskUser.Status" /> @Html.DisplayNameFor(model => model.TaskUser.Status)
-                </label>
+                <input class="form-check-input" type="checkbox" id="Status" name="Status" @(Model.TaskUser.Status == true ? "checked" : "") />
+                <label class="form-check-label" for="Status">@Html.DisplayNameFor(model => model.TaskUser.Status)</label>
+                <input type="hidden" asp-for="TaskUser.Status" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

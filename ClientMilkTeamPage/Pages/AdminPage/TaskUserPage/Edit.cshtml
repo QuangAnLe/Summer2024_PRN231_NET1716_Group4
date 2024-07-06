@@ -1,55 +1,51 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.AdminPage.TaskUserPage.EditModel
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Task User";
 }
 
-<h1>Edit</h1>
+<h2>Edit Task User</h2>
 
-<h4>TaskUser</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="TaskUser.TaskId" />
-
-            <div class="form-group">
-                <label asp-for="TaskUser.WorkName" class="control-label"></label>
-                <input asp-for="TaskUser.WorkName" class="form-control" />
-                <span asp-validation-for="TaskUser.WorkName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="TaskUser.WorkDescription" class="control-label"></label>
-                <input asp-for="TaskUser.WorkDescription" class="form-control" />
-                <span asp-validation-for="TaskUser.WorkDescription" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="TaskUser.UserID" class="control-label"></label>
-                <input asp-for="TaskUser.UserID" class="form-control" />
-                <span asp-validation-for="TaskUser.UserID" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="TaskUser.OrderID" class="control-label"></label>
-                <input asp-for="TaskUser.OrderID" class="form-control" />
-                <span asp-validation-for="TaskUser.OrderID" class="text-danger"></span>
-            </div>
-
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TaskUser.Status" /> @Html.DisplayNameFor(model => model.TaskUser.Status)
-                </label>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="TaskUser.TaskId" class="control-label"></label>
+        <input asp-for="TaskUser.TaskId" class="form-control" readonly />
     </div>
-</div>
+    <div class="form-group">
+        <label asp-for="TaskUser.WorkName" class="control-label"></label>
+        <input asp-for="TaskUser.WorkName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="TaskUser.WorkDescription" class="control-label"></label>
+        <input asp-for="TaskUser.WorkDescription" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="TaskUser.Status" class="control-label"></label>
+        <select asp-for="TaskUser.Status" class="form-control">
+            <option value="">Processing</option>
+            <option value="true">Success</option>
+            <option value="false">Failed</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="TaskUser.UserID" class="control-label"></label>
+        <select asp-for="TaskUser.UserID" class="form-control">
+            @foreach (var user in Model.UserList)
+            {
+                <option value="@user.UserID" selected="@((user.UserID == Model.TaskUser.UserID) ? "selected" : null)">
+                    @user.UserName
+                </option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="TaskUser.OrderID" class="control-label"></label>
+        <input asp-for="TaskUser.OrderID" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
 
 <div>
     <a asp-page="./Index">Back to List</a>

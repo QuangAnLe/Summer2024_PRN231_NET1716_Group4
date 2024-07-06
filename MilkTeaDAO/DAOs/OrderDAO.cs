@@ -132,5 +132,26 @@ namespace MilkTeaDAO.DAOs
                 throw new Exception(ex.Message);
             }
         }
+        public void UpdatePaymentSuccess(int id)
+        {
+            try
+            {
+                var existingOrder = _context.Orders.SingleOrDefault(o => o.OrderID == id);
+                if (existingOrder != null)
+                {
+                    existingOrder.Status = true;
+                    _context.Update(existingOrder);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("Order not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

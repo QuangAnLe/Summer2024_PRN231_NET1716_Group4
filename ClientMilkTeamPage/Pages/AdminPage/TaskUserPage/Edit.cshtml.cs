@@ -1,64 +1,96 @@
+using ClientMilkTeamPage.DTO;
 using ClientMilkTeamPage.DTO.TaskUserDTO;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
 {
     public class EditModel : PageModel
     {
-        private readonly HttpClient client = null!;
-        private string ApiUrl = "";
+        private readonly HttpClient _client;
+        private readonly ILogger<EditModel> _logger;
+        private readonly string _apiUrl = "https://localhost:7112/odata/TaskUser";
+        private readonly string _userApiUrl = "https://localhost:7112/odata/User";
 
-        public EditModel()
+        public EditModel(HttpClient client, ILogger<EditModel> logger)
         {
-            client = new HttpClient();
-            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
-            client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7112/odata/TaskUser";
+            _client = client;
+            _logger = logger;
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         [BindProperty]
-        public TaskUserUpdateDTO TaskUser { get; set; } = default!;
+        public TaskUserUpdateDTO TaskUser { get; set; }
+
+        public List<UserVM> UserList { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-
-            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}/{id}");
-            string strData = await response.Content.ReadAsStringAsync();
-
-            var options = new JsonSerializerOptions
+            if (id == null)
             {
-                PropertyNameCaseInsensitive = true
-            };
-            var _taskUser = JsonSerializer.Deserialize<TaskUserUpdateDTO>(strData, options)!;
+                return NotFound();
+            }
 
-            TaskUser = _taskUser;
+            HttpResponseMessage response = await _client.GetAsync($"{_apiUrl}/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+
+            string strData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            TaskUser = JsonSerializer.Deserialize<TaskUserUpdateDTO>(strData, options)!;
+
+            HttpResponseMessage userResponse = await _client.GetAsync(_userApiUrl);
+            if (userResponse.IsSuccessStatusCode)
+            {
+                string userData = await userResponse.Content.ReadAsStringAsync();
+                UserList = JsonSerializer.Deserialize<List<UserVM>>(userData, options);
+            }
+
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             try
             {
+                TaskUser.TaskId = id.Value;
+
                 string strData = JsonSerializer.Serialize(TaskUser);
-                var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PutAsync($"{ApiUrl}/{id}", contentData);
+                var contentData = new StringContent(strData, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _client.PutAsync($"{_apiUrl}/{id}", contentData);
                 if (response.IsSuccessStatusCode)
                 {
                     ViewData["Success"] = "Update Success";
                     return RedirectToPage("./Index");
                 }
-                ViewData["Error"] = "Update Error";
-                return RedirectToPage("./Index");
+                else
+                {
+                    ViewData["Error"] = "Update Error";
+                    return Page();
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                ViewData["Error"] = "Fail To Call API";
-                return RedirectToPage("/Error");
+                _logger.LogError(ex, "Failed to call API");
+                ViewData["Error"] = $"Failed to call API: {ex.Message}";
+                return Page();
             }
         }
     }
