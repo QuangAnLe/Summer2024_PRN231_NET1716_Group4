@@ -19,7 +19,7 @@ namespace MilkTeaDAO.DAOs
         private readonly string app_id = "2553";
         private readonly string key1 = "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL";
         private readonly string create_order_url = "https://sb-openapi.zalopay.vn/v2/create";
-        private readonly string redirectUrl = "https://localhost:7097/";
+        private readonly string redirectUrl = "https://localhost:7097/UserPage/MyOrder/OrderDetail?id=";
         public async Task<Dictionary<string, object>> CreateOrder(int id)
         {
             double priceOrder = 0;
@@ -28,11 +28,12 @@ namespace MilkTeaDAO.DAOs
             List<OrderDetail> list = order.OrderDetails.ToList();
             foreach (var item in list)
             {
-                priceOrder += item.Quantity * item.Tea.Price;
+                double costsIncurred = ConvertCostsIncurred(item.CostsIncurred);
+                priceOrder += item.Quantity * item.Tea.Price + costsIncurred;
                 listNameTea.Add(item.Tea.TeaName);
             }
             Random rnd = new Random();
-            var embed_data = new { redirecturl=redirectUrl };
+            var embed_data = new { redirecturl=redirectUrl+id };
             var items = new[] { new { } };
             var param = new Dictionary<string, string>();
             var app_trans_id = rnd.Next(1000000); // Generate a random order's ID.
@@ -54,6 +55,18 @@ namespace MilkTeaDAO.DAOs
 
             var result = await HttpHelper.PostFormAsync(create_order_url, param);
             return result;
+        }
+        private double ConvertCostsIncurred(string costsIncurred)
+        {
+            if (costsIncurred.EndsWith("d"))
+            {
+                string numberPart = costsIncurred.Substring(0, costsIncurred.Length - 1);
+                if (double.TryParse(numberPart, out double result))
+                {
+                    return result;
+                }
+            }
+            return 0;
         }
     }
 }

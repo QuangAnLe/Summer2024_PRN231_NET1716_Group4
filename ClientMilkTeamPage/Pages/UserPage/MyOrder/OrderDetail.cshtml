@@ -58,5 +58,14 @@
  <div>
         <a asp-page="./OrderList">Back to List</a>
     </div>
-   
+    @if (!string.IsNullOrEmpty(Model.OrderUrl))
+    {
+    <div>
+        <a href="@Model.OrderUrl" class="btn btn-success">Pay with ZaloPay</a>
+        </div>
+    }
+    else
+    {
+        <p> Đơn hàng đã thanh toán</p>
+    }
 </table>
