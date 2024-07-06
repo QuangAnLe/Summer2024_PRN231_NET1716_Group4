@@ -142,7 +142,6 @@ namespace ClientMilkTeamPage.Pages.Cart
             string strData = JsonSerializer.Serialize(orderDTO, options);
             var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync(ApiUrl, contentData);
-
             if (response.IsSuccessStatusCode)
             {
                 string Data = await response.Content.ReadAsStringAsync();

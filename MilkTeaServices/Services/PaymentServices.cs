@@ -10,9 +10,9 @@ namespace MilkTeaServices.Services
         {
             _repo = repo;
         }
-        public async Task<Dictionary<string, object>> CreateOrder()
+        public async Task<Dictionary<string, object>> CreateOrder(int id)
         {
-            return await _repo.CreateOrder();
+            return await _repo.CreateOrder(id);
         }
     }
 }

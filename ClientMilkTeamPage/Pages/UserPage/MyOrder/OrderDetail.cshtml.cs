@@ -21,7 +21,7 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
             ApiUrl = "https://localhost:7112/odata/OrderDetailByOid";
         }
         public IList<OrderDetail> orderdetails { get; set; } = default!;
-
+        public string OrderUrl { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
 
@@ -40,7 +40,18 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
             string summaryData = await summaryResponse.Content.ReadAsStringAsync();
             OrderSummary = JsonSerializer.Deserialize<Order>(summaryData, options)!;
 
+            if (OrderSummary.Status == null)
+            {
+                HttpResponseMessage response1 = await client.PostAsync($"https://localhost:7112/odata/CreateOrder/{id}", null);
+                var jsonResponse = await response1.Content.ReadAsStringAsync();
+                var responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonResponse);
+                if (responseData.ContainsKey("order_url"))
+                {
+                    OrderUrl = responseData["order_url"].ToString();
+                }
+            }
             return Page();
         }
+        
     }
 }

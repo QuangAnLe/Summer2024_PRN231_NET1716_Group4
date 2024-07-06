@@ -2,6 +2,6 @@
 {
     public interface IPaymentServices
     {
-        Task<Dictionary<string, object>> CreateOrder();
+        Task<Dictionary<string, object>> CreateOrder(int id);
     }
 }

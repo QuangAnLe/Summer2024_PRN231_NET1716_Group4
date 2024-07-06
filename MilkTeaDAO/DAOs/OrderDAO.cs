@@ -44,6 +44,7 @@ namespace MilkTeaDAO.DAOs
             {
                 var order = _context.Orders.Include(o => o.OrderDetails)
                                            .ThenInclude(od => od.Tea)
+                                           .Include(p => p.User)
                                            .SingleOrDefault(o => o.OrderID == id);
                 return order;
             }
