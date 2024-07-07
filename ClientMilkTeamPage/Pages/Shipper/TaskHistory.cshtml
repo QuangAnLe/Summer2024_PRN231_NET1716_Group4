@@ -12,9 +12,10 @@
             <th>Work Name</th>
             <th>Work Description</th>
             <th>User Name</th>
+            <th>Order Name</th>
             <th>Order ID</th>
             <th>Status</th>
-            <th></th>
+            <th>End Date</th>
         </tr>
     </thead>
     <tbody>
@@ -23,13 +24,14 @@
             <tr>
                 <td>@taskUser.WorkName</td>
                 <td>@taskUser.WorkDescription</td>
-                <td>@taskUser.UserID</td>
+                <td>@taskUser.UserName</td>
+                <td>@taskUser.ReasonContent</td>
                 <td>@taskUser.OrderID</td>
                 <td>@(taskUser.Status.HasValue ? (taskUser.Status.Value ? "Success" : "Failed") : "Unknown")</td>
-               
+                <td>@(taskUser.EndDate.HasValue ? taskUser.EndDate.Value.ToShortDateString() : "N/A")</td>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-page="./Shipper/ShipperPage">Back to List</a>
+<a href="https://localhost:7097/Shipper/ShipperPage">Shipper Page</a>
