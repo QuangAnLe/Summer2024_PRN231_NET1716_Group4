@@ -18,6 +18,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             ApiUrl = "https://localhost:7112/odata/TaskUser";
+
         }
 
         [BindProperty]

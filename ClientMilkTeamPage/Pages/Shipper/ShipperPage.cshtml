@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.TaskUserVM[0].UserID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].OrderID)
+                Order Details
             </th>
             <th>
                 Status
@@ -29,6 +29,7 @@
     <tbody>
         @foreach (var item in Model.TaskUserVM)
         {
+            var order = Model.OrderDetails[item.OrderID];
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.WorkName)
@@ -40,13 +41,22 @@
                     @Html.DisplayFor(modelItem => item.UserID)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.OrderID)
+                    @if (order != null)
+                    {
+                        <div>
+                            <strong>Order Name:</strong> @order.ReasonContent
+                        </div>
+                        <div>
+                            <strong>Start Date:</strong> @order.StartDate.ToString("yyyy-MM-dd")
+                        </div>
+                        <div>
+                            <strong>End Date:</strong> @order.EndDate.ToString("yyyy-MM-dd")
+                        </div>
+                    }
                 </td>
                 <td>
                     <form method="post" asp-page-handler="UpdateStatus">
                         <input type="hidden" name="TaskId" value="@item.TaskId" />
-                        <input type="hidden" name="TeaID" value="@item.OrderID" /> <!-- Assuming OrderID is TeaID -->
-                        <input type="hidden" name="UserID" value="@item.UserID" />
                         <input type="radio" name="Status" value="Success" /> Success
                         <input type="radio" name="Status" value="Failed" /> Failed
                         <button type="submit">Update</button>

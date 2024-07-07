@@ -24,9 +24,11 @@ namespace ClientMilkTeamPage.Pages.Shipper
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             TaskUserVM = new List<TaskUserVM>(); // Initialize to avoid null reference
+            OrderDetails = new Dictionary<int, OrderDTO>();
         }
 
         public IList<TaskUserVM> TaskUserVM { get; set; }
+        public Dictionary<int, OrderDTO> OrderDetails { get; set; }
         public bool ShowModal { get; set; } = false;
 
         [BindProperty]
@@ -145,6 +147,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
                             if (order != null && order.Status != true && order.Status != false)
                             {
                                 filteredTasks.Add(task);
+                                OrderDetails[task.OrderID] = order; // Store order details
                             }
                         }
                     }
@@ -161,7 +164,6 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 Console.WriteLine($"Error refreshing TaskUser list: {ex.Message}");
             }
         }
-
 
         private void RemoveTaskFromList(int taskId)
         {
