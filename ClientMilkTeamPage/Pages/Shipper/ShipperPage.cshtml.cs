@@ -87,7 +87,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
             if (Status.HasValue && Status.Value == true)
             {
                 await UpdateTaskStatusAsync(taskId, true);
-                RemoveTaskFromList(taskId);
+              
                 await RefreshTaskList();
             }
 
@@ -197,25 +197,6 @@ namespace ClientMilkTeamPage.Pages.Shipper
         }
 
 
-        private void RemoveTaskFromList(int taskId)
-        {
-            try
-            {
-                var taskToRemove = TaskUserVM.FirstOrDefault(t => t.TaskId == taskId);
-                if (taskToRemove != null)
-                {
-                    TaskUserVM.Remove(taskToRemove);
-                    Console.WriteLine($"Task removed from TaskUserVM: {taskId}");
-                }
-                else
-                {
-                    Console.WriteLine($"Task not found in TaskUserVM: {taskId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error removing task from TaskUserVM: {ex.Message}");
-            }
-        }
+        
     }
 }
