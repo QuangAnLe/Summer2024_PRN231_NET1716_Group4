@@ -53,9 +53,9 @@ namespace ClientMilkTeamPage.Pages.Shipper
             {
                 Content = FailureReason,
                 CommentDate = DateTime.UtcNow,
-                Rating = 0,
-                TeaID = 0,
-                UserID = 0
+                Rating = 0, // Adjust as necessary
+                TeaID = 0, // Adjust as necessary
+                UserID = 0 // Adjust as necessary
             };
 
             string apiUrl = "https://localhost:7112/odata/Comment";
@@ -65,11 +65,8 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
             if (commentResponse.IsSuccessStatusCode)
             {
-                if (Status.HasValue && Status.Value == false)
-                {
-                    await UpdateTaskStatusAsync(TaskId, false);
-                }
-                await RefreshTaskList();
+                await UpdateTaskStatusAsync(TaskId, false);
+                await RefreshTaskList(); // Refresh the list after updating status
             }
 
             return RedirectToPage("/UserPage/MyOrder/OrderList");
@@ -77,21 +74,26 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
         public async Task<IActionResult> OnPostUpdateStatusAsync()
         {
+            // Check if Status is explicitly set to false
             if (Status.HasValue && Status.Value == false)
             {
                 ShowModal = true;
                 return Page();
             }
 
-            var taskId = TaskId;
+            // If Status is true, proceed with update
             if (Status.HasValue && Status.Value == true)
             {
-                await UpdateTaskStatusAsync(taskId, true);
-              
+                var taskId = TaskId;
+                var status = Status.Value;
+                await UpdateTaskStatusAsync(taskId, status);
+
                 await RefreshTaskList();
+                return RedirectToPage("/UserPage/MyOrder/OrderList");
             }
 
-            return RedirectToPage("/UserPage/MyOrder/OrderList");
+            // If Status is null, handle appropriately (you can adjust this part based on your specific requirements)
+            return Page();
         }
 
         private async Task UpdateTaskStatusAsync(int taskId, bool status)
@@ -108,6 +110,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
                 var contentData = new StringContent(strData, Encoding.UTF8, "application/json");
 
+                // Send PATCH request
                 var response = await client.PatchAsync(apiUrl, contentData);
 
                 if (!response.IsSuccessStatusCode)
@@ -125,7 +128,6 @@ namespace ClientMilkTeamPage.Pages.Shipper
         {
             try
             {
-                // Fetch tasks
                 string taskApiUrl = "https://localhost:7112/odata/TaskUser";
                 HttpResponseMessage taskResponse = await client.GetAsync(taskApiUrl);
 
@@ -137,13 +139,6 @@ namespace ClientMilkTeamPage.Pages.Shipper
                         PropertyNameCaseInsensitive = true
                     };
                     var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(taskData, options) ?? new List<TaskUserVM>();
-
-                    // Log fetched tasks
-                    Console.WriteLine("Fetched Tasks:");
-                    foreach (var task in taskUserList)
-                    {
-                        Console.WriteLine($"TaskId: {task.TaskId}, OrderID: {task.OrderID}");
-                    }
 
                     var allOrders = new Dictionary<int, OrderDTO>();
                     foreach (var task in taskUserList)
@@ -158,14 +153,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
                             if (order != null)
                             {
                                 allOrders[task.OrderID] = order;
-
-                                // Log fetched orders
-                                Console.WriteLine($"OrderID: {order.OrderID}, Status: {order.Status}, ReasonContent: {order.ReasonContent}");
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Failed to fetch order for TaskId: {task.TaskId}");
                         }
                     }
 
@@ -174,7 +162,6 @@ namespace ClientMilkTeamPage.Pages.Shipper
                         if (allOrders.TryGetValue(task.OrderID, out var order))
                         {
                             bool includeTask = order.Status != true && order.Status != false;
-                            Console.WriteLine($"TaskId: {task.TaskId}, OrderID: {task.OrderID}, Include: {includeTask}");
                             return includeTask;
                         }
                         return false;
@@ -182,12 +169,10 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
                     TaskUserVM = filteredTasks;
                     OrderDetails = allOrders;
-                    Console.WriteLine($"Filtered task list count: {TaskUserVM.Count}");
                 }
                 else
                 {
                     TaskUserVM = new List<TaskUserVM>();
-                    Console.WriteLine("Failed to retrieve task user list.");
                 }
             }
             catch (Exception ex)
@@ -195,8 +180,5 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 Console.WriteLine($"Error refreshing TaskUser list: {ex.Message}");
             }
         }
-
-
-        
     }
 }

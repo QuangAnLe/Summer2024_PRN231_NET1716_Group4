@@ -57,8 +57,8 @@
                 <td>
                     <form method="post" asp-page-handler="UpdateStatus">
                         <input type="hidden" name="TaskId" value="@item.TaskId" />
-                        <input type="radio" name="Status" value="Success" /> Success
-                        <input type="radio" name="Status" value="Failed" /> Failed
+                        <input type="radio" name="Status" value="true" /> Success
+                        <input type="radio" name="Status" value="false" /> Failed
                         <button type="submit">Update</button>
                     </form>
                 </td>
