@@ -273,11 +273,7 @@
                                         </td>
                                         <td>
                                             @*@Html.DisplayFor(modelItem => item.RoleName)*@
-                                            @if (item.RoleName == "Customer")
-                                            {
-                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700; background-color: #b3a7a8; color: #dc3545;">Customer</span>
-                                            }
-                                            else if (item.RoleName == "Staff")
+                                            @if (item.RoleName == "Staff")
                                             {
                                                 <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #f4efff; color: #9A84DA;">Staff</span>
                                             }
@@ -287,7 +283,7 @@
                                             }
                                             else if (item.RoleName == "Manager")
                                             {
-                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #eaf2ff; color: #2ECC71;">Manager</span>
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #eaf2ff; color: #2ECC71;">Shipper</span>
                                             }
                                         </td>
 

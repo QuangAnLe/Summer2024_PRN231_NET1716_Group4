@@ -1,0 +1,52 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.ManagerPage.TaskUserPage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+    <a href="./TeaPage">Teapage</a> || <a href="./MaterialPage">MaterialPage</a> || <a href="./DistrictPage">DistrictPage</a>
+    <button class="btn btn-primary" onclick="window.location.href='/Logout'">
+        <span>Logout</span>
+        <ion-icon name="log-in-outline"></ion-icon>
+    </button>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.TaskUser[0].WorkName)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUser[0].WorkDescription)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUser[0].User.UserName)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUser[0].OrderID)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUser[0].Status)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TaskUser)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.WorkName)</td>
+                <td>@Html.DisplayFor(modelItem => item.WorkDescription)</td>
+                <td>@Html.DisplayFor(modelItem => item.User.UserName)</td>
+                <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
+                <td>
+                    @{
+                        var status = item.Status.HasValue ? (item.Status.Value ? "Success" : "Failed") : "Processing";
+                        var color = item.Status.HasValue ? (item.Status.Value ? "green" : "red") : "orange";
+                    }
+                    <span style="color: @color;">@status</span>
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.TaskId">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.TaskId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
