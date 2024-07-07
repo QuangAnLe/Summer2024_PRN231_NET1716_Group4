@@ -33,10 +33,9 @@
                 <input asp-for="TaskUser.OrderID" class="form-control" />
                 <span asp-validation-for="TaskUser.OrderID" class="text-danger"></span>
             </div>
-           <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TaskUser.Status" /> @Html.DisplayNameFor(model => model.TaskUser.Status)
-                </label>
+            <div class="form-group form-check">
+                <input type="checkbox" asp-for="TaskUser.Status" class="form-check-input" />
+                <label class="form-check-label" asp-for="TaskUser.Status"></label>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
