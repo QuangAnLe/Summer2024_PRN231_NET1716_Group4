@@ -59,6 +59,17 @@ namespace ClientMilkTeamPage.Pages
                             HttpContext.Response.Cookies.Append("UserCookie", token);
                             return RedirectToPage("./Shipper/ShipperPage");
                         }
+                        else if (roleClaim?.Value == "3") //Staff
+                        {
+                            HttpContext.Response.Cookies.Append("UserCookie", token);
+                            return RedirectToPage("./Shipper/ShipperPage");
+                        }
+
+                        else if (roleClaim?.Value == "4") //Manager
+                        {
+                            HttpContext.Response.Cookies.Append("ManagerCookie", token);
+                            return RedirectToPage("./ManagerPage/UserPage/Index");
+                        }
                         else if (roleClaim?.Value == "Admin") //Admin
                         {
                             HttpContext.Response.Cookies.Append("AdminCookie", token);
