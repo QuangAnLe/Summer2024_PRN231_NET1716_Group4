@@ -13,6 +13,13 @@
             <a href="/Login" style="display: inline-block; background-color: #3498db; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Login</a>
         </div>
     }
+    else if (Model.IsCartEmpty)
+    {
+        <div style="background-color: #f39c12; color: #fff; padding: 20px; text-align: center; margin-bottom: 20px; border-radius: 5px;">
+            <p style="margin-bottom: 10px;">Your cart is empty. Please add some items before checking out.</p>
+            <a href="/" style="display: inline-block; background-color: #3498db; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Home</a>
+        </div>
+    }
     else
     {
     <form method="post">
@@ -55,14 +62,31 @@
         <p style="font-weight: bold; color: #2c3e50;">Total: @Model.CartItems.Sum(item => item.TotalPrice)</p>
         <button type="submit" style="background-color: #2ecc71; color: #fff; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">Update Cart</button>
     </form>
-    <form action="/Cart/SubmitOrder" method="get" style="background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); margin-top: 30px;">
-        <h1 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">Checkout</h1>
-        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Note:</label>
-        <input type="text" name="content" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
-        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Address:</label>
-        <input type="text" name="address" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
-        <p style="font-weight: bold; color: #2c3e50;">@ViewData["Message"]</p>
-        <button type="submit" style="background-color: #2ecc71; color: #fff; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">Checkout</button>
-    </form>
+        <form action="/Cart/SubmitOrder" method="get" style="background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); margin-top: 30px;">
+            <h1 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">Checkout</h1>
+
+            @if (Model.CurrentUser != null)
+            {
+                <div style="margin-bottom: 20px;">
+                    <p><strong>User Name:</strong> @Model.CurrentUser.UserName</p>
+                    <p><strong>Mobile Number:</strong> @Model.CurrentUser.Phone</p>
+                </div>
+            }
+
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Note:</label>
+            <input type="text" name="content" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
+
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Address:</label>
+            <input type="text" name="address" value="@(Model.CurrentUser?.UserAddress ?? "")" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">District:</label>
+            <input type="text" name="district" value="@(Model.CurrentUser?.DistrictName ?? "")" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Ward:</label>
+            <input type="text" name="ward" value="@(Model.CurrentUser?.WardName ?? "")" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
+
+            <p style="font-weight: bold; color: #2c3e50;">@ViewData["Message"]</p>
+            <button type="submit" style="background-color: #2ecc71; color: #fff; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">Checkout</button>
+        </form>
     }
 </div>

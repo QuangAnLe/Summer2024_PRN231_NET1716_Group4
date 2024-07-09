@@ -33,7 +33,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             ApiUrlDetail = "https://localhost:7112/odata/OrderDetail";
         }
 
-        public async Task<IActionResult> OnPostAsync(string content, string address)
+        public async Task<IActionResult> OnPostAsync(string content, string address1, string district, string ward)
         {
             var token = HttpContext.Request.Cookies["UserCookie"];
 
@@ -44,7 +44,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
             var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
+            string address = $"{address1}, {ward}, {district}".Trim(',', ' ');
             List<CartItem> CartItems = _cartService.GetCart();
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.ShipAddress = address;
@@ -88,7 +88,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             return Redirect("/Cart/Index");
 
         }
-        public async Task<IActionResult> OnGetAsync(string content, string address)
+        public async Task<IActionResult> OnGetAsync(string content, string address1, string district, string ward)
         {
             var token = HttpContext.Request.Cookies["UserCookie"];
 
@@ -99,7 +99,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
             var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
+            string address = $"{address1}, {ward}, {district}".Trim(',', ' ');
             List<CartItem> CartItems = _cartService.GetCart();
 
             // Validate tea and material quantities
