@@ -31,9 +31,6 @@
     </style>
 </head>
 <body>
-
-   
-
     <div class="container mt-4">
         <h1>Create Task User</h1>
 
@@ -56,13 +53,25 @@
 
                     <div class="mb-3">
                         <label asp-for="TaskUser.UserID" class="form-label">User ID</label>
-                        <input asp-for="TaskUser.UserID" class="form-control" />
+                        <select asp-for="TaskUser.UserID" class="form-control">
+                            <option value="">Select User</option>
+                            @foreach (var user in Model.Users)
+                            {
+                                <option value="@user.Value">@user.Text</option>
+                            }
+                        </select>
                         <span asp-validation-for="TaskUser.UserID" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="TaskUser.OrderID" class="form-label">Order ID</label>
-                        <input asp-for="TaskUser.OrderID" class="form-control" />
+                        <select asp-for="TaskUser.OrderID" class="form-control">
+                            <option value="">Select Order</option>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <option value="@order.Value">@order.Text</option>
+                            }
+                        </select>
                         <span asp-validation-for="TaskUser.OrderID" class="text-danger"></span>
                     </div>
 
