@@ -47,7 +47,7 @@ namespace MilkTeaDAO.DAOs
             param.Add("item", JsonConvert.SerializeObject(items));
             param.Add("description", "Thanh toán đơn hàng của " + order.User.FullName);
             param.Add("bank_code", "zalopayapp");
-            param.Add("callback_url", "https://f4b0-14-186-77-119.ngrok-free.app/odata/Callback/"+order.OrderID);
+            param.Add("callback_url", "https://0b6a-2402-800-be09-c3d2-b125-ecd8-6f5b-b158.ngrok-free.app/odata/Callback/" + order.OrderID);
 
             var data = app_id + "|" + param["app_trans_id"] + "|" + param["app_user"] + "|" + param["amount"] + "|"
                 + param["app_time"] + "|" + param["embed_data"] + "|" + param["item"];
