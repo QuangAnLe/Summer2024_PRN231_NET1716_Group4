@@ -1,52 +1,164 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.AdminPage.TaskUserPage.IndexModel
 
-@{
-    ViewData["Title"] = "Index";
-}
-
-<h1>Index</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-    <a href="./TeaPage">Teapage</a> || <a href="./MaterialPage">MaterialPage</a> || <a href="./DistrictPage">DistrictPage</a>
-    <button class="btn btn-primary" onclick="window.location.href='/Logout'">
-        <span>Logout</span>
-        <ion-icon name="log-in-outline"></ion-icon>
-    </button>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.TaskUser[0].WorkName)</th>
-            <th>@Html.DisplayNameFor(model => model.TaskUser[0].WorkDescription)</th>
-            <th>@Html.DisplayNameFor(model => model.TaskUser[0].User.UserName)</th>
-            <th>@Html.DisplayNameFor(model => model.TaskUser[0].OrderID)</th>
-            <th>@Html.DisplayNameFor(model => model.TaskUser[0].Status)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.TaskUser)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.WorkName)</td>
-                <td>@Html.DisplayFor(modelItem => item.WorkDescription)</td>
-                <td>@Html.DisplayFor(modelItem => item.User.UserName)</td>
-                <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
-                <td>
-                    @{
-                        var status = item.Status.HasValue ? (item.Status.Value ? "Success" : "Failed") : "Processing";
-                        var color = item.Status.HasValue ? (item.Status.Value ? "green" : "red") : "orange";
-                    }
-                    <span style="color: @color;">@status</span>
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.TaskId">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.TaskId">Details</a>
-                </td>
-            </tr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Index - ClientMilkTeamPage</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
         }
-    </tbody>
-</table>
+
+        .navbar {
+            background-color: #28a745; /* Dark green navbar */
+        }
+
+        .navbar-brand {
+            color: white !important; /* White text for navbar brand */
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important; /* White text for navbar links */
+        }
+
+        .btn-primary {
+            background-color: #28a745; /* Green button */
+            border-color: #28a745; /* Green border */
+        }
+
+            .btn-primary:hover {
+                background-color: #218838; /* Darker green on hover */
+                border-color: #1e7e34; /* Darker green border on hover */
+            }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table thead th {
+            background-color: #28a745; /* Green header background */
+            color: white; /* White header text */
+            border-color: #28a745; /* Green header border */
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa; /* Light gray alternating rows */
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9ecef; /* Lighter gray on row hover */
+        }
+
+        .status-success {
+            color: green; /* Green text for success status */
+        }
+
+        .status-failed {
+            color: red; /* Red text for failed status */
+        }
+
+        .status-processing {
+            color: orange; /* Orange text for processing status */
+        }
+
+        /* Dark green header */
+        .navbar-dark.bg-dark-green {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+            .navbar-dark.bg-dark-green .navbar-brand {
+                color: white;
+            }
+
+            .navbar-dark.bg-dark-green .navbar-nav .nav-link {
+                color: white;
+            }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark-green">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">ClientMilkTeamPage</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/HomePage">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Cart/Index">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <h1>Index</h1>
+
+        <p>
+            <a asp-page="Create" class="btn btn-primary">Create New</a>
+           
+            <button class="btn btn-primary" onclick="window.location.href='/Logout'">
+                <span>Logout</span>
+                <ion-icon name="log-in-outline"></ion-icon>
+            </button>
+        </p>
+
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.TaskUser[0].WorkName)</th>
+                    <th>@Html.DisplayNameFor(model => model.TaskUser[0].WorkDescription)</th>
+                    <th>@Html.DisplayNameFor(model => model.TaskUser[0].User.UserName)</th>
+                    <th>@Html.DisplayNameFor(model => model.TaskUser[0].OrderID)</th>
+                    <th>@Html.DisplayNameFor(model => model.TaskUser[0].Status)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.TaskUser)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.WorkName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.WorkDescription)</td>
+                        <td>@Html.DisplayFor(modelItem => item.User.UserName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
+                        <td>
+                            @{
+                                var status = item.Status.HasValue ? (item.Status.Value ? "Success" : "Failed") : "Processing";
+                                var statusClass = item.Status.HasValue ? (item.Status.Value ? "status-success" : "status-failed") : "status-processing";
+                            }
+                            <span class="@statusClass">@status</span>
+                        </td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.TaskId" class="btn btn-sm btn-secondary">Edit</a>
+                            <a asp-page="./Details" asp-route-id="@item.TaskId" class="btn btn-sm btn-info">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

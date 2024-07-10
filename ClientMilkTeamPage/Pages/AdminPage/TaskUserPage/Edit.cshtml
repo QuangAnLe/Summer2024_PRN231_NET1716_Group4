@@ -4,55 +4,86 @@
     ViewData["Title"] = "Edit Task User";
 }
 
-<h2>Edit Task User</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Edit Task User - ClientMilkTeamPage</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
 
-<form method="post">
-    <div class="form-group">
-        <label asp-for="TaskUser.TaskId" class="control-label"></label>
-        <input asp-for="TaskUser.TaskId" class="form-control" readonly />
-    </div>
-    <div class="form-group">
-        <label asp-for="TaskUser.WorkName" class="control-label"></label>
-        <input asp-for="TaskUser.WorkName" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="TaskUser.WorkDescription" class="control-label"></label>
-        <input asp-for="TaskUser.WorkDescription" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="TaskUser.Status" class="control-label"></label>
-        <select asp-for="TaskUser.Status" class="form-control">
-           
-            <option value="true">Success</option>
-            <option value="false">Failed</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label asp-for="TaskUser.UserID" class="control-label"></label>
-        <select asp-for="TaskUser.UserID" class="form-control">
-            @foreach (var user in Model.UserList)
-            {
-                <option value="@user.UserID" selected="@((user.UserID == Model.TaskUser.UserID) ? "selected" : null)">
-                    @user.UserName
-                </option>
-            }
-        </select>
-    </div>
-    <div class="form-group">
-        <label asp-for="TaskUser.OrderID" class="control-label"></label>
-        <input asp-for="TaskUser.OrderID" class="form-control" />
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
-    </div>
-</form>
+        .navbar {
+            background-color: #28a745 !important; /* Dark green navbar */
+        }
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
+        .navbar-brand {
+            color: white !important; /* White text for navbar brand */
+        }
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+        .navbar-nav .nav-link {
+            color: white !important; /* White text for navbar links */
+        }
+    </style>
+</head>
+<body>
+
+  
+
+    <div class="container mt-4">
+        <h2>Edit Task User</h2>
+
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="TaskUser.TaskId" class="control-label"></label>
+                <input asp-for="TaskUser.TaskId" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskUser.WorkName" class="control-label"></label>
+                <input asp-for="TaskUser.WorkName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskUser.WorkDescription" class="control-label"></label>
+                <input asp-for="TaskUser.WorkDescription" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskUser.Status" class="control-label"></label>
+                <select asp-for="TaskUser.Status" class="form-control">
+                    <option value="true" selected="@(Model.TaskUser.Status == true)">Success</option>
+                    <option value="false" selected="@(Model.TaskUser.Status == false)">Failed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskUser.UserID" class="control-label"></label>
+                <select asp-for="TaskUser.UserID" class="form-control">
+                    @foreach (var user in Model.UserList)
+                    {
+                        <option value="@user.UserID" selected="@(user.UserID == Model.TaskUser.UserID)">
+                            @user.UserName
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskUser.OrderID" class="control-label"></label>
+                <input asp-for="TaskUser.OrderID" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+        <div>
+            <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
