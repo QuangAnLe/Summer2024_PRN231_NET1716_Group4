@@ -119,6 +119,7 @@ namespace ClientMilkTeamPage.Pages.Cart
         }
     }
 
+
     public class UserInfo
     {
         public int UserID { get; set; }
