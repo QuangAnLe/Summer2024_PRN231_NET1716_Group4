@@ -6,6 +6,8 @@
         public string TeaName { get; set; }
         public double Price { get; set; }
         public int Quantity { get; set; }
+
+        public int MaxQuantity { get; set; }
         public List<SelectedMaterial> SelectedMaterials { get; set; } = new List<SelectedMaterial>();
         public double TotalPrice
         {

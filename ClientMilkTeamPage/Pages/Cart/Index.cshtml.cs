@@ -38,6 +38,23 @@ namespace ClientMilkTeamPage.Pages.Cart
             if (IsAuthenticated)
             {
                 CartItems = _cartService.GetCart();
+                // Fetch tea details and set MaxQuantity
+                var teaResponse = await _httpClient.GetAsync("https://localhost:7112/odata/Tea");
+                if (teaResponse.IsSuccessStatusCode)
+                {
+                    var teaJsonString = await teaResponse.Content.ReadAsStringAsync();
+                    var teas = JsonSerializer.Deserialize<List<Tea>>(teaJsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    foreach (var cartItem in CartItems)
+                    {
+                        var tea = teas.FirstOrDefault(t => t.TeaID == cartItem.TeaID);
+                        if (tea != null)
+                        {
+                            cartItem.MaxQuantity = tea.Estimation;
+                        }
+                    }
+                }
+
                 var response = await _httpClient.GetAsync(_apiUrl);
                 response.EnsureSuccessStatusCode();
                 var jsonString = await response.Content.ReadAsStringAsync();

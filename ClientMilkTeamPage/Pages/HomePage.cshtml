@@ -121,7 +121,7 @@
 									<strong class="product-price">@item.Price</strong>
 
 								</a>
-								<a class="btn btn-info" href="/Cart/Add?teaID=@item.TeaID&quantity=1">Add cart</a>
+								<button class="btn btn-info" onclick="addToCart(@item.TeaID, 1)">Add to cart</button>
 							</div>
 						}
 					</div>
@@ -270,6 +270,24 @@
 	<script src="js/bootstrap.bundle.min.js"></script>
 	<script src="js/tiny-slider.js"></script>
 	<script src="js/custom.js"></script>
+	<script>
+		function addToCart(teaID, quantity) {
+			fetch('/api/Cart/Add', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ teaID: teaID, quantity: quantity })
+			})
+				.then(response => response.json())
+				.then(data => {
+					alert(data.message);
+				})
+				.catch((error) => {
+					console.error('Error:', error);
+				});
+		}
+	</script>
 </body>
 
 </html>
