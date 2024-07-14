@@ -29,7 +29,7 @@ namespace MilkTeaDAO.DAOs
             foreach (var item in list)
             {
                 double costsIncurred = ConvertCostsIncurred(item.CostsIncurred);
-                priceOrder += item.Quantity * item.Tea.Price + costsIncurred;
+                priceOrder += item.TotalPrice + costsIncurred;
                 listNameTea.Add(item.Tea.TeaName);
             }
             Random rnd = new Random();
