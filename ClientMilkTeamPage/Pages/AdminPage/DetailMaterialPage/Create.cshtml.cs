@@ -26,7 +26,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.DetailMaterialPage
         }
 
         [BindProperty]
-        public DetailMaterialUpdateDTO DetailMaterial { get; set; } = default!;
+        public DetailMaterialCreateDTO DetailMaterial { get; set; } = default!;
 
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
