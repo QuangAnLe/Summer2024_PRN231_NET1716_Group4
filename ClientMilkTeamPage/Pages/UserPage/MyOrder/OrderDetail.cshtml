@@ -55,13 +55,13 @@
             </tr>
         }
     </tbody>
- <div>
-        <a asp-page="./OrderList">Back to List</a>
+    <div>
+        <a asp-page="/UserPage/OrderHistory">Back </a>
     </div>
     @if (!string.IsNullOrEmpty(Model.OrderUrl))
     {
-    <div>
-        <a href="@Model.OrderUrl" class="btn btn-success">Pay with ZaloPay</a>
+        <div>
+            <a href="@Model.OrderUrl" class="btn btn-success">Pay with ZaloPay</a>
         </div>
     }
     else

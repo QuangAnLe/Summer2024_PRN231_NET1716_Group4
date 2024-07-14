@@ -34,6 +34,21 @@ namespace MilkTeaStore.Controllers.OrderController
             }
         }
 
+        [HttpGet("odata/OrderByUser/{id}")]
+        [EnableQuery]
+        public ActionResult<IQueryable<Order>> GetAllOrdersByUserID([FromRoute] int id)
+        {
+            try
+            {
+                var orders = _orderService.getList();
+                return Ok(orders.AsQueryable());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("odata/Order/{id}")]
         [EnableQuery]
         public IActionResult GetByID([FromRoute] int id)

@@ -4,46 +4,83 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Details - ClientMilkTeamPage</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
 
-<div>
-    <h4>TaskUser</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskUser.WorkName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TaskUser.WorkName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskUser.WorkDescription)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TaskUser.WorkDescription)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskUser.UserID)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TaskUser.UserID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskUser.OrderID)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TaskUser.OrderID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskUser.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TaskUser.Status)
-        </dd>
-       
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.TaskUser?.TaskId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+        .navbar {
+            background-color: #28a745 !important; /* Dark green navbar */
+        }
+
+        .navbar-brand {
+            color: white !important; /* White text for navbar brand */
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important; /* White text for navbar links */
+        }
+    </style>
+</head>
+<body>
+
+   
+
+    <div class="container mt-4">
+        <h1>Details</h1>
+
+        <div>
+            <h4>TaskUser</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.TaskUser.WorkName)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.TaskUser.WorkName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.TaskUser.WorkDescription)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.TaskUser.WorkDescription)
+                </dd>
+                <dt class="col-sm-2">
+                    User Name
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.TaskUser.User.UserName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.TaskUser.OrderID)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.TaskUser.OrderID)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.TaskUser.Status)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.TaskUser.Status)
+                </dd>
+            </dl>
+        </div>
+        <div>
+            <a asp-page="./Edit" asp-route-id="@Model.TaskUser?.TaskId" class="btn btn-primary">Edit</a> |
+            <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

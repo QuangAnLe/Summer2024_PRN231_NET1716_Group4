@@ -12,6 +12,7 @@ namespace MilkTeaServices.Services
             _OrderRepo = orderRepo;
         }
         public List<Order> getList() => _OrderRepo.getList();
+        public List<Order> GetAllOrdersByUserID(int userID) => _OrderRepo.GetAllOrdersByUserID(userID);
         public Order get(int id) => _OrderRepo.get(id);
         public void delete(int id) => _OrderRepo.delete(id);
         public void update(Order order) => _OrderRepo.update(order);

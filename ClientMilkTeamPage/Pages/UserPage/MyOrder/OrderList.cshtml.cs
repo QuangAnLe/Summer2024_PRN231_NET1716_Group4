@@ -18,9 +18,15 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
             client.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
-        public IList<Order> orders { get; set; } = new List<Order>();
+        public IList<Order> Orders { get; set; } = new List<Order>();
 
         public async Task<IActionResult> OnGetAsync()
+        {
+            await RefreshOrderList();
+            return Page();
+        }
+
+        private async Task RefreshOrderList()
         {
             HttpResponseMessage response = await client.GetAsync(ApiUrl);
             if (response.IsSuccessStatusCode)
@@ -30,14 +36,15 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                orders = JsonSerializer.Deserialize<List<Order>>(strData, options) ?? new List<Order>();
+                var allOrders = JsonSerializer.Deserialize<List<Order>>(strData, options) ?? new List<Order>();
+
+                // Filter to only include orders with processing status (Status == null)
+                Orders = allOrders.Where(order => order.Status == null).ToList();
             }
             else
             {
-                orders = new List<Order>(); // Initialize to an empty list if the API call fails
+                Orders = new List<Order>(); // Initialize to an empty list if the API call fails
             }
-
-            return Page();
         }
     }
 }

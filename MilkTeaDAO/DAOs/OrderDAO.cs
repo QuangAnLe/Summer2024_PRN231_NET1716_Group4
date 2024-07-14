@@ -117,6 +117,21 @@ namespace MilkTeaDAO.DAOs
             }
         }
 
+        public List<Order> GetAllOrdersByUserID(int userID)
+        {
+            try
+            {
+                var orders = _context.Orders.Include(o => o.OrderDetails)
+                                            .ThenInclude(od => od.Tea)
+                                            .Where(o => o.UserID == userID)
+                                            .ToList();
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
         public void UpdatePaymentSuccess(int id)
         {
             try

@@ -4,57 +4,185 @@
 @{
     ViewData["Title"] = "Index";
 }
+@{
+    Layout = null;
+}
 
-<h1>Index</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-    <a href="./TeaPage">Teapage</a> ||  <a href="./MaterialPage">MaterialPage</a> || <a href="./DistrictPage">DistrictPage</a>|| <a href="./TaskUserPage">TaskUserPage</a>
-    <button class="btn btn-primary" onclick="window.location.href='/Logout'">
-        <span>Logout</span>
-        <ion-icon name="log-in-outline"></ion-icon>
-    </button>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Material[0].MaterialName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Material[0].Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Material[0].Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Material[0].Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Material)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MaterialName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                </td>
-
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.MaterialID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.MaterialID">Details</a> |
-                </td>
-            </tr>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <title>Modern Admin Dashboard</title>
+    <link rel="stylesheet" href="~/admin/admin.css">
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        table thead th {
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 21px;
         }
-    </tbody>
-</table>
+
+        tbody tr {
+            padding: 1rem 1rem;
+            text-align: center;
+            font-size: 19px;
+        }
+
+            tbody tr:hover {
+                background-color: #e2ecff
+            }
+
+        .side-content ul li:hover {
+            border: 2px solid #0d6efd;
+            background: #2B384E;
+        }
+    </style>
+</head>
+
+<h1>Orders</h1>
+
+<body>
+    <input type="checkbox" id="menu-toggle">
+    <div class="sidebar">
+        <div class="side-header">
+            <h3>A<span>dmin</span></h3>
+        </div>
+
+        <div class="side-content">
+            <div class="profile">
+                <h4></h4>
+
+            </div>
+            <div class="side-menu">
+                <ul>
+                    <li>
+                        <a asp-page="/AdminPage/UserPage/Index">
+                            <span><i class="fa-solid fa-user-tie"></i></span>
+                            <small>User</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/TaskUserPage/Index">
+                            <span><i class="fa-solid fa-user-tie"></i></span>
+                            <small>Task User</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/TeaPage/Index">
+                            <span><i class="fa-solid fa-kiwi-bird"></i></span>
+                            <small>Tea</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/OrderPage/Index">
+                            <span class="las la-shopping-cart"></span>
+                            <small>Orders</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/MaterialPage/Index">
+                            <span><i class="fa-solid fa-comment"></i></span>
+                            <small>Material</small>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a asp-page="/AdminPage/DistrictPage/Index">
+                            <span class="las la-shopping-cart"></span>
+                            <small>Distric</small>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="main-content">
+
+        <header>
+            <div class="header-content">
+                <label for="menu-toggle">
+                    <span class="las la-bars"></span>
+                </label>
+
+                <div class="header-menu">
+
+
+                    <div class="user">
+                        <div class="bg-img" style="background-image: url(img/1.jpeg)"></div>
+
+                        <span class="las la-power-off"></span>
+                        <a class="actions" asp-page="/Logout"><button>Logout</button></a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="page-header">
+                <h1>Material Management</h1>
+            </div>
+
+            <div class="page-content">
+
+                <div class="record-header">
+
+                    <a asp-page="Create"><button class="btn btn-primary">Create</button></a>
+                    <div class="browse">
+                    </div>
+                </div>
+
+                <div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Material[0].MaterialName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Material[0].Quantity)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Material[0].Price)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Material[0].Status)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Material)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.MaterialName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Quantity)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </td>
+
+                                    <td>
+                                        <div class="actions">
+                                            <a style="padding-left:14px;" asp-page="./Details" asp-route-id="@item.MaterialID"><span><i class="fa-solid fa-eye"></i></span></a>
+                                            <a style="padding-left:14px;" asp-page="./Edit" asp-route-id="@item.MaterialID"><span><i class="fa-solid fa-pen"></i></span></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+    <script src="~admin/admin.js"></script>
+    <script src="https://kit.fontawesome.com/aadd71a7c7.js" crossorigin="anonymous"></script>
+</body>

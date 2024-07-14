@@ -6,13 +6,18 @@
         public string TeaName { get; set; }
         public double Price { get; set; }
         public int Quantity { get; set; }
+
+        public int MaxQuantity { get; set; }
         public List<SelectedMaterial> SelectedMaterials { get; set; } = new List<SelectedMaterial>();
         public double TotalPrice
         {
             get
             {
-                return (Price + SelectedMaterials.Sum(m => m.Price)) * Quantity;
+                return (Price + SelectedMaterials.Sum(m => m.Price * m.Quantity)) * Quantity;
             }
+
+            set { }
+           
         }
     }
 
@@ -21,5 +26,6 @@
         public int MaterialID { get; set; }
         public string MaterialName { get; set; }
         public double Price { get; set; }
+        public int Quantity { get; set; }
     }
 }

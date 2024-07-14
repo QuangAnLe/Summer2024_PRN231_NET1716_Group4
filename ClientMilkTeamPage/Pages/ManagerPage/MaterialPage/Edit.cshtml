@@ -1,0 +1,51 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.ManagerPage.MaterialPage.EditModel
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Material</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Material.MaterialID" />
+            <div class="form-group">
+                <label asp-for="Material.MaterialName" class="control-label"></label>
+                <input asp-for="Material.MaterialName" class="form-control" />
+                <span asp-validation-for="Material.MaterialName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Material.Quantity" class="control-label"></label>
+                <input asp-for="Material.Quantity" class="form-control" />
+                <span asp-validation-for="Material.Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Material.Price" class="control-label"></label>
+                <input asp-for="Material.Price" class="form-control" />
+                <span asp-validation-for="Material.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Material.Status" /> @Html.DisplayNameFor(model => model.Material.Status)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

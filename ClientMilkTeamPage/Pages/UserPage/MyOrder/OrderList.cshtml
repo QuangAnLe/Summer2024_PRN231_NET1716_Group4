@@ -3,41 +3,123 @@
 @{
     ViewData["Title"] = "Order List";
 }
-<h1>Order List</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>OrderID</th>
-            <th>ReasonContent</th>
-            <th>TypeOrder</th>
-            <th>Status</th>
-            <th>Order Date</th>
-            <th>ShipAddress</th>
-            <th>Detail</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.orders)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
-                <td>@Html.DisplayFor(modelItem => item.ReasonContent)</td>
-                <td>@Html.DisplayFor(modelItem => item.TypeOrder)</td>
-                <td>
-                    @{
-                        var status = item.Status.HasValue ? (item.Status.Value ? "Success" : "Failed") : "Processing";
-                        var color = item.Status.HasValue ? (item.Status.Value ? "green" : "red") : "orange";
-                    }
-                    <span style="color: @color;">@status</span>
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
-                <td>@Html.DisplayFor(modelItem => item.ShipAddress)</td>
-                <td><a asp-page="./OrderDetail" asp-route-id="@item.OrderID">Detail</a></td>
-            </tr>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding-top: 60px; /* Adjusted padding for fixed navbar */
+            padding-bottom: 60px; /* Adjusted padding for fixed footer */
         }
-    </tbody>
-   <div>
-        <a class="nav-link" asp-page="/Shipper/ShipperPage">Back</a>
-  </div>
-    
-</table>
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+            td span {
+                font-weight: bold;
+            }
+
+                td span.success {
+                    color: green;
+                }
+
+                td span.failed {
+                    color: red;
+                }
+
+                td span.processing {
+                    color: orange;
+                }
+
+        /* Link Styles */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+            .back-link:hover {
+                color: #555;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Page Content -->
+    <div class="container">
+        <h1>Order List</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>OrderID</th>
+                    <th>ReasonContent</th>
+                    <th>TypeOrder</th>
+                    <th>Status</th>
+                    <th>Order Date</th>
+                    <th>ShipAddress</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Orders)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ReasonContent)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TypeOrder)</td>
+                        <td>
+                            @{
+                                var status = item.Status.HasValue ? (item.Status.Value ? "Success" : "Failed") : "Processing";
+                                var statusColor = item.Status.HasValue ? (item.Status.Value ? "success" : "failed") : "processing";
+                            }
+                            <span class="@statusColor">@status</span>
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ShipAddress)</td>
+                        <td><a asp-page="./OrderDetail" asp-route-id="@item.OrderID">Detail</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a class="back-link" asp-page="/Shipper/ShipperPage">Back</a>
+    </div>
+
+</body>
+</html>

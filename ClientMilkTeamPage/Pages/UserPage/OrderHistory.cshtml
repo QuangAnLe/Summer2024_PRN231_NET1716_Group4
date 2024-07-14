@@ -1,0 +1,121 @@
+﻿@page
+@model ClientMilkTeamPage.Pages.UserPage.OrderHistoryModel
+
+@{
+    ViewData["Title"] = "Order History";
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gMVrAkyyIWdO8uWKSOkb+FFqDQtH1RVRVAc2x3G8tQt1/tpVckh2" crossorigin="anonymous" />
+<style>
+    .status-processing {
+        color: #6c757d;
+    }
+
+    .status-success {
+        color: #28a745;
+    }
+
+    .status-failed {
+        color: #dc3545;
+    }
+</style>
+
+@functions {
+    public string GetStatusDisplay(bool? status)
+    {
+        return status switch
+        {
+            null => "Chờ thanh toán",
+            true => "Đã thanh toán",
+            false => "Chưa thanh toán"
+        };
+    }
+}
+
+<h1>Order History</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].OrderID)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].StartDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].EndDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].ShipAddress)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].Status)</th>
+            <th>@Html.DisplayNameFor(model => model.Orders[0].TypeOrder)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Orders.OrderByDescending(o => o.EndDate))
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
+                <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.ShipAddress)</td>
+                <td class="@($"status-{GetStatusDisplay(item.Status).ToLower()}")">@GetStatusDisplay(item.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.TypeOrder)</td>
+                <td>
+                    <button class="btn btn-primary" onclick="showOrderDetails(@item.OrderID)">View Details</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tea Name</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderDetailsBody">
+                        <!-- Order details will be appended here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXlGA3Vo20moDtvbH1STzUNj2N6bPVnY6JdEA35W8wGylbmE8Q3dv4yy9K9z" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4Ag0bF1uG1dM3IKA+kW09NAU8R5b/T8HK8WZs3ihUQMDZ4uW3DzF" crossorigin="anonymous"></script>
+
+@section Scripts {
+    <script>
+        function showOrderDetails(orderId) {
+            fetch('https://localhost:7112/odata/OrderDetailByOid/' + orderId)
+                .then(response => response.json())
+                .then(data => {
+                    const orderDetailsBody = document.getElementById('orderDetailsBody');
+                    orderDetailsBody.innerHTML = '';
+                    data.forEach(detail => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                                    <td>${detail.tea.teaName}</td>
+                                    <td>${detail.quantity}</td>
+                                    <td>${detail.totalPrice}</td>
+                                    <td><img src="${detail.tea.image}" alt="${detail.tea.teaName}" style="width: 100px;"/></td>
+                                `;
+                        orderDetailsBody.appendChild(row);
+                    });
+                    $('#orderDetailsModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error fetching order details:', error);
+                });
+        }
+    </script>
+}

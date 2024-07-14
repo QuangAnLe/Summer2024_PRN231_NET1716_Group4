@@ -1,56 +1,101 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.AdminPage.TaskUserPage.CreateModel
-
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Task User";
 }
 
-<h1>Create</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Create Task User - ClientMilkTeamPage</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
 
-<h4>TaskUser</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="TaskUser.WorkName" class="control-label"></label>
-                <input asp-for="TaskUser.WorkName" class="form-control" />
-                <span asp-validation-for="TaskUser.WorkName" class="text-danger"></span>
+        .navbar {
+            background-color: #28a745 !important; /* Dark green navbar */
+        }
+
+        .navbar-brand {
+            color: white !important; /* White text for navbar brand */
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important; /* White text for navbar links */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Create Task User</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaskUser.WorkName" class="form-label">Work Name</label>
+                        <input asp-for="TaskUser.WorkName" class="form-control" />
+                        <span asp-validation-for="TaskUser.WorkName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaskUser.WorkDescription" class="form-label">Work Description</label>
+                        <input asp-for="TaskUser.WorkDescription" class="form-control" />
+                        <span asp-validation-for="TaskUser.WorkDescription" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaskUser.UserID" class="form-label">User ID</label>
+                        <select asp-for="TaskUser.UserID" class="form-control">
+                            <option value="">Select User</option>
+                            @foreach (var user in Model.Users)
+                            {
+                                <option value="@user.Value">@user.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="TaskUser.UserID" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaskUser.OrderID" class="form-label">Order ID</label>
+                        <select asp-for="TaskUser.OrderID" class="form-control">
+                            <option value="">Select Order</option>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <option value="@order.Value">@order.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="TaskUser.OrderID" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TaskUser.Status" class="form-label">Status</label>
+                        <select asp-for="TaskUser.Status" class="form-control">
+                            <option value="">Select Status</option>
+                            <option value="true">Success</option>
+                            <option value="false">Failed</option>
+                        </select>
+                        <span asp-validation-for="TaskUser.Status" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="TaskUser.WorkDescription" class="control-label"></label>
-                <input asp-for="TaskUser.WorkDescription" class="form-control" />
-                <span asp-validation-for="TaskUser.WorkDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TaskUser.UserID" class="control-label"></label>
-                <input asp-for="TaskUser.UserID" class="form-control" />
-                <span asp-validation-for="TaskUser.UserID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TaskUser.OrderID" class="control-label"></label>
-                <input asp-for="TaskUser.OrderID" class="form-control" />
-                <span asp-validation-for="TaskUser.OrderID" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TaskUser.Status" /> @Html.DisplayNameFor(model => model.TaskUser.Status)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

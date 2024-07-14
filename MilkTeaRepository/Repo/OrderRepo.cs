@@ -23,6 +23,11 @@ namespace MilkTeaRepository.Repo
             return dao.Get(id);
         }
 
+        public List<Order> GetAllOrdersByUserID(int userID)
+        {
+            return dao.GetAllOrdersByUserID(userID);
+        }
+
         public List<Order> getList()
         {
             return dao.GetList();

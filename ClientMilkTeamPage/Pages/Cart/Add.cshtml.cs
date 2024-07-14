@@ -30,19 +30,31 @@ namespace ClientMilkTeamPage.Pages.Cart
 
         public async Task<IActionResult> OnGetAsync(int teaID, int quantity)
         {
-            Tea tea = await GetTeaByIdAsync(teaID); 
-
-            if (tea != null)
+            var token = HttpContext.Request.Cookies["UserCookie"];
+            if (string.IsNullOrEmpty(token))
             {
-                CartItem item = new CartItem();
-                item.TeaID = tea.TeaID;
-                item.TeaName = tea.TeaName;
-                item.Quantity = quantity;
-                item.Price = tea.Price;
-                _cartService.AddToCart(item);
+                return RedirectToPage("/Login");
             }
 
-            return Redirect("/HomePage"); 
+            Tea tea = await GetTeaByIdAsync(teaID);
+            if (tea != null)
+            {
+                if (quantity > tea.Estimation)
+                {
+                    TempData["ErrorMessage"] = $"Cannot add more than {tea.Estimation} units of {tea.TeaName} to the cart.";
+                    return RedirectToPage("/HomePage");
+                }
+
+                CartItem item = new CartItem
+                {
+                    TeaID = tea.TeaID,
+                    TeaName = tea.TeaName,
+                    Quantity = quantity,
+                    Price = tea.Price
+                };
+                _cartService.AddToCart(item);
+            }
+            return RedirectToPage("/HomePage");
         }
 
         private async Task<Tea> GetTeaByIdAsync(int teaID)

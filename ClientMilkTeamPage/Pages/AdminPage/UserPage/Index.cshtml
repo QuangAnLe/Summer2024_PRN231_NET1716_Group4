@@ -6,7 +6,10 @@
 
 <h1>Index</h1>
 
-<p>
+@{
+    Layout = null;
+}
+@*<p>
     <a asp-page="Create">Create New</a>
 <a href="./TeaPage">Teapage</a> ||  <a href="./MaterialPage">MaterialPage</a> || <a href="./DistrictPage">DistrictPage</a> || <a href="./DetailMaterialPage">DetailMaterialPage</a> || <a href="./OrderPage">OrderPage</a>
 
@@ -94,3 +97,230 @@
         }
     </tbody>
 </table>
+*@
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <title>Modern Admin Dashboard</title>
+    <link rel="stylesheet" href="~/admin/admin.css">
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        table thead th {
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 21px;
+        }
+
+        tbody tr {
+            padding: 1rem 1rem;
+            text-align: center;
+            font-size: 19px;
+        }
+
+            tbody tr:hover {
+                background-color: #e2ecff
+            }
+
+        .side-content ul li:hover {
+            border: 2px solid #0d6efd;
+            background: #2B384E;
+        }
+    </style>
+</head>
+<body>
+    <input type="checkbox" id="menu-toggle">
+    <div class="sidebar">
+        <div class="side-header">
+            <h3>A<span>dmin</span></h3>
+        </div>
+
+        <div class="side-content">
+            <div class="profile">
+                <h4></h4>
+               
+            </div>
+            <div class="side-menu">
+                <ul>
+                    <li>
+                        <a asp-page="/AdminPage/UserPage/Index">
+                            <span><i class="fa-solid fa-user-tie"></i></span>
+                            <small>User</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/TaskUserPage/Index">
+                            <span><i class="fa-solid fa-user-tie"></i></span>
+                            <small>Task User</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/TeaPage/Index">
+                            <span><i class="fa-solid fa-kiwi-bird"></i></span>
+                            <small>Tea</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/OrderPage/Index">
+                            <span class="las la-shopping-cart"></span>
+                            <small>Orders</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/AdminPage/MaterialPage/Index">
+                            <span><i class="fa-solid fa-comment"></i></span>
+                            <small>Material</small>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a asp-page="/AdminPage/DistrictPage/Index">
+                            <span class="las la-shopping-cart"></span>
+                            <small>Distric</small>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <header>
+            <div class="header-content">
+                <label for="menu-toggle">
+                    <span class="las la-bars"></span>
+                </label>
+
+                <div class="header-menu">
+
+
+                    <div class="user">
+                        <div class="bg-img" style="background-image: url(img/1.jpeg)"></div>
+
+                        <span class="las la-power-off"></span>
+                        <a class="actions" asp-page="/Logout"><button>Logout</button></a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+        <main>
+
+            <div class="page-header">
+                <h1>User Management</h1>
+
+            </div>
+
+            <div class="page-content">
+
+                <div class="records table-responsive">
+
+                    <div class="record-header">
+
+                        <a asp-page="Create"><button class="btn btn-primary">Create</button></a>
+                        <div class="browse">
+                        </div>
+                    </div>
+
+                    <div>
+                        <table width="100%">
+                            <thead>
+                                <tr>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].UserName)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].FullName)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].Phone)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].UserAddress)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].Email)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].Status)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].RoleName)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].DistrictName)</th>
+                                    <th><span class="las la-sort"></span>@Html.DisplayNameFor(model => model.User[0].WardName)</th>
+                                    <th><span></span></th>
+                                </tr>
+                            </thead>
+                            @foreach (var item in Model.User)
+                            {
+                                <tbody class="list">
+                                    <tr class="itemn text-dark">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.UserName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FullName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Phone)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.UserAddress)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Email)
+                                        </td>
+                                        <td>
+                                            @if (item.Status == true)
+                                            {
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700; background-color: #EAFEF3; color: #2ECC71;">Active</span>
+                                            }
+                                            else if (item.Status != true)
+                                            {
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #b3a7a8; color: #dc3545;">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @*@Html.DisplayFor(modelItem => item.RoleName)*@
+                                            @if (item.RoleName == "Customer")
+                                            {
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700; background-color: #b3a7a8; color: #dc3545;">Customer</span>
+                                            }
+                                            else if (item.RoleName == "Staff")
+                                            {
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #f4efff; color: #9A84DA;">Staff</span>
+                                            }
+                                            else if (item.RoleName == "Shipper")
+                                            {
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #eaf2ff; color: #739FDC;">Shipper</span>
+                                            }
+                                            else if (item.RoleName == "Manager")
+                                            {
+                                                <span style="border-radius: 8px; padding: 8px; font-weight: 700;  background-color: #eaf2ff; color: #2ECC71;">Manager</span>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DistrictName)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.WardName)
+                                        </td>
+
+                                        <td>
+                                            <div class="actions">
+                                                <a style="padding-left:14px;" asp-page="./Edit" asp-route-id="@item.UserID"><span><i class="fa-solid fa-pen"></i></span></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+
+                                </tbody>
+                            }
+                        </table>
+                    </div>
+                    <ul class="listPage">
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+    <script src="~admin/admin.js"></script>
+    <script src="https://kit.fontawesome.com/aadd71a7c7.js" crossorigin="anonymous"></script>
+</body>

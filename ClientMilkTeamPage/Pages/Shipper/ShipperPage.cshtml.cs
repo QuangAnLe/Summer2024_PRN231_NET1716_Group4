@@ -1,3 +1,4 @@
+using ClientMilkTeamPage.DTO;
 using ClientMilkTeamPage.DTO.CommentDTO;
 using ClientMilkTeamPage.DTO.TaskUserDTO;
 using ClientMilkTeamPage.ViewModel;
@@ -23,24 +24,26 @@ namespace ClientMilkTeamPage.Pages.Shipper
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            TaskUserVM = new List<TaskUserVM>(); // Initialize to avoid null reference
+            TaskUserVM = new List<TaskUserVM>();
+            OrderDetails = new Dictionary<int, OrderDTO>();
         }
 
         public IList<TaskUserVM> TaskUserVM { get; set; }
+        public Dictionary<int, OrderDTO> OrderDetails { get; set; }
         public bool ShowModal { get; set; } = false;
 
         [BindProperty]
         public int TaskId { get; set; }
 
         [BindProperty]
-        public string Status { get; set; }
+        public bool? Status { get; set; }
 
         [BindProperty]
         public string FailureReason { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            await RefreshTaskList(); // Ensure TaskUserVM reflects the latest from the server
+            await RefreshTaskList();
             return Page();
         }
 
@@ -71,18 +74,26 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
         public async Task<IActionResult> OnPostUpdateStatusAsync()
         {
-            if (Status == "Failed")
+            // Check if Status is explicitly set to false
+            if (Status.HasValue && Status.Value == false)
             {
                 ShowModal = true;
                 return Page();
             }
 
-            var taskId = TaskId;
-            var status = Status == "Success";
-            await UpdateTaskStatusAsync(taskId, status);
-            RemoveTaskFromList(taskId);
-            await RefreshTaskList();
-            return RedirectToPage("/UserPage/MyOrder/OrderList");
+            // If Status is true, proceed with update
+            if (Status.HasValue && Status.Value == true)
+            {
+                var taskId = TaskId;
+                var status = Status.Value;
+                await UpdateTaskStatusAsync(taskId, status);
+
+                await RefreshTaskList();
+                return RedirectToPage("/UserPage/MyOrder/OrderList");
+            }
+
+            // If Status is null, handle appropriately (you can adjust this part based on your specific requirements)
+            return Page();
         }
 
         private async Task UpdateTaskStatusAsync(int taskId, bool status)
@@ -129,8 +140,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
                     };
                     var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(taskData, options) ?? new List<TaskUserVM>();
 
-                    // Fetch orders and filter tasks based on order status
-                    var filteredTasks = new List<TaskUserVM>();
+                    var allOrders = new Dictionary<int, OrderDTO>();
                     foreach (var task in taskUserList)
                     {
                         string orderApiUrl = $"https://localhost:7112/odata/Order/{task.OrderID}";
@@ -140,20 +150,29 @@ namespace ClientMilkTeamPage.Pages.Shipper
                         {
                             string orderData = await orderResponse.Content.ReadAsStringAsync();
                             var order = JsonSerializer.Deserialize<OrderDTO>(orderData, options);
-
-                            // Filter out tasks with order status "Success" or "Failed"
-                            if (order != null && order.Status != true && order.Status != false)
+                            if (order != null)
                             {
-                                filteredTasks.Add(task);
+                                allOrders[task.OrderID] = order;
                             }
                         }
                     }
 
+                    var filteredTasks = taskUserList.Where(task =>
+                    {
+                        if (allOrders.TryGetValue(task.OrderID, out var order))
+                        {
+                            bool includeTask = order.Status != true && order.Status != false;
+                            return includeTask;
+                        }
+                        return false;
+                    }).ToList();
+
                     TaskUserVM = filteredTasks;
+                    OrderDetails = allOrders;
                 }
                 else
                 {
-                    TaskUserVM = new List<TaskUserVM>(); // Initialize to an empty list if the API call fails
+                    TaskUserVM = new List<TaskUserVM>();
                 }
             }
             catch (Exception ex)
@@ -161,28 +180,5 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 Console.WriteLine($"Error refreshing TaskUser list: {ex.Message}");
             }
         }
-
-
-        private void RemoveTaskFromList(int taskId)
-        {
-            try
-            {
-                var taskToRemove = TaskUserVM.FirstOrDefault(t => t.TaskId == taskId);
-                if (taskToRemove != null)
-                {
-                    TaskUserVM.Remove(taskToRemove);
-                    Console.WriteLine($"Task removed from TaskUserVM: {taskId}");
-                }
-                else
-                {
-                    Console.WriteLine($"Task not found in TaskUserVM: {taskId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error removing task from TaskUserVM: {ex.Message}");
-            }
-        }
-
     }
 }
