@@ -28,6 +28,8 @@ namespace ClientMilkTeamPage.Pages.Cart
 
         public List<CartItem> CartItems { get; private set; }
         public List<Material> Materials { get; private set; }
+
+        public List<UserVM> Shippers { get; set; }
         public bool IsAuthenticated { get; private set; }
         public bool IsCartEmpty => CartItems == null || CartItems.Count == 0;
         public async Task OnGetAsync()
@@ -54,6 +56,13 @@ namespace ClientMilkTeamPage.Pages.Cart
                         }
                     }
                 }
+                var shippersResponse = await _httpClient.GetAsync("https://localhost:7112/odata/User/Shippers");
+                if (shippersResponse.IsSuccessStatusCode)
+                {
+                    var shippersJson = await shippersResponse.Content.ReadAsStringAsync();
+                    Shippers = JsonSerializer.Deserialize<List<UserVM>>(shippersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+
 
                 var response = await _httpClient.GetAsync(_apiUrl);
                 response.EnsureSuccessStatusCode();

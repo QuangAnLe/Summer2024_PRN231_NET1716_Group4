@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
+using MilkTeaServices.Services;
 using MilkTeaStore.DTO.Create;
 
 namespace MilkTeaStore.Controllers.OrderController
@@ -12,11 +13,15 @@ namespace MilkTeaStore.Controllers.OrderController
     public class OrderController : ODataController
     {
         private readonly IOrderService _orderService;
+        private readonly ITaskUserServices _taskUserServices;
+        private readonly IUserServices _userServices;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService, IMapper mapper)
+        public OrderController(IOrderService orderService, ITaskUserServices taskUserServices, IUserServices userServices, IMapper mapper)
         {
             _orderService = orderService;
+            _taskUserServices = taskUserServices;
+            _userServices = userServices;
             _mapper = mapper;
         }
         [HttpGet("odata/Order")]
@@ -25,7 +30,7 @@ namespace MilkTeaStore.Controllers.OrderController
         {
             try
             {
-                var orders = _orderService.getList();
+                var orders = _orderService.getList().OrderByDescending(o => o.StartDate);
                 return Ok(orders.AsQueryable());
             }
             catch (Exception ex)
@@ -34,13 +39,14 @@ namespace MilkTeaStore.Controllers.OrderController
             }
         }
 
+
         [HttpGet("odata/OrderByUser/{id}")]
         [EnableQuery]
         public ActionResult<IQueryable<Order>> GetAllOrdersByUserID([FromRoute] int id)
         {
             try
             {
-                var orders = _orderService.getList();
+                var orders = _orderService.getList().Where(o => o.UserID == id).OrderByDescending(o => o.StartDate);
                 return Ok(orders.AsQueryable());
             }
             catch (Exception ex)
@@ -68,15 +74,37 @@ namespace MilkTeaStore.Controllers.OrderController
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("odata/Order")]
+        [HttpPost("odata/OrderWithShipper")]
         [EnableQuery]
-        public IActionResult PostOrder([FromBody] OrderDTO orderDTO)
+        public IActionResult PostOrderWithShipper([FromBody] OrderWithShipperDTO orderWithShipperDTO)
         {
             try
             {
-                var order = _mapper.Map<Order>(orderDTO);
-                Order newo = _orderService.add(order);
-                return Ok(newo);
+                // Create the order
+                var order = _mapper.Map<Order>(orderWithShipperDTO.Order);
+                order.Status = true;
+                Order newOrder = _orderService.add(order);
+
+                // Get the shipper
+                var shipper = _userServices.GetUserByID(orderWithShipperDTO.ShipperID);
+                if (shipper == null)
+                {
+                    return BadRequest("Invalid shipper ID");
+                }
+
+                // Create the TaskUser
+                var taskUser = new TaskUser
+                {
+                    OrderID = newOrder.OrderID,
+                    UserID = shipper.UserID,
+                    WorkName = shipper.FullName,
+                    WorkDescription = "Shipping",
+                    Status = true,
+                };
+
+                _taskUserServices.add(taskUser);
+
+                return Ok(new { OrderID = newOrder.OrderID });
             }
             catch (Exception ex)
             {
@@ -138,5 +166,11 @@ namespace MilkTeaStore.Controllers.OrderController
                 return BadRequest(ex.Message);
             }
         }
+    }
+
+    public class OrderWithShipperDTO
+    {
+        public OrderDTO Order { get; set; }
+        public int ShipperID { get; set; }
     }
 }

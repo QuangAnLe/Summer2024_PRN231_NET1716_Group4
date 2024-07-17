@@ -88,7 +88,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             return Redirect("/Cart/Index");
 
         }
-        public async Task<IActionResult> OnGetAsync(string content, string address1, string district, string ward)
+        public async Task<IActionResult> OnGetAsync(string content, string address, string district, string ward, int ShipperID)
         {
             var token = HttpContext.Request.Cookies["UserCookie"];
 
@@ -99,7 +99,7 @@ namespace ClientMilkTeamPage.Pages.Cart
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(token) as JwtSecurityToken;
             var userIdClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            string address = $"{address1}, {ward}, {district}".Trim(',', ' ');
+            string address1 = $"{address}, {ward}, {district}".Trim(',', ' ');
             List<CartItem> CartItems = _cartService.GetCart();
 
             // Validate tea and material quantities
@@ -123,15 +123,19 @@ namespace ClientMilkTeamPage.Pages.Cart
                 }
             }
 
-            OrderDTO orderDTO = new OrderDTO
+            var orderWithShipper = new OrderWithShipperDTO
             {
-                ShipAddress = address,
-                ReasonContent = content,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now,
-                Status = null,
-                TypeOrder = "Online",
-                UserID = int.Parse(userIdClaim)
+                Order = new OrderDTO
+                {
+                    ShipAddress = address1,
+                    ReasonContent = content,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now,
+                    Status = null,
+                    TypeOrder = "Online",
+                    UserID = int.Parse(userIdClaim)
+                },
+                ShipperID = ShipperID
             };
 
             var options = new JsonSerializerOptions
@@ -139,46 +143,69 @@ namespace ClientMilkTeamPage.Pages.Cart
                 PropertyNameCaseInsensitive = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
-            string strData = JsonSerializer.Serialize(orderDTO, options);
-            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync(ApiUrl, contentData);
-            if (response.IsSuccessStatusCode)
+
+            try
             {
-                string Data = await response.Content.ReadAsStringAsync();
-                Order reps = JsonSerializer.Deserialize<Order>(Data, options)!;
+                string strData = JsonSerializer.Serialize(orderWithShipper, options);
+                var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync("https://localhost:7112/odata/OrderWithShipper", contentData);
 
-                foreach (var item in CartItems)
+                if (response.IsSuccessStatusCode)
                 {
-                    OrderDetailDTO orderDetailDTO = new OrderDetailDTO
-                    {
-                        OrderID = reps.OrderID,
-                        Quantity = item.Quantity,
-                        TotalPrice = item.TotalPrice,
-                        CostsIncurred = "100d",
-                        TeaID = item.TeaID
-                    };
+                    string Data = await response.Content.ReadAsStringAsync();
+                    var responseObject = JsonSerializer.Deserialize<Dictionary<string, int>>(Data, options);
 
-                    // Update tea estimate
-                    await UpdateTeaEstimate(item.TeaID, item.Quantity);
-
-                    // Update material quantities
-                    foreach (var material in item.SelectedMaterials)
+                    if (responseObject != null && responseObject.ContainsKey("orderID"))
                     {
-                        await UpdateMaterialQuantity(material.MaterialID, item.Quantity);
+                        int orderId = responseObject["orderID"];
+
+                        // Process each cart item as order detail
+                        foreach (var item in CartItems)
+                        {
+                            OrderDetailDTO orderDetailDTO = new OrderDetailDTO
+                            {
+                                OrderID = orderId,
+                                Quantity = item.Quantity,
+                                TotalPrice = item.TotalPrice,
+                                CostsIncurred = "100d",
+                                TeaID = item.TeaID
+                            };
+
+                            // Update tea estimate
+                            await UpdateTeaEstimate(item.TeaID, item.Quantity);
+
+                            // Update material quantities
+                            foreach (var material in item.SelectedMaterials)
+                            {
+                                await UpdateMaterialQuantity(material.MaterialID, item.Quantity);
+                            }
+
+                            _cartService.RemoveFromCart(item.TeaID);
+                            string strData1 = JsonSerializer.Serialize(orderDetailDTO);
+                            var contentData1 = new StringContent(strData1, System.Text.Encoding.UTF8, "application/json");
+                            HttpResponseMessage response1 = await client.PostAsync(ApiUrlDetail, contentData1);
+                        }
+
+                        ViewData["Message"] = "Add Order successfully";
+                        return Redirect("/UserPage/MyOrder/OrderDetail?id=" + orderId);
                     }
-
-                    _cartService.RemoveFromCart(item.TeaID);
-                    string strData1 = JsonSerializer.Serialize(orderDetailDTO);
-                    var contentData1 = new StringContent(strData1, System.Text.Encoding.UTF8, "application/json");
-                    HttpResponseMessage response1 = await client.PostAsync(ApiUrlDetail, contentData1);
+                    else
+                    {
+                        ViewData["Message"] = "Failed to retrieve Order ID from response";
+                        return Redirect("/Cart/Index");
+                    }
                 }
-
-                ViewData["Message"] = "Add Order successfully";
-                return Redirect("/UserPage/MyOrder/OrderDetail?id=" + reps.OrderID);
+                else
+                {
+                    ViewData["Message"] = "Failed to add Order";
+                    return Redirect("/Cart/Index");
+                }
             }
-
-            ViewData["Message"] = "Fail";
-            return Redirect("/Cart/Index");
+            catch (Exception ex)
+            {
+                ViewData["Message"] = "Error: " + ex.Message;
+                return Redirect("/Cart/Index");
+            }
         }
 
         private async Task UpdateTeaEstimate(int teaId, int quantity)
@@ -247,5 +274,11 @@ namespace ClientMilkTeamPage.Pages.Cart
                 throw new Exception($"Failed to update material: {response.StatusCode}");
             }
         }
+    }
+
+    public class OrderWithShipperDTO
+    {
+        public OrderDTO Order { get; set; }
+        public int ShipperID { get; set; }
     }
 }

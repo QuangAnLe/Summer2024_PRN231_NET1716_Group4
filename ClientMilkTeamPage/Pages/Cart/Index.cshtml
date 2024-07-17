@@ -101,6 +101,14 @@
                 </div>
             }
 
+            <label for="shipper">Select Shipper:</label>
+            <select name="ShipperID" id="shipper" required>
+                @foreach (var shipper in Model.Shippers)
+                {
+                    <option value="@shipper.UserID">@shipper.FullName</option>
+                }
+            </select>
+
             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Note:</label>
             <input type="text" name="content" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;" />
 
@@ -157,10 +165,21 @@
         const input = document.getElementById(`materialQuantity-${uniqueId}`);
         const currentValue = parseInt(input.value);
         const newValue = currentValue + change;
-        if (newValue >= parseInt(input.min) && newValue <= parseInt(input.max)) {
-            input.value = newValue;
-            updateCart(uniqueId);
+        const minQuantity = parseInt(input.min);
+        const maxQuantity = parseInt(input.max);
+
+        if (newValue < minQuantity) {
+            alert(`Quantity cannot be less than ${minQuantity}.`);
+            return;
         }
+
+        if (newValue > maxQuantity) {
+            alert(`Maximum quantity allowed is ${maxQuantity}.`);
+            return;
+        }
+
+        input.value = newValue;
+        updateCart(uniqueId);
     }
 
     function updateCart(uniqueId) {
@@ -170,6 +189,12 @@
         const materialName = input.getAttribute('data-material-name');
         const materialPrice = parseFloat(input.getAttribute('data-material-price'));
         const quantity = parseInt(input.value);
+
+
+        if (quantity < 1) {
+            alert(`Quantity cannot be less than 1.`);
+            return;
+        }
 
         fetch('/api/Cart/UpdateMaterial', {
             method: 'POST',
@@ -196,15 +221,30 @@
         const currentValue = parseInt(input.value);
         const newValue = currentValue + change;
         const maxQuantity = parseInt(input.max);
-        if (newValue >= 1 && newValue <= maxQuantity) {
-            input.value = newValue;
-            updateTeaQuantity(teaId);
+
+        if (newValue < 1) {
+            alert(`Quantity cannot be less than 1.`);
+            return;
         }
+
+        if (newValue > maxQuantity) {
+            alert(`Maximum quantity allowed is ${maxQuantity}.`);
+            return;
+        }
+
+        input.value = newValue;
+        updateTeaQuantity(teaId);
     }
+
 
     function updateTeaQuantity(teaId) {
         const input = document.getElementById(`teaQuantity-${teaId}`);
         const quantity = parseInt(input.value);
+
+        if (quantity < 1) {
+            alert(`Quantity cannot be less than 1.`);
+            return;
+        }
 
         fetch('/api/Cart/UpdateTeaQuantity', {
             method: 'POST',

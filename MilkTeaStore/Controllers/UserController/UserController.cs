@@ -22,6 +22,14 @@ namespace MilkTeaStore.Controllers.UserController
             _mapper = mapper;
         }
 
+        [HttpGet("odata/User/Shippers")]
+        [EnableQuery]
+        public ActionResult<IQueryable<UserVM>> GetShippers()
+        {
+            var shippers = _userServices.GetAllUser().Where(u => u.RoleID == 2); 
+            return Ok(_mapper.Map<IEnumerable<UserVM>>(shippers));
+        }
+
         [EnableQuery]
         [HttpGet]
         public ActionResult<IQueryable<User>> Get()
