@@ -20,6 +20,11 @@ namespace MilkTeaServices.Services
 
         public void delete(int id) => _taskUserRepo.delete(id);
 
+        public TaskUser GetByOrderID(int orderId)
+        {
+            return _taskUserRepo.GetByOrderID(orderId);
+        }
+
         public void update(TaskUser taskUser) => _taskUserRepo.update(taskUser);
 
         public void add(TaskUser taskUser) => _taskUserRepo.add(taskUser);

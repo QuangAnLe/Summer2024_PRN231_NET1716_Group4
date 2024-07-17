@@ -88,9 +88,10 @@ namespace ClientMilkTeamPage.Pages.Cart
             return Redirect("/Cart/Index");
 
         }
-        public async Task<IActionResult> OnGetAsync(string content, string address, string district, string ward, int ShipperID)
+        public async Task<IActionResult> OnGetAsync(string content, string address, string district, string ward)
         {
             var token = HttpContext.Request.Cookies["UserCookie"];
+            int ShipperID = 0;
 
             if (string.IsNullOrEmpty(token))
             {
@@ -121,6 +122,14 @@ namespace ClientMilkTeamPage.Pages.Cart
                         return RedirectToPage("/Cart/Index");
                     }
                 }
+            }
+
+            var shippersResponse = await client.GetAsync("https://localhost:7112/odata/User/Shippers");
+            if (shippersResponse.IsSuccessStatusCode)
+            {
+                var shippersJson = await shippersResponse.Content.ReadAsStringAsync();
+                var shippers = JsonSerializer.Deserialize<List<UserVM>>(shippersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ShipperID = shippers.FirstOrDefault()?.UserID ?? 0;
             }
 
             var orderWithShipper = new OrderWithShipperDTO

@@ -125,5 +125,13 @@ namespace MilkTeaDAO.DAOs
                 throw new Exception(ex.Message);
             }
         }
-    }
+
+		public TaskUser GetByOrderID(int orderId)
+		{
+			return _context.TaskUsers
+				.Include(tu => tu.Order)
+				.Include(tu => tu.User)
+				.FirstOrDefault(tu => tu.OrderID == orderId);
+		}
+	}
 }

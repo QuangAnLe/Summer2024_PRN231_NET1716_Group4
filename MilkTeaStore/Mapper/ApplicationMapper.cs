@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MilkTeaBusinessObject.BusinessObject;
+using MilkTeaStore.Controllers.OrderController;
 using MilkTeaStore.DTO.Create;
 using MilkTeaStore.DTO.Update;
 using MilkTeaStore.ViewModels;
@@ -50,6 +51,10 @@ namespace MilkTeaStore.Mapper
             CreateMap<DistrictCreateDTO, District>().ReverseMap();
             CreateMap<DistrictUpdateDTO, District>().ReverseMap();
             CreateMap<RoleVM, Role>().ReverseMap();
-        }
+			CreateMap<TaskUser, TaskUserDTO>().ReverseMap();
+			CreateMap<OrderWithTaskUserDTO, OrderWithTaskUserDTO>().ReverseMap();
+			CreateMap<OrderWithShipperDTO, OrderWithShipperDTO>().ReverseMap();
+			CreateMap<Order, OrderWithTaskUserDTO>().ReverseMap();
+		}
     }
 }

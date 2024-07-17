@@ -59,6 +59,7 @@ namespace MilkTeaDAO.DAOs
             try
             {
                 order.OrderID = 0;
+                order.Status = null;
                 _context.Orders.Add(order);
                 _context.SaveChanges();
                 return _context.Orders.Take(1).OrderByDescending(o => o.StartDate).FirstOrDefault();

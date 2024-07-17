@@ -1,4 +1,5 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
@@ -11,7 +12,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.OrderPage
     {
         private readonly HttpClient client = null!;
         private string ApiUrl = "";
-
+        public List<UserVM> Shippers { get; set; }
         public IndexModel()
         {
 
@@ -21,20 +22,24 @@ namespace ClientMilkTeamPage.Pages.AdminPage.OrderPage
             ApiUrl = "https://localhost:7112/odata/Order";
         }
 
-        public IList<Order> Orders { get; set; } = default!;
+        public IList<OrderWithTaskUserDTO> OrdersWithTaskUsers { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync()
         {
             HttpResponseMessage response = await client.GetAsync(ApiUrl);
             string strData = await response.Content.ReadAsStringAsync();
-
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            List<Order> orders = JsonSerializer.Deserialize<List<Order>>(strData, options)!;
+            OrdersWithTaskUsers = JsonSerializer.Deserialize<List<OrderWithTaskUserDTO>>(strData, options)!;
 
-            Orders = orders;
+            var shippersResponse = await client.GetAsync("https://localhost:7112/odata/User/Shippers");
+            if (shippersResponse.IsSuccessStatusCode)
+            {
+                var shippersJson = await shippersResponse.Content.ReadAsStringAsync();
+                Shippers = JsonSerializer.Deserialize<List<UserVM>>(shippersJson, options);
+            }
 
             return Page();
         }
@@ -50,13 +55,13 @@ namespace ClientMilkTeamPage.Pages.AdminPage.OrderPage
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var order = JsonSerializer.Deserialize<Order>(strData, options);
+                var order = JsonSerializer.Deserialize<OrderWithTaskUserDTO>(strData, options);
 
                 if (order == null)
                 {
                     return NotFound();
                 }
-                order.Status = status;
+                order.Order.Status = status;
 
                 var content = new StringContent(JsonSerializer.Serialize(order), Encoding.UTF8, "application/json");
                 HttpResponseMessage putResponse = await client.PutAsync($"{ApiUrl}/{id}", content);
@@ -75,7 +80,35 @@ namespace ClientMilkTeamPage.Pages.AdminPage.OrderPage
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        public async Task<IActionResult> OnPostUpdateShipperAsync(int orderId, int shipperId)
+        {
+            var response = await client.PutAsync($"{ApiUrl}/{orderId}/UpdateShipper?shipperId={shipperId}", null);
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToPage();
+            }
+            else
+            {
+                // Handle error
+                return Page();
+            }
+        }
 
+    }
 
+    public class OrderWithTaskUserDTO
+    {
+        public OrderDTO Order { get; set; }
+        public TaskUserDTO TaskUser { get; set; }
+    }
+
+    public class TaskUserDTO
+    {
+        public int TaskID { get; set; }
+        public int OrderID { get; set; }
+        public int UserID { get; set; }
+        public string WorkName { get; set; }
+        public string WorkDescription { get; set; }
+        public bool Status { get; set; }
     }
 }

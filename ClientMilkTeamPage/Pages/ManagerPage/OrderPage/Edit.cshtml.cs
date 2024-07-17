@@ -1,4 +1,5 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,8 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
         private readonly HttpClient client;
         private readonly string OrderApiUrl;
         private readonly string UserApiUrl;
+
+        public List<UserVM> Shippers { get; set; }
 
         [BindProperty]
         public OrderEditViewModel OrderVM { get; set; }
@@ -52,6 +55,12 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
             };
 
             await LoadUserList();
+            var shippersResponse = await client.GetAsync("https://localhost:7112/odata/User/Shippers");
+            if (shippersResponse.IsSuccessStatusCode)
+            {
+                var shippersJson = await shippersResponse.Content.ReadAsStringAsync();
+                Shippers = JsonSerializer.Deserialize<List<UserVM>>(shippersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
             return Page();
         }
 
@@ -146,6 +155,7 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
         [Required(ErrorMessage = "User is required")]
         public int UserID { get; set; }
 
-       
+        [Required(ErrorMessage = "Shipper is required")]
+        public int ShipperID { get; set; }
     }
 }

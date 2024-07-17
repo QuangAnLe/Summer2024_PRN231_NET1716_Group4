@@ -11,6 +11,6 @@ namespace MilkTeaRepository.IRepo
         void update(TaskUser taskUser);
         void add(TaskUser taskUser);
         void UpdateTaskStatus(int taskId, bool status);
-        
+        TaskUser GetByOrderID(int orderId);
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page
-@model ClientMilkTeamPage.Pages.ManagerPage.OrderPage.EditModel
+@model ClientMilkTeamPage.Pages.AdminPage.OrderPage.EditModel
 @{
     ViewData["Title"] = "Edit Order";
 }
@@ -34,7 +34,7 @@
             <div class="form-group">
                 <label asp-for="OrderVM.Status" class="control-label"></label>
                 <select asp-for="OrderVM.Status" class="form-control">
-                   
+                    <option value="">Processing</option>
                     <option value="true">Success</option>
                     <option value="false">Failed</option>
                 </select>
@@ -49,6 +49,11 @@
                 <label asp-for="OrderVM.ReasonContent" class="control-label"></label>
                 <textarea asp-for="OrderVM.ReasonContent" class="form-control"></textarea>
                 <span asp-validation-for="OrderVM.ReasonContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrderVM.ShipperID" class="control-label">Shipper</label>
+                <select asp-for="OrderVM.ShipperID" class="form-control" asp-items="Model.ShipperList"></select>
+                <span asp-validation-for="OrderVM.ShipperID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

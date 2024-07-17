@@ -26,12 +26,44 @@ namespace MilkTeaStore.Controllers.OrderController
         }
         [HttpGet("odata/Order")]
         [EnableQuery]
-        public ActionResult<IQueryable<Order>> Get()
+        public ActionResult<IQueryable<OrderWithTaskUserDTO>> Get()
         {
             try
             {
                 var orders = _orderService.getList().OrderByDescending(o => o.StartDate);
-                return Ok(orders.AsQueryable());
+                var ordersWithTaskUsers = orders.Select(o => new OrderWithTaskUserDTO
+                {
+                    Order = _mapper.Map<OrderDTO>(o),
+                    TaskUser = _mapper.Map<TaskUserDTO>(_taskUserServices.GetByOrderID(o.OrderID))
+                });
+                return Ok(ordersWithTaskUsers.AsQueryable());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("odata/Order/{id}")]
+        [EnableQuery]
+        public IActionResult GetByID([FromRoute] int id)
+        {
+            try
+            {
+                var order = _orderService.get(id);
+                if (order != null)
+                {
+                    var orderDTO = _mapper.Map<OrderDTO>(order);
+                    var taskUser = _taskUserServices.GetByOrderID(id);
+                    var taskUserDTO = _mapper.Map<TaskUserDTO>(taskUser);
+                    var orderWithTaskUser = new OrderWithTaskUserDTO
+                    {
+                        Order = orderDTO,
+                        TaskUser = taskUserDTO
+                    };
+                    return Ok(orderWithTaskUser);
+                }
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -55,25 +87,7 @@ namespace MilkTeaStore.Controllers.OrderController
             }
         }
 
-        [HttpGet("odata/Order/{id}")]
-        [EnableQuery]
-        public IActionResult GetByID([FromRoute] int id)
-        {
-            try
-            {
-                var order = _orderService.get(id);
-                if (order != null)
-                {
-                    var orderDTO = _mapper.Map<OrderDTO>(order);
-                    return Ok(orderDTO);
-                }
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+       
         [HttpPost("odata/OrderWithShipper")]
         [EnableQuery]
         public IActionResult PostOrderWithShipper([FromBody] OrderWithShipperDTO orderWithShipperDTO)
@@ -82,7 +96,6 @@ namespace MilkTeaStore.Controllers.OrderController
             {
                 // Create the order
                 var order = _mapper.Map<Order>(orderWithShipperDTO.Order);
-                order.Status = true;
                 Order newOrder = _orderService.add(order);
 
                 // Get the shipper
@@ -112,27 +125,47 @@ namespace MilkTeaStore.Controllers.OrderController
             }
         }
 
-        [HttpPut("odata/Order/{id}")]
-        [EnableQuery]
-        public IActionResult Put([FromBody] OrderDTO orderDTO, [FromRoute] int id)
-        {
-            try
-            {
-                if (orderDTO.OrderID != id)
-                {
-                    return NotFound();
-                }
-                var order = _mapper.Map<Order>(orderDTO);
-                _orderService.update(order);
-                return Ok("Update Successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+		[HttpPut("odata/Order/{id}")]
+		[EnableQuery]
+		public IActionResult Put([FromBody] OrderWithTaskUserDTO orderWithTaskUserDTO, [FromRoute] int id)
+		{
+			try
+			{
+				if (orderWithTaskUserDTO.Order.OrderID != id)
+				{
+					return NotFound();
+				}
 
-        [HttpDelete("odata/Order/{id}")]
+				// Update the order
+				var order = _mapper.Map<Order>(orderWithTaskUserDTO.Order);
+				_orderService.update(order);
+
+				// Update or create the TaskUser
+				var existingTaskUser = _taskUserServices.GetByOrderID(id);
+				if (existingTaskUser == null)
+				{
+					// Create new TaskUser
+					var newTaskUser = _mapper.Map<TaskUser>(orderWithTaskUserDTO.TaskUser);
+					_taskUserServices.add(newTaskUser);
+				}
+				else
+				{
+					var taskId = existingTaskUser.TaskId;
+					_mapper.Map(orderWithTaskUserDTO.TaskUser, existingTaskUser);
+					existingTaskUser.TaskId = taskId; // Gán lại TaskId sau khi map
+
+					_taskUserServices.update(existingTaskUser);
+				}
+
+				return Ok("Update Successfully");
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpDelete("odata/Order/{id}")]
         [EnableQuery]
         public IActionResult Delete(int id)
         {
@@ -166,11 +199,74 @@ namespace MilkTeaStore.Controllers.OrderController
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("odata/Order/{id}/UpdateShipper")]
+        [EnableQuery]
+        public IActionResult UpdateShipper([FromRoute] int id, [FromQuery] int shipperId)
+        {
+            try
+            {
+                var order = _orderService.get(id);
+                if (order == null)
+                {
+                    return NotFound("Order not found");
+                }
+
+                var shipper = _userServices.GetUserByID(shipperId);
+                if (shipper == null)
+                {
+                    return BadRequest("Invalid shipper ID");
+                }
+
+                // Update or create the TaskUser entry
+                var taskUser = _taskUserServices.GetByOrderID(id);
+                if (taskUser == null)
+                {
+                    taskUser = new TaskUser
+                    {
+                        OrderID = id,
+                        UserID = shipperId,
+                        WorkName = shipper.FullName,
+                        WorkDescription = "Shipping",
+                        Status = true,
+                    };
+                    _taskUserServices.add(taskUser);
+                }
+                else
+                {
+                    taskUser.UserID = shipperId;
+                    taskUser.WorkName = shipper.FullName;
+                    _taskUserServices.update(taskUser);
+                }
+
+                return Ok("Shipper updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 
     public class OrderWithShipperDTO
     {
         public OrderDTO Order { get; set; }
         public int ShipperID { get; set; }
+    }
+
+    public class OrderWithTaskUserDTO
+    {
+        public OrderDTO Order { get; set; }
+        public TaskUserDTO TaskUser { get; set; }
+    }
+
+    public class TaskUserDTO
+    {
+        public int TaskID { get; set; }
+        public int OrderID { get; set; }
+        public int UserID { get; set; }
+        public string WorkName { get; set; }
+        public string WorkDescription { get; set; }
+        public bool Status { get; set; }
     }
 }

@@ -39,6 +39,9 @@ namespace MilkTeaRepository.Repo
             dao.UpdateTaskStatus(taskId, status);
         }
 
-        
+        public TaskUser GetByOrderID(int orderId)
+        {
+            return dao.GetByOrderID(orderId);
+        }
     }
 }
