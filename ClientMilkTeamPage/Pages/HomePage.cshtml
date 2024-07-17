@@ -272,21 +272,36 @@
 	<script src="js/tiny-slider.js"></script>
 	<script src="js/custom.js"></script>
 	<script>
-		function addToCart(teaID, quantity) {
-			fetch('/api/Cart/Add', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ teaID: teaID, quantity: quantity })
-			})
-				.then(response => response.json())
-				.then(data => {
-					alert(data.message);
-				})
-				.catch((error) => {
-					console.error('Error:', error);
+		async function addToCart(teaId, quantity) {
+			try {
+				const response = await fetch('/api/cart/Add', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ TeaID: teaId, Quantity: quantity }),
 				});
+
+				if (response.status === 401) {
+					// Người dùng chưa đăng nhập, điều hướng đến trang đăng nhập
+					window.location.href = '/Login';
+					return;
+				}
+
+				const data = await response.json();
+
+				if (response.ok) {
+					console.log(data.message); // Hiển thị thông báo thành công
+				} else if (response.status === 404) {
+					console.error('Error: Tea not found');
+				} else if (response.status === 400) {
+					console.error('Error:', data);
+				} else {
+					console.error('An unexpected error occurred');
+				}
+			} catch (error) {
+				console.error('Error:', error);
+			}
 		}
 	</script>
 </body>
