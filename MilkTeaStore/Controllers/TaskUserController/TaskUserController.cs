@@ -148,6 +148,7 @@ namespace MilkTeaStore.Controllers
 
 
         [HttpPatch("{id}")]
+        [EnableQuery]
         public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
         {
             try
@@ -177,8 +178,7 @@ namespace MilkTeaStore.Controllers
                     return NotFound();
                 }
 
-                taskUser.Status = taskUserUpdateStatusDTO.Status ?? false; // Handle nullable bool
-
+                taskUser.Status = taskUserUpdateStatusDTO.Status ?? false;
                 if (taskUserUpdateStatusDTO.Status.HasValue && !taskUserUpdateStatusDTO.Status.Value)
                 {
                     taskUser.WorkDescription = taskUserUpdateStatusDTO.FailureReason;
@@ -187,7 +187,6 @@ namespace MilkTeaStore.Controllers
                 {
                     taskUser.WorkDescription = null;
                 }
-
                 await _taskUserServices.Update(taskUser);
 
                 if (taskUser.OrderID > 0)

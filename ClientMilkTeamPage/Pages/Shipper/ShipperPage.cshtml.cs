@@ -93,9 +93,14 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 var taskUpdateStatusDTO = new TaskUserUpdateStatusDTO
                 {
                     TaskId = taskId,
-                    Status = status,
-                    FailureReason = failureReason // Include failure reason in DTO
+                    Status = status
                 };
+
+                // Include failureReason only if status is false
+                if (!status)
+                {
+                    taskUpdateStatusDTO.FailureReason = failureReason;
+                }
 
                 string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}";
                 Console.WriteLine($"API URL: {apiUrl}"); // Debug API URL
@@ -121,7 +126,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
             }
         }
 
-        private async Task RefreshTaskList()
+       private async Task RefreshTaskList()
         {
             try
             {
@@ -150,6 +155,20 @@ namespace ClientMilkTeamPage.Pages.Shipper
                             if (order != null)
                             {
                                 allOrders[task.OrderID] = order;
+                            }
+                        }
+
+                        // Fetch UserName based on UserID
+                        string userApiUrl = $"https://localhost:7112/odata/User/{task.UserID}";
+                        HttpResponseMessage userResponse = await client.GetAsync(userApiUrl);
+
+                        if (userResponse.IsSuccessStatusCode)
+                        {
+                            string userData = await userResponse.Content.ReadAsStringAsync();
+                            var user = JsonSerializer.Deserialize<UserVM>(userData, options);
+                            if (user != null)
+                            {
+                                task.UserName = user.UserName; // Populate UserName
                             }
                         }
                     }
