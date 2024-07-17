@@ -145,8 +145,9 @@ namespace MilkTeaStore.Controllers
             }
         }
 
+
+
         [HttpPatch("{id}")]
-        [EnableQuery]
         public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
         {
             try
@@ -210,6 +211,8 @@ namespace MilkTeaStore.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
 
 
     }

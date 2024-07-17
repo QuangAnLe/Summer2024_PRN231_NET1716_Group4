@@ -25,7 +25,7 @@ namespace MilkTeaRepository.Repo
 
         public TaskUser GetByOrderID(int orderId)
         {
-            return dao.GetByOrderID(orderId);
+            return _dao.GetByOrderID(orderId);
         }
         public Task UpdateStatusOfTask(int taskId, bool status) =>
             _dao.UpdateStatusOfTaskAsync(taskId, status);

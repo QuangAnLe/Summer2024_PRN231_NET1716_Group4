@@ -146,7 +146,7 @@ namespace MilkTeaStore.Controllers.OrderController
 				{
 					// Create new TaskUser
 					var newTaskUser = _mapper.Map<TaskUser>(orderWithTaskUserDTO.TaskUser);
-					_taskUserServices.add(newTaskUser);
+					_taskUserServices.Add(newTaskUser);
 				}
 				else
 				{
@@ -154,7 +154,7 @@ namespace MilkTeaStore.Controllers.OrderController
 					_mapper.Map(orderWithTaskUserDTO.TaskUser, existingTaskUser);
 					existingTaskUser.TaskId = taskId; // Gán lại TaskId sau khi map
 
-					_taskUserServices.update(existingTaskUser);
+					_taskUserServices.Update(existingTaskUser);
 				}
 
 				return Ok("Update Successfully");
@@ -230,13 +230,13 @@ namespace MilkTeaStore.Controllers.OrderController
                         WorkDescription = "Shipping",
                         Status = true,
                     };
-                    _taskUserServices.add(taskUser);
+                    _taskUserServices.Add(taskUser);
                 }
                 else
                 {
                     taskUser.UserID = shipperId;
                     taskUser.WorkName = shipper.FullName;
-                    _taskUserServices.update(taskUser);
+                    _taskUserServices.Update(taskUser);
                 }
 
                 return Ok("Shipper updated successfully");
