@@ -101,8 +101,8 @@
                 </div>
             }
 
-            <label for="shipper">Select Shipper:</label>
-            <select name="ShipperID" id="shipper" required>
+            <label for="shipper" style="display: none">Select Shipper:</label >
+            <select name="ShipperID" id="shipper" required style="display: none">
                 @foreach (var shipper in Model.Shippers)
                 {
                     <option value="@shipper.UserID">@shipper.FullName</option>
