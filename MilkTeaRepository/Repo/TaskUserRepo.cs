@@ -2,46 +2,32 @@
 using MilkTeaDAO.DAOs;
 using MilkTeaRepository.IRepo;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MilkTeaRepository.Repo
 {
     public class TaskUserRepo : ITaskUserRepo
     {
-        TaskUserDAO dao = new TaskUserDAO();
+        TaskUserDAO _dao = new TaskUserDAO();
 
-        public void add(TaskUser taskUser)
-        {
-            dao.Add(taskUser);
-        }
+        public Task<List<TaskUser>> GetList() => _dao.GetListAsync();
 
-        public void delete(int id)
-        {
-            dao.Delete(id);
-        }
+        public Task<TaskUser> Get(int id) => _dao.GetAsync(id);
 
-        public TaskUser get(int id)
-        {
-            return dao.Get(id);
-        }
+        public Task Add(TaskUser taskUser) => _dao.AddAsync(taskUser);
 
-        public List<TaskUser> getList()
-        {
-            return dao.GetList();
-        }
+        public Task Update(TaskUser taskUser) => _dao.UpdateAsync(taskUser);
 
-        public void update(TaskUser taskUser)
-        {
-            dao.Update(taskUser);
-        }
+        public Task Delete(int id) => _dao.DeleteAsync(id);
 
-        public void UpdateTaskStatus(int taskId, bool status)
-        {
-            dao.UpdateTaskStatus(taskId, status);
-        }
+        public Task UpdateTaskStatus(int taskId, bool status, string failureReason) =>
+            _dao.UpdateTaskStatusAsync(taskId, status, failureReason);
 
         public TaskUser GetByOrderID(int orderId)
         {
             return dao.GetByOrderID(orderId);
         }
+        public Task UpdateStatusOfTask(int taskId, bool status) =>
+            _dao.UpdateStatusOfTaskAsync(taskId, status);
     }
 }

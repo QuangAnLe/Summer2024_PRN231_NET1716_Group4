@@ -115,7 +115,7 @@ namespace MilkTeaStore.Controllers.OrderController
                     Status = true,
                 };
 
-                _taskUserServices.add(taskUser);
+                _taskUserServices.Add(taskUser);
 
                 return Ok(new { OrderID = newOrder.OrderID });
             }

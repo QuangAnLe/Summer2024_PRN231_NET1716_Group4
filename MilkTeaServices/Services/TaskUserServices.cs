@@ -2,6 +2,7 @@
 using MilkTeaRepository.IRepo;
 using MilkTeaServices.IServices;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MilkTeaServices.Services
 {
@@ -14,21 +15,22 @@ namespace MilkTeaServices.Services
             _taskUserRepo = taskUserRepo;
         }
 
-        public List<TaskUser> getList() => _taskUserRepo.getList();
+        public Task<List<TaskUser>> GetList() => _taskUserRepo.GetList();
 
-        public TaskUser get(int id) => _taskUserRepo.get(id);
+        public Task<TaskUser> Get(int id) => _taskUserRepo.Get(id);
 
-        public void delete(int id) => _taskUserRepo.delete(id);
+        public Task Add(TaskUser taskUser) => _taskUserRepo.Add(taskUser);
 
         public TaskUser GetByOrderID(int orderId)
         {
             return _taskUserRepo.GetByOrderID(orderId);
         }
+        public Task Update(TaskUser taskUser) => _taskUserRepo.Update(taskUser);
 
-        public void update(TaskUser taskUser) => _taskUserRepo.update(taskUser);
+        public Task Delete(int id) => _taskUserRepo.Delete(id);
 
-        public void add(TaskUser taskUser) => _taskUserRepo.add(taskUser);
+        public Task UpdateTaskStatus(int taskId, bool status, string failureReason) => _taskUserRepo.UpdateTaskStatus(taskId, status, failureReason);
 
-        public void UpdateTaskStatus(int taskId, bool status) => _taskUserRepo.UpdateTaskStatus(taskId, status);
+        public Task UpdateStatusOfTask(int taskId, bool status) => _taskUserRepo.UpdateStatusOfTask(taskId, status);
     }
 }

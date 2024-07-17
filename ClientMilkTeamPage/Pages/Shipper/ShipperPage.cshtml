@@ -145,6 +145,9 @@
                                 <div>
                                     <strong>End Date:</strong> @order.EndDate.ToString("yyyy-MM-dd")
                                 </div>
+                                <div>
+                                     <strong>Ship Address:</strong> @order.ShipAddress
+                                </div>
                             }
                         </td>
                         <td>
@@ -166,7 +169,8 @@
                 <div class="modal-content">
                     <h2>Enter Reason for Failure</h2>
                     <form method="post" asp-page-handler="SubmitFailureReason">
-                        <textarea name="FailureReason" required></textarea>
+                        <input type="hidden" asp-for="TaskId" value="@Model.TaskId" />
+                        <textarea asp-for="FailureReason" required></textarea>
                         <button type="submit">Submit</button>
                     </form>
                 </div>

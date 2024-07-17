@@ -13,5 +13,6 @@
         public string RoleName { get; set; }
         public string DistrictName { get; set; }
         public string WardName { get; set; }
+        
     }
 }

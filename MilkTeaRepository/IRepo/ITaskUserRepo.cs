@@ -1,5 +1,6 @@
 ﻿using MilkTeaBusinessObject.BusinessObject;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MilkTeaRepository.IRepo
 {
@@ -11,6 +12,7 @@ namespace MilkTeaRepository.IRepo
         void update(TaskUser taskUser);
         void add(TaskUser taskUser);
         void UpdateTaskStatus(int taskId, bool status);
+        Task UpdateStatusOfTask(int taskId, bool status);
         TaskUser GetByOrderID(int orderId);
     }
 }

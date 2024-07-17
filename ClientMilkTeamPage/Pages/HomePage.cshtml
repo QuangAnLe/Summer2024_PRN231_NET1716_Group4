@@ -115,7 +115,7 @@
 						@foreach (var item in Model.Tea)
 						{
 							<div class="col-12 col-md-6 col-lg-4 mb-4">
-								<a class="product-item" href="cart.html">
+								<a class="product-item" asp-page="/DetailsTea" asp-route-id="@item.TeaID">
 									<img src="@item.Image" class="img-fluid product-thumbnail">
 									<h3 class="product-title">@item.TeaName</h3>
 									<strong class="product-price">@item.Price</strong>

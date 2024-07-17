@@ -3,6 +3,7 @@ using MilkTeaBusinessObject.BusinessObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MilkTeaDAO.DAOs
 {
@@ -15,56 +16,53 @@ namespace MilkTeaDAO.DAOs
             _context = new MilkTeaDeliveryDBContext();
         }
 
-        public List<TaskUser> GetList()
+        public async Task<List<TaskUser>> GetListAsync()
         {
             try
             {
-                return _context.TaskUsers.Include(t => t.Order).Include(t => t.User)
-                        .ToList();
+                return await _context.TaskUsers.Include(t => t.Order).Include(t => t.User).ToListAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error retrieving TaskUser list.", ex);
             }
         }
 
-        public TaskUser Get(int id)
+        public async Task<TaskUser> GetAsync(int id)
         {
             try
             {
-                var taskUser = _context.TaskUsers.Include(t => t.Order).Include(t => t.User)
-                                           .SingleOrDefault(t => t.TaskId == id);
-                return taskUser;
+                return await _context.TaskUsers.Include(t => t.Order).Include(t => t.User)
+                                              .SingleOrDefaultAsync(t => t.TaskId == id);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception($"Error retrieving TaskUser with ID {id}.", ex);
             }
         }
 
-        public void Add(TaskUser taskUser)
+        public async Task AddAsync(TaskUser taskUser)
         {
             try
             {
-                taskUser.TaskId = 0;
-                _context.TaskUsers.Add(taskUser);
-                _context.SaveChanges();
+                await _context.TaskUsers.AddAsync(taskUser);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error adding TaskUser.", ex);
             }
         }
 
-        public void Update(TaskUser taskUser)
+        public async Task UpdateAsync(TaskUser taskUser)
         {
             try
             {
-                var existingTask = _context.TaskUsers.SingleOrDefault(t => t.TaskId == taskUser.TaskId);
+                var existingTask = await _context.TaskUsers.FindAsync(taskUser.TaskId);
                 if (existingTask != null)
                 {
                     _context.Entry(existingTask).CurrentValues.SetValues(taskUser);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -73,19 +71,19 @@ namespace MilkTeaDAO.DAOs
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error updating TaskUser.", ex);
             }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
             try
             {
-                var taskUser = _context.TaskUsers.SingleOrDefault(t => t.TaskId == id);
+                var taskUser = await _context.TaskUsers.FindAsync(id);
                 if (taskUser != null)
                 {
                     _context.TaskUsers.Remove(taskUser);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -94,26 +92,35 @@ namespace MilkTeaDAO.DAOs
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error deleting TaskUser.", ex);
             }
         }
 
-        public void UpdateTaskStatus(int taskId, bool status)
+        public async Task UpdateTaskStatusAsync(int taskId, bool status, string failureReason)
         {
             try
             {
-                var existingTask = _context.TaskUsers.Include(t => t.Order).SingleOrDefault(t => t.TaskId == taskId);
+                var existingTask = await _context.TaskUsers.Include(t => t.Order).SingleOrDefaultAsync(t => t.TaskId == taskId);
                 if (existingTask != null)
                 {
                     existingTask.Status = status;
 
+                    if (!status)
+                    {
+                        existingTask.WorkDescription = failureReason; // Update work description with failure reason
+                    }
+                    else
+                    {
+                        existingTask.WorkDescription = null; // Clear work description if status is true
+                    }
+
                     // Update the associated order's status
                     if (existingTask.Order != null)
                     {
-                        existingTask.Order.Status = status; // Assuming Order has a Status property
+                        existingTask.Order.Status = status; // Update Order status based on TaskUser status
                     }
 
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -122,7 +129,28 @@ namespace MilkTeaDAO.DAOs
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error updating TaskUser status.", ex);
+            }
+        }
+
+        public async Task UpdateStatusOfTaskAsync(int taskId, bool status)
+        {
+            try
+            {
+                var existingTask = await _context.TaskUsers.FindAsync(taskId);
+                if (existingTask != null)
+                {
+                    existingTask.Status = status;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new Exception("Task not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error updating TaskUser status.", ex);
             }
         }
 
