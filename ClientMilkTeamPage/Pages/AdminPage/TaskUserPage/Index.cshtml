@@ -114,7 +114,7 @@
 
         <p>
             <a asp-page="Create" class="btn btn-primary">Create New</a>
-           
+
             <button class="btn btn-primary" onclick="window.location.href='/Logout'">
                 <span>Logout</span>
                 <ion-icon name="log-in-outline"></ion-icon>
@@ -148,7 +148,12 @@
                             <span class="@statusClass">@status</span>
                         </td>
                         <td>
-                            <a asp-page="./Edit" asp-route-id="@item.TaskId" class="btn btn-sm btn-secondary">Edit</a>
+                            <form method="post" asp-page-handler="UpdateStatus" asp-route-id="@item.TaskId" asp-route-status="true" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">Success</button>
+                            </form>
+                            <form method="post" asp-page-handler="UpdateStatus" asp-route-id="@item.TaskId" asp-route-status="false" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Failed</button>
+                            </form>
                             <a asp-page="./Details" asp-route-id="@item.TaskId" class="btn btn-sm btn-info">Details</a>
                         </td>
                     </tr>

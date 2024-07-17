@@ -1,5 +1,3 @@
-using ClientMilkTeamPage.DTO;
-using ClientMilkTeamPage.DTO.CommentDTO;
 using ClientMilkTeamPage.DTO.TaskUserDTO;
 using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -49,24 +47,15 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
         public async Task<IActionResult> OnPostSubmitFailureReasonAsync()
         {
-            var commentCreateDTO = new CommentCreateDTO
+            try
             {
-                Content = FailureReason,
-                CommentDate = DateTime.UtcNow,
-                Rating = 0, // Adjust as necessary
-                TeaID = 0, // Adjust as necessary
-                UserID = 0 // Adjust as necessary
-            };
-
-            string apiUrl = "https://localhost:7112/odata/Comment";
-            string strData = JsonSerializer.Serialize(commentCreateDTO);
-            var contentData = new StringContent(strData, Encoding.UTF8, "application/json");
-            HttpResponseMessage commentResponse = await client.PostAsync(apiUrl, contentData);
-
-            if (commentResponse.IsSuccessStatusCode)
+                Console.WriteLine($"Submitting FailureReason for TaskId: {TaskId}");
+                await UpdateTaskStatusAsync(TaskId, false, FailureReason);
+                await RefreshTaskList();
+            }
+            catch (Exception ex)
             {
-                await UpdateTaskStatusAsync(TaskId, false);
-                await RefreshTaskList(); // Refresh the list after updating status
+                Console.WriteLine($"Error updating failure reason and status: {ex.Message}");
             }
 
             return RedirectToPage("/UserPage/MyOrder/OrderList");
@@ -74,6 +63,8 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
         public async Task<IActionResult> OnPostUpdateStatusAsync()
         {
+            Console.WriteLine($"Updating Status for TaskId: {TaskId} with Status: {Status}");
+
             // Check if Status is explicitly set to false
             if (Status.HasValue && Status.Value == false)
             {
@@ -84,10 +75,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
             // If Status is true, proceed with update
             if (Status.HasValue && Status.Value == true)
             {
-                var taskId = TaskId;
-                var status = Status.Value;
-                await UpdateTaskStatusAsync(taskId, status);
-
+                await UpdateTaskStatusAsync(TaskId, Status.Value, null); // Null for failure reason when status is not failed
                 await RefreshTaskList();
                 return RedirectToPage("/UserPage/MyOrder/OrderList");
             }
@@ -96,17 +84,22 @@ namespace ClientMilkTeamPage.Pages.Shipper
             return Page();
         }
 
-        private async Task UpdateTaskStatusAsync(int taskId, bool status)
+        private async Task UpdateTaskStatusAsync(int taskId, bool status, string failureReason)
         {
             try
             {
+                Console.WriteLine($"TaskId: {taskId}, Status: {status}, FailureReason: {failureReason}");
+
                 var taskUpdateStatusDTO = new TaskUserUpdateStatusDTO
                 {
                     TaskId = taskId,
-                    Status = status
+                    Status = status,
+                    FailureReason = failureReason // Include failure reason in DTO
                 };
 
                 string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}";
+                Console.WriteLine($"API URL: {apiUrl}"); // Debug API URL
+
                 string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
                 var contentData = new StringContent(strData, Encoding.UTF8, "application/json");
 
@@ -115,7 +108,11 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"Failed to update TaskUser status for Task: {taskId}");
+                    Console.WriteLine($"Failed to update TaskUser status for Task: {taskId}, StatusCode: {response.StatusCode}");
+                }
+                else
+                {
+                    Console.WriteLine($"Successfully updated TaskUser status for Task: {taskId}");
                 }
             }
             catch (Exception ex)

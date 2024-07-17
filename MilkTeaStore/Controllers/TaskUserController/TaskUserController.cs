@@ -6,44 +6,51 @@ using MilkTeaBusinessObject.BusinessObject;
 using MilkTeaServices.IServices;
 using MilkTeaStore.DTO.Create;
 using MilkTeaStore.DTO.Update;
-using MilkTeaStore.DTO;
 using MilkTeaStore.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace MilkTeaStore.Controllers.TaskUserController
+namespace MilkTeaStore.Controllers
 {
     [ApiController]
     [Route("odata/[controller]")]
     public class TaskUserController : ODataController
     {
         private readonly ITaskUserServices _taskUserServices;
-        private readonly IOrderService _orderServices;
+        private readonly IOrderService _orderService;
         private readonly IMapper _mapper;
 
-        public TaskUserController(ITaskUserServices taskUserServices, IOrderService orderServices, IMapper mapper)
+        public TaskUserController(ITaskUserServices taskUserServices, IOrderService orderService, IMapper mapper)
         {
             _taskUserServices = taskUserServices;
-            _orderServices = orderServices;
+            _orderService = orderService;
             _mapper = mapper;
         }
 
         [EnableQuery]
         [HttpGet]
-        public ActionResult<IEnumerable<TaskUserVM>> GetAll()
+        public async Task<ActionResult<IEnumerable<TaskUserVM>>> GetAll()
         {
-            var taskUsers = _taskUserServices.getList();
-            var taskUserViewModels = _mapper.Map<IEnumerable<TaskUserVM>>(taskUsers);
-            return Ok(taskUserViewModels);
+            try
+            {
+                var taskUsers = await _taskUserServices.GetList();
+                var taskUserViewModels = _mapper.Map<IEnumerable<TaskUserVM>>(taskUsers);
+                return Ok(taskUserViewModels);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         [EnableQuery]
-        public IActionResult GetByID([FromRoute] int id)
+        public async Task<IActionResult> GetByID([FromRoute] int id)
         {
             try
             {
-                var taskUser = _taskUserServices.get(id);
+                var taskUser = await _taskUserServices.Get(id);
                 if (taskUser != null)
                 {
                     var response = _mapper.Map<TaskUserVM>(taskUser);
@@ -59,12 +66,12 @@ namespace MilkTeaStore.Controllers.TaskUserController
 
         [HttpPost]
         [EnableQuery]
-        public IActionResult Create([FromBody] TaskUserCreateDTO taskUser)
+        public async Task<IActionResult> Create([FromBody] TaskUserCreateDTO taskUser)
         {
             try
             {
                 var _taskUser = _mapper.Map<TaskUser>(taskUser);
-                _taskUserServices.add(_taskUser);
+                await _taskUserServices.Add(_taskUser);
                 return Ok();
             }
             catch (Exception ex)
@@ -75,7 +82,7 @@ namespace MilkTeaStore.Controllers.TaskUserController
 
         [HttpPut("{id}")]
         [EnableQuery]
-        public IActionResult Update([FromRoute] int id, [FromBody] TaskUserUpdateDTO taskUser)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TaskUserUpdateDTO taskUser)
         {
             try
             {
@@ -85,7 +92,7 @@ namespace MilkTeaStore.Controllers.TaskUserController
                 }
 
                 var _taskUser = _mapper.Map<TaskUser>(taskUser);
-                _taskUserServices.update(_taskUser);
+                await _taskUserServices.Update(_taskUser);
                 return Ok("Update Successfully");
             }
             catch (Exception ex)
@@ -96,17 +103,41 @@ namespace MilkTeaStore.Controllers.TaskUserController
 
         [HttpDelete("{id}")]
         [EnableQuery]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             try
             {
-                var taskUser = _taskUserServices.get(id);
+                var taskUser = await _taskUserServices.Get(id);
                 if (taskUser == null)
                 {
                     return NotFound();
                 }
-                _taskUserServices.delete(id);
+                await _taskUserServices.Delete(id);
                 return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPatch("{id}/updatestatus")]
+        [EnableQuery]
+        public async Task<IActionResult> UpdateTaskStatus([FromRoute] int id, [FromBody] TaskUpdateStatus taskUpdateStatus)
+        {
+            try
+            {
+                var taskUser = await _taskUserServices.Get(id);
+                if (taskUser == null)
+                {
+                    return NotFound();
+                }
+
+                taskUser.Status = taskUpdateStatus.Status ?? false; // Assign false if status is null
+
+                await _taskUserServices.Update(taskUser);
+
+                return Ok("Update Successfully");
             }
             catch (Exception ex)
             {
@@ -116,7 +147,7 @@ namespace MilkTeaStore.Controllers.TaskUserController
 
         [HttpPatch("{id}")]
         [EnableQuery]
-        public IActionResult UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
+        public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
         {
             try
             {
@@ -125,24 +156,46 @@ namespace MilkTeaStore.Controllers.TaskUserController
                     return BadRequest("ID in the route does not match the ID in the request body.");
                 }
 
-                var taskUser = _taskUserServices.get(id);
+                if (taskUserUpdateStatusDTO.Status == false && string.IsNullOrEmpty(taskUserUpdateStatusDTO.FailureReason))
+                {
+                    return BadRequest(new
+                    {
+                        errors = new
+                        {
+                            FailureReason = new[] { "The FailureReason field is required." }
+                        },
+                        type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                        title = "One or more validation errors occurred.",
+                        status = 400
+                    });
+                }
+
+                var taskUser = await _taskUserServices.Get(taskUserUpdateStatusDTO.TaskId);
                 if (taskUser == null)
                 {
                     return NotFound();
                 }
 
-                // Update TaskUser status
-                taskUser.Status = taskUserUpdateStatusDTO.Status;
-                _taskUserServices.update(taskUser);
+                taskUser.Status = taskUserUpdateStatusDTO.Status ?? false; // Handle nullable bool
 
-                // Check if there is an associated Order and update its status
+                if (taskUserUpdateStatusDTO.Status.HasValue && !taskUserUpdateStatusDTO.Status.Value)
+                {
+                    taskUser.WorkDescription = taskUserUpdateStatusDTO.FailureReason;
+                }
+                else
+                {
+                    taskUser.WorkDescription = null;
+                }
+
+                await _taskUserServices.Update(taskUser);
+
                 if (taskUser.OrderID > 0)
                 {
-                    var order = _orderServices.get(taskUser.OrderID); // Assuming _orderServices provides access to Order CRUD operations
+                    var order = _orderService.get(taskUser.OrderID);
                     if (order != null)
                     {
-                        order.Status = taskUserUpdateStatusDTO.Status; // Update Order status based on TaskUser status
-                        _orderServices.update(order);
+                        order.Status = taskUserUpdateStatusDTO.Status ?? false; // Handle nullable bool
+                        _orderService.update(order); // Ensure this method is asynchronous
                     }
                     else
                     {
@@ -157,5 +210,7 @@ namespace MilkTeaStore.Controllers.TaskUserController
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }

@@ -166,7 +166,8 @@
                 <div class="modal-content">
                     <h2>Enter Reason for Failure</h2>
                     <form method="post" asp-page-handler="SubmitFailureReason">
-                        <textarea name="FailureReason" required></textarea>
+                        <input type="hidden" asp-for="TaskId" value="@Model.TaskId" />
+                        <textarea asp-for="FailureReason" required></textarea>
                         <button type="submit">Submit</button>
                     </form>
                 </div>
