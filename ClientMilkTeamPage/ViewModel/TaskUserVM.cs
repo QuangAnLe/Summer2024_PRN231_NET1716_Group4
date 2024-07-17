@@ -14,5 +14,6 @@
         public string ReasonContent { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string ShipAddress { get; set; }
     }
 }
