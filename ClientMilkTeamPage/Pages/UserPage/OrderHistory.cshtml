@@ -4,7 +4,83 @@
 @{
     ViewData["Title"] = "Order History";
 }
+@{
+    var token = Request.Cookies["UserCookie"];
+}
+@{
+    Layout = null;
+}
 
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Untree.co">
+    <link rel="shortcut icon" href="favicon.png">
+
+    <meta name="description" content="" />
+    <meta name="keywords" content="bootstrap, bootstrap4" />
+
+    <!-- Bootstrap CSS -->
+    <link href="~/css2/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="~/css2/tiny-slider.css" rel="stylesheet">
+    <link href="~/css2/style.css" rel="stylesheet">
+    <title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
+</head>
+
+<body>
+
+    <!-- Start Header/Navigation -->
+    <nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+        <div class="container">
+            <a class="navbar-brand" asp-page="/UserPage/OrderHistory">Order History<span>.</span></a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsFurni">
+                <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-page="/HomePage">Home</a>
+                    </li>
+
+                    @if (!string.IsNullOrEmpty(token))
+                    {
+                        <li><a class="nav-link" asp-page="/UserProfile">Profile</a></li>
+                        <li><a class="nav-link" asp-page="/Cart/Index">Cart</a></li>
+                        <li><a class="nav-link" asp-page="/UserPage/OrderHistory">Order History</a></li>
+                    }
+
+                </ul>
+            </div>
+            <!-- login Log out -->
+            <div class="header-action">
+                @if (string.IsNullOrEmpty(token))
+                {
+                    <button class="btn btn-primary" onclick="window.location.href='./Login'">
+                        <span>Đăng nhập</span>
+                        <ion-icon name="log-in-outline"></ion-icon>
+                    </button>
+                }
+                else
+                {
+                    <a class="actions" asp-page="/Logout">
+                        <button class="btn btn-primary">
+                            <span>Logout</span>
+                            <ion-icon name="log-in-outline"></ion-icon>
+                        </button>
+                    </a>
+                }
+
+
+            </div>
+
+        </div>
+    </nav>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gMVrAkyyIWdO8uWKSOkb+FFqDQtH1RVRVAc2x3G8tQt1/tpVckh2" crossorigin="anonymous" />
 <style>
     .status-processing {
@@ -30,9 +106,17 @@
             false => "Chưa thanh toán"
         };
     }
+        public string GetStatusColor(bool? status)
+        {
+            return status switch
+            {
+                null => "orange",
+                true => "green",
+                false => "red"
+            };
+        }
 }
 
-<h1>Order History</h1>
 <table class="table">
     <thead>
         <tr>
@@ -53,7 +137,8 @@
                 <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.ShipAddress)</td>
-                <td class="@($"status-{GetStatusDisplay(item.Status).ToLower()}")">@GetStatusDisplay(item.Status)</td>
+                    <td class="@($"status-{GetStatusDisplay(item.Status).ToLower()}")"> <span style="color: @GetStatusColor(item.Status)">@GetStatusDisplay(item.Status) </span></td>
+
                 <td>@Html.DisplayFor(modelItem => item.TypeOrder)</td>
                 <td>
                     <button class="btn btn-primary" onclick="showOrderDetails(@item.OrderID)">View Details</button>
@@ -119,3 +204,5 @@
         }
     </script>
 }
+</body>
+</html>
