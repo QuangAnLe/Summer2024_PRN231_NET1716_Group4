@@ -1,4 +1,5 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.Pages.AdminPage.OrderPage;
 using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,11 +17,12 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
         private readonly HttpClient client;
         private readonly string OrderApiUrl;
         private readonly string UserApiUrl;
-
-        public List<UserVM> Shippers { get; set; }
+        public SelectList ShipperList { get; set; }
 
         [BindProperty]
         public OrderEditViewModel OrderVM { get; set; }
+        public int taskId { get; set; }
+
         public SelectList UserList { get; set; }
 
         public EditModel()
@@ -40,27 +42,24 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
             {
                 PropertyNameCaseInsensitive = true
             };
-            var order = JsonSerializer.Deserialize<Order>(strData, options)!;
+            var orderWithTaskUser = JsonSerializer.Deserialize<OrderWithTaskUserDTO>(strData, options)!;
 
             OrderVM = new OrderEditViewModel
             {
-                OrderID = order.OrderID,
-                TypeOrder = order.TypeOrder,
-                ReasonContent = order.ReasonContent,
-                Status = order.Status,
-                StartDate = order.StartDate,
-                EndDate = order.EndDate,
-                ShipAddress = order.ShipAddress,
-                UserID = order.UserID
+                OrderID = orderWithTaskUser.Order.OrderID,
+                TypeOrder = orderWithTaskUser.Order.TypeOrder,
+                ReasonContent = orderWithTaskUser.Order.ReasonContent,
+                Status = orderWithTaskUser.Order.Status,
+                StartDate = orderWithTaskUser.Order.StartDate,
+                EndDate = orderWithTaskUser.Order.EndDate,
+                ShipAddress = orderWithTaskUser.Order.ShipAddress,
+                UserID = orderWithTaskUser.Order.UserID,
+                ShipperID = orderWithTaskUser.TaskUser?.UserID ?? 0
             };
+            taskId = orderWithTaskUser.TaskUser.TaskID;
 
             await LoadUserList();
-            var shippersResponse = await client.GetAsync("https://localhost:7112/odata/User/Shippers");
-            if (shippersResponse.IsSuccessStatusCode)
-            {
-                var shippersJson = await shippersResponse.Content.ReadAsStringAsync();
-                Shippers = JsonSerializer.Deserialize<List<UserVM>>(shippersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
+            await LoadShipperList();
             return Page();
         }
 
@@ -69,10 +68,11 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
             if (!ModelState.IsValid)
             {
                 await LoadUserList();
+                await LoadShipperList();
                 return Page();
             }
 
-            var order = new Order
+            var orderDTO = new OrderDTO
             {
                 OrderID = OrderVM.OrderID,
                 TypeOrder = OrderVM.TypeOrder,
@@ -84,8 +84,25 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
                 UserID = OrderVM.UserID
             };
 
-            var content = new StringContent(JsonSerializer.Serialize(order), System.Text.Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PutAsync($"{OrderApiUrl}/{order.OrderID}", content);
+            var taskUserDTO = new TaskUserDTO
+            {
+                TaskID = taskId,
+                OrderID = OrderVM.OrderID,
+                UserID = OrderVM.ShipperID,
+                WorkName = "Shipping",
+                WorkDescription = "Order Delivery",
+                Status = true
+            };
+
+            var orderWithTaskUser = new OrderWithTaskUserDTO
+            {
+                Order = orderDTO,
+                TaskUser = taskUserDTO
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(orderWithTaskUser), System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PutAsync($"{OrderApiUrl}/{OrderVM.OrderID}", content);
+
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToPage("/AdminPage/OrderPage/Index");
@@ -95,6 +112,7 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
                 var errorMessage = await response.Content.ReadAsStringAsync();
                 ModelState.AddModelError(string.Empty, $"Update failed: {errorMessage}");
                 await LoadUserList();
+                await LoadShipperList();
                 return Page();
             }
         }
@@ -109,6 +127,18 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
             };
             var users = JsonSerializer.Deserialize<List<User>>(userData, options);
             UserList = new SelectList(users, "UserID", "UserName");
+        }
+
+        private async Task LoadShipperList()
+        {
+            HttpResponseMessage shipperResponse = await client.GetAsync($"{UserApiUrl}/Shippers");
+            string shipperData = await shipperResponse.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var shippers = JsonSerializer.Deserialize<List<User>>(shipperData, options);
+            ShipperList = new SelectList(shippers, "UserID", "FullName");
         }
 
         public string GetStatusDisplay(bool? status)

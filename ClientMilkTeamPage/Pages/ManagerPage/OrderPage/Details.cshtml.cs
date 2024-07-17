@@ -1,4 +1,5 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.Pages.AdminPage.OrderPage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
@@ -23,7 +24,8 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
             OrderDetailApiUrl = "https://localhost:7112/odata/OrderDetailByOid/";
         }
 
-        public Order Order { get; set; }
+        [BindProperty]
+        public OrderEditViewModel OrderVM { get; set; }
         public string UserName { get; set; }
         public List<OrderDetail> OrderDetails { get; set; }
 
@@ -42,15 +44,23 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var order = JsonSerializer.Deserialize<Order>(strData, options);
-                if (order == null)
+                var orderWithTaskUser = JsonSerializer.Deserialize<OrderWithTaskUserDTO>(strData, options)!;
+
+                OrderVM = new OrderEditViewModel
                 {
-                    return NotFound();
-                }
-                Order = order;
+                    OrderID = orderWithTaskUser.Order.OrderID,
+                    TypeOrder = orderWithTaskUser.Order.TypeOrder,
+                    ReasonContent = orderWithTaskUser.Order.ReasonContent,
+                    Status = orderWithTaskUser.Order.Status,
+                    StartDate = orderWithTaskUser.Order.StartDate,
+                    EndDate = orderWithTaskUser.Order.EndDate,
+                    ShipAddress = orderWithTaskUser.Order.ShipAddress,
+                    UserID = orderWithTaskUser.Order.UserID,
+                    ShipperID = orderWithTaskUser.TaskUser?.UserID ?? 0
+                };
 
                 // Fetch user details
-                HttpResponseMessage userResponse = await client.GetAsync($"{UserApiUrl}/{order.UserID}");
+                HttpResponseMessage userResponse = await client.GetAsync($"{UserApiUrl}/{OrderVM.UserID}");
                 if (userResponse.IsSuccessStatusCode)
                 {
                     string userData = await userResponse.Content.ReadAsStringAsync();

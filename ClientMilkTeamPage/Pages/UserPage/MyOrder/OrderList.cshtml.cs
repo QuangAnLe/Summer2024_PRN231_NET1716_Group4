@@ -1,4 +1,6 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.Pages.AdminPage.OrderPage;
+using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
@@ -18,7 +20,8 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
             client.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
-        public IList<Order> Orders { get; set; } = new List<Order>();
+        public IList<OrderDTO> Orders { get; set; } = new List<OrderDTO>();
+        public IList<OrderWithTaskUserDTO> OrdersWithTaskUsers { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -36,14 +39,13 @@ namespace ClientMilkTeamPage.Pages.UserPage.MyOrder
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var allOrders = JsonSerializer.Deserialize<List<Order>>(strData, options) ?? new List<Order>();
-
+                OrdersWithTaskUsers = JsonSerializer.Deserialize<List<OrderWithTaskUserDTO>>(strData, options);
                 // Filter to only include orders with processing status (Status == null)
-                Orders = allOrders.Where(order => order.Status == null).ToList();
+                Orders = OrdersWithTaskUsers.Select(o => o.Order).Where(order => order.Status == null).ToList();
             }
             else
             {
-                Orders = new List<Order>(); // Initialize to an empty list if the API call fails
+                Orders = new List<OrderDTO>(); // Initialize to an empty list if the API call fails
             }
         }
     }

@@ -1,4 +1,5 @@
 using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.Pages.AdminPage.OrderPage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http;
@@ -12,7 +13,8 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
     {
         private readonly HttpClient client;
         private readonly string ApiUrl;
-        public Order Order { get; set; }
+
+        public OrderEditViewModel OrderVM { get; set; }
 
         public DeleteModel()
         {
@@ -33,12 +35,24 @@ namespace ClientMilkTeamPage.Pages.ManagerPage.OrderPage
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var order = JsonSerializer.Deserialize<Order>(strData, options)!;
-                if (order == null)
+                var orderWithTaskUser = JsonSerializer.Deserialize<OrderWithTaskUserDTO>(strData, options)!;
+                if (orderWithTaskUser == null)
                 {
                     return NotFound();
                 }
-                Order = order;
+                OrderVM = new OrderEditViewModel
+                {
+                    OrderID = orderWithTaskUser.Order.OrderID,
+                    TypeOrder = orderWithTaskUser.Order.TypeOrder,
+                    ReasonContent = orderWithTaskUser.Order.ReasonContent,
+                    Status = orderWithTaskUser.Order.Status,
+                    StartDate = orderWithTaskUser.Order.StartDate,
+                    EndDate = orderWithTaskUser.Order.EndDate,
+                    ShipAddress = orderWithTaskUser.Order.ShipAddress,
+                    UserID = orderWithTaskUser.Order.UserID,
+                    ShipperID = orderWithTaskUser.TaskUser?.UserID ?? 0
+                };
+
                 return Page();
             }
             else

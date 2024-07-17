@@ -51,6 +51,11 @@
                 <span asp-validation-for="OrderVM.ReasonContent" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="OrderVM.ShipperID" class="control-label">Shipper</label>
+                <select asp-for="OrderVM.ShipperID" class="form-control" asp-items="Model.ShipperList"></select>
+                <span asp-validation-for="OrderVM.ShipperID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
