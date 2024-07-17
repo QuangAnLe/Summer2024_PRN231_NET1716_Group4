@@ -27,35 +27,48 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
 
         public async Task<IActionResult> OnGetAsync()
         {
-            HttpResponseMessage response = await _client.GetAsync(_apiUrl);
-            if (response.IsSuccessStatusCode)
+            try
             {
+                HttpResponseMessage response = await _client.GetAsync(_apiUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                    return Page();
+                }
+
                 string strData = await response.Content.ReadAsStringAsync();
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 TaskUser = JsonSerializer.Deserialize<List<TaskUser>>(strData, options) ?? new List<TaskUser>();
 
                 foreach (var taskUser in TaskUser)
                 {
-                    HttpResponseMessage userResponse = await _client.GetAsync($"{_userApiUrl}({taskUser.UserID})");
+                    HttpResponseMessage userResponse = await _client.GetAsync($"{_userApiUrl}/{taskUser.UserID}");
                     if (userResponse.IsSuccessStatusCode)
                     {
                         string userData = await userResponse.Content.ReadAsStringAsync();
                         var userVM = JsonSerializer.Deserialize<UserVM>(userData, options);
 
+                        // Assign UserName from UserVM to TaskUser.User.UserName
                         taskUser.User = new User
                         {
                             UserID = userVM.UserID,
                             UserName = userVM.UserName,
+                            // Add any other properties you need to map from UserVM to User
                         };
                     }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, $"Failed to retrieve user details for TaskUser with ID {taskUser.TaskId}");
+                    }
                 }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-            }
 
-            return Page();
+                return Page();
+            }
+            catch (HttpRequestException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Request error: {ex.Message}");
+                return Page();
+            }
         }
 
         public async Task<IActionResult> OnPostUpdateStatusAsync(int id, bool status)
