@@ -33,6 +33,12 @@ namespace ClientMilkTeamPage.Controllers
                 return Unauthorized("User is not logged in");
             }
 
+            var accountStatus = await CheckAccountStatus(token);
+            if (accountStatus.IsLocked)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Your account is locked. You cannot add items to the cart.");
+            }
+
             var tea = await GetTeaByIdAsync(request.TeaID);
             if (tea == null)
             {
@@ -55,6 +61,29 @@ namespace ClientMilkTeamPage.Controllers
             _cartService.AddToCart(item);
 
             return Ok(new { message = $"{tea.TeaName} added to cart successfully" });
+        }
+
+        private async Task<AccountStatus> CheckAccountStatus(string token)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await client.GetAsync("https://localhost:7112/api/Auth/CheckAccountStatus");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                return JsonSerializer.Deserialize<AccountStatus>(content, options);
+            }
+
+            return new AccountStatus { IsLocked = false };
+        }
+
+        public class AccountStatus
+        {
+            public bool IsLocked { get; set; }
         }
 
         [HttpPost("UpdateTeaQuantity")]

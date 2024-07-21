@@ -296,16 +296,18 @@
 				const data = await response.json();
 
 				if (response.ok) {
-					console.log(data.message); // Hiển thị thông báo thành công
+					alert(data.message); // Hiển thị thông báo thành công
+				} else if (response.status === 403) {
+					alert('Error: Your account is locked. You cannot add items to the cart.');
 				} else if (response.status === 404) {
-					console.error('Error: Tea not found');
+					alert('Error: Tea not found');
 				} else if (response.status === 400) {
-					console.error('Error:', data);
+					alert('Error:', data);
 				} else {
-					console.error('An unexpected error occurred');
+					alert('An unexpected error occurred');
 				}
 			} catch (error) {
-				console.error('Error:', error);
+				alert('Error:', error);
 			}
 		}
 	</script>
