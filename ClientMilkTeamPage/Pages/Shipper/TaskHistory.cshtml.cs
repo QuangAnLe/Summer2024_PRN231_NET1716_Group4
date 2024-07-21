@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -33,41 +32,17 @@ namespace ClientMilkTeamPage.Pages.Shipper
         {
             try
             {
-                string taskApiUrl = "https://localhost:7112/odata/TaskUser";
-                HttpResponseMessage taskResponse = await _client.GetAsync(taskApiUrl);
+                string apiUrl = "https://localhost:7112/odata/TaskUser";
+                HttpResponseMessage response = await _client.GetAsync(apiUrl);
 
-                if (taskResponse.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    string taskData = await taskResponse.Content.ReadAsStringAsync();
+                    string responseData = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     };
-                    var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(taskData, options) ?? new List<TaskUserVM>();
-
-                    foreach (var taskUser in taskUserList)
-                    {
-                        // Retrieve user details
-                        string userApiUrl = $"https://localhost:7112/odata/User/{taskUser.UserID}";
-                        HttpResponseMessage userResponse = await _client.GetAsync(userApiUrl);
-                        if (userResponse.IsSuccessStatusCode)
-                        {
-                            string userData = await userResponse.Content.ReadAsStringAsync();
-                            var user = JsonSerializer.Deserialize<UserVM>(userData, options);
-                            taskUser.UserName = user?.UserName;
-                        }
-
-                        // Retrieve order details
-                        string orderApiUrl = $"https://localhost:7112/odata/Order/{taskUser.OrderID}";
-                        HttpResponseMessage orderResponse = await _client.GetAsync(orderApiUrl);
-                        if (orderResponse.IsSuccessStatusCode)
-                        {
-                            string orderData = await orderResponse.Content.ReadAsStringAsync();
-                            var order = JsonSerializer.Deserialize<OrderDTO>(orderData, options);
-                            taskUser.ReasonContent = order?.ReasonContent;
-                            taskUser.EndDate = order?.EndDate;
-                        }
-                    }
+                    var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(responseData, options) ?? new List<TaskUserVM>();
 
                     // Filter tasks where Status is true (Success) or false (Failed)
                     TaskUserVM = taskUserList.FindAll(t => t.Status.HasValue && (t.Status.Value == true || t.Status.Value == false));
@@ -83,6 +58,4 @@ namespace ClientMilkTeamPage.Pages.Shipper
             }
         }
     }
-
-    
 }

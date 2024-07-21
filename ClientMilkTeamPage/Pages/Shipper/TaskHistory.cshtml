@@ -4,91 +4,32 @@
     ViewData["Title"] = "Task History";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            padding: 20px;
+<h1>Task History</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Work Name</th>
+            <th>Work Description</th>
+            <th>User Name</th>
+            <th>Order ID</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var taskUser in Model.TaskUserVM)
+        {
+            <tr>
+                <td>@taskUser.WorkName</td>
+                <td>@taskUser.WorkDescription</td>
+                <td>@taskUser.UserID</td>
+                <td>@taskUser.OrderID</td>
+                <td>@(taskUser.Status.HasValue ? (taskUser.Status.Value ? "Success" : "Failed") : "Unknown")</td>
+
+            </tr>
         }
+    </tbody>
+</table>
 
-        .container {
-            width: 80%;
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #4CAF50;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h1>Task History</h1>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Work Name</th>
-                    <th>Work Description</th>
-                    <th>User Name</th>
-                    <th>Order Name</th>
-                    <th>Order ID</th>
-                    <th>Status</th>
-                    <th>End Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var taskUser in Model.TaskUserVM.OrderByDescending(t => t.EndDate))
-                {
-                    <tr>
-                        <td>@taskUser.WorkName</td>
-                        <td>@taskUser.WorkDescription</td>
-                        <td>@taskUser.UserName</td>
-                        <td>@taskUser.ReasonContent</td>
-                        <td>@taskUser.OrderID</td>
-                        <td>@(taskUser.Status.HasValue ? (taskUser.Status.Value ? "Success" : "Failed") : "Unknown")</td>
-                        <td>@(taskUser.EndDate.HasValue ? taskUser.EndDate.Value.ToShortDateString() : "N/A")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <a asp-page="/Shipper/ShipperPage">Shipper Page</a>
-    </div>
-
-</body>
-</html>
+<a asp-page="./Shipper/ShipperPage">Back to List</a>
