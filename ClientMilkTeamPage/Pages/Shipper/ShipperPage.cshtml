@@ -4,192 +4,93 @@
     ViewData["Title"] = "Task List";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            padding: 20px;
-        }
+<h1>Task List</h1>
 
-        .container {
-            width: 80%;
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-
-        form {
-            display: flex;
-            align-items: center;
-        }
-
-        label {
-            margin-right: 20px;
-            font-weight: normal;
-        }
-
-        .modal {
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            display: none;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            resize: vertical;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        button[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #4CAF50;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h1>Task List</h1>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Work Name</th>
-                    <th>Work Description</th>
-                    <th>User ID</th>
-                    <th>Order Details</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.TaskUserVM)
-                {
-                    var order = Model.OrderDetails[item.OrderID];
-                    <tr>
-                        <td>@item.WorkName</td>
-                        <td>@item.WorkDescription</td>
-                        <td>@item.UserID</td>
-                        <td>
-                            @if (order != null)
-                            {
-                                <div>
-                                    <strong>Order Name:</strong> @order.ReasonContent
-                                </div>
-                                <div>
-                                    <strong>Start Date:</strong> @order.StartDate.ToString("yyyy-MM-dd")
-                                </div>
-                                <div>
-                                    <strong>End Date:</strong> @order.EndDate.ToString("yyyy-MM-dd")
-                                </div>
-                                <div>
-                                     <strong>Ship Address:</strong> @order.ShipAddress
-                                </div>
-                            }
-                        </td>
-                        <td>
-                            <form method="post" asp-page-handler="UpdateStatus">
-                                <input type="hidden" name="TaskId" value="@item.TaskId" />
-                                <label><input type="radio" name="Status" value="true" /> Success</label>
-                                <label><input type="radio" name="Status" value="false" /> Failed</label>
-                                <button type="submit">Update</button>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        @if (Model.ShowModal)
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskUserVM[0].WorkName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskUserVM[0].WorkDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskUserVM[0].UserID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskUserVM[0].OrderID)
+            </th>
+            <th>
+                Status
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TaskUserVM)
         {
-            <div id="failureReasonModal" class="modal" style="display: block;">
-                <div class="modal-content">
-                    <h2>Enter Reason for Failure</h2>
-                    <form method="post" asp-page-handler="SubmitFailureReason">
-                        <input type="hidden" asp-for="TaskId" value="@Model.TaskId" />
-                        <textarea asp-for="FailureReason" required></textarea>
-                        <button type="submit">Submit</button>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderID)
+                </td>
+                <td>
+                    <form method="post" asp-page-handler="UpdateStatus">
+                        <input type="hidden" name="TaskId" value="@item.TaskId" />
+                        <input type="hidden" name="TeaID" value="@item.OrderID" /> <!-- Assuming OrderID is TeaID -->
+                        <input type="hidden" name="UserID" value="@item.UserID" />
+                        <input type="radio" name="Status" value="Success" /> Success
+                        <input type="radio" name="Status" value="Failed" /> Failed
+                        <button type="submit">Update</button>
                     </form>
-                </div>
-            </div>
+                </td>
+            </tr>
         }
+    </tbody>
+</table>
 
-        <a asp-page="/Shipper/TaskHistory">Go to Task History</a>
+<!-- Modal for inputting reason (rendered conditionally) -->
+@if (Model.ShowModal)
+{
+    <div id="failureReasonModal" class="modal" style="display: block;">
+        <div class="modal-content">
+            <h2>Enter Reason for Failure</h2>
+            <form method="post" asp-page-handler="SubmitFailureReason">
+                <textarea name="FailureReason" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     </div>
+}
 
-    <script>
-        // Script to toggle modal visibility
-        var modal = document.getElementById("failureReasonModal");
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
 
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-    </script>
-
-</body>
-</html>
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+</style>
+<a asp-page="https://localhost:7097/Shipper/TaskHistory">Go to Task History</a>

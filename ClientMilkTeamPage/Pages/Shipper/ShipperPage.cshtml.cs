@@ -1,96 +1,114 @@
-@page
-@model ClientMilkTeamPage.Pages.Shipper.ShipperPageModel
-@{
-    ViewData["Title"] = "Task List";
-}
+using ClientMilkTeamPage.DTO;
+using ClientMilkTeamPage.DTO.CommentDTO;
+using ClientMilkTeamPage.DTO.TaskUserDTO;
+using ClientMilkTeamPage.ViewModel;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
-<h1>Task List</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].WorkName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].WorkDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].UserID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].OrderID)
-            </th>
-            <th>
-                Status
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.TaskUserVM)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WorkName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WorkDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderID)
-                </td>
-                <td>
-                    <form method="post" asp-page-handler="UpdateStatus">
-                        <input type="hidden" name="TaskId" value="@item.TaskId" />
-                        <input type="hidden" name="TeaID" value="@item.OrderID" /> <!-- Assuming OrderID is TeaID -->
-                        <input type="hidden" name="UserID" value="@item.UserID" />
-                        <input type="radio" name="Status" value="Success" /> Success
-                        <input type="radio" name="Status" value="Failed" /> Failed
-                        <button type="submit">Update</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Modal for inputting reason (rendered conditionally) -->
-@if (Model.ShowModal)
+namespace ClientMilkTeamPage.Pages.Shipper
 {
-    <div id="failureReasonModal" class="modal" style="display: block;">
-        <div class="modal-content">
-            <h2>Enter Reason for Failure</h2>
-            <form method="post" asp-page-handler="SubmitFailureReason">
-                <textarea name="FailureReason" required></textarea>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    </div>
+    public class ShipperPageModel : PageModel
+    {
+        private readonly HttpClient client;
+
+        public ShipperPageModel()
+        {
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            TaskUserVM = new List<TaskUserVM>(); // Initialize to avoid null reference
+        }
+
+        public IList<TaskUserVM> TaskUserVM { get; set; }
+        public bool ShowModal { get; set; } = false;
+
+        [BindProperty]
+        public int TaskId { get; set; }
+
+        [BindProperty]
+        public string Status { get; set; }
+
+        [BindProperty]
+        public string FailureReason { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            string apiUrl = "https://localhost:7112/odata/TaskUser";
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string strData = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                TaskUserVM = JsonSerializer.Deserialize<List<TaskUserVM>>(strData, options) ?? new List<TaskUserVM>();
+            }
+            else
+            {
+                TaskUserVM = new List<TaskUserVM>(); // Initialize to an empty list if the API call fails
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostUpdateStatusAsync()
+        {
+            if (Status == "Failed")
+            {
+                ShowModal = true;
+                return Page();
+            }
+
+            await UpdateTaskStatusAsync(TaskId, Status == "Success");
+            return RedirectToPage("/UserPage/MyOrder/OrderList");
+        }
+
+        public async Task<IActionResult> OnPostSubmitFailureReasonAsync()
+        {
+            var commentCreateDTO = new CommentCreateDTO
+            {
+                Content = FailureReason,
+                CommentDate = DateTime.UtcNow,
+                Rating = 0, // Adjust as necessary
+                TeaID = 0, // Adjust as necessary
+                UserID = 0 // Adjust as necessary
+            };
+
+            string apiUrl = "https://localhost:7112/odata/Comment";
+            string strData = JsonSerializer.Serialize(commentCreateDTO);
+            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage commentResponse = await client.PostAsync(apiUrl, contentData);
+
+            if (commentResponse.IsSuccessStatusCode)
+            {
+                await UpdateTaskStatusAsync(TaskId, false);
+            }
+
+            return RedirectToPage("/UserPage/MyOrder/OrderList");
+        }
+
+        private async Task UpdateTaskStatusAsync(int taskId, bool status)
+        {
+            var taskUpdateStatusDTO = new TaskUserUpdateStatusDTO
+            {
+                TaskId = taskId,
+                Status = status
+            };
+
+            string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}";
+            string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
+            var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
+            var response = await client.PatchAsync(apiUrl, contentData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Fetch the updated data
+                await OnGetAsync();
+            }
+        }
+    }
 }
-
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgb(0,0,0);
-        background-color: rgba(0,0,0,0.4);
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-    }
-</style>
-<a asp-page="https://localhost:7097/Shipper/TaskHistory">Go to Task History</a>
