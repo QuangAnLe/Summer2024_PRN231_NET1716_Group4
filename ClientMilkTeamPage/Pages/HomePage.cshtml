@@ -43,15 +43,12 @@
 					<li class="nav-item active">
 						<a class="nav-link" href="index.html">Home</a>
 					</li>
-					<li><a class="nav-link" href="shop.html">Shop</a></li>
 					@if (!string.IsNullOrEmpty(token))
 					{
 						<li><a class="nav-link" asp-page="/UserProfile">Profile</a></li>
 						<li><a class="nav-link" asp-page="/Cart/Index">Cart</a></li>
 						<li><a class="nav-link" asp-page="/UserPage/OrderHistory">Order History</a></li>
 					}
-					
-					<li><a class="nav-link" href="blog.html">Blog</a></li>
 				</ul>
 			</div>
 			<!-- login Log out -->
@@ -114,16 +111,24 @@
 					<div class="row">
 						@foreach (var item in Model.Tea)
 						{
-							<div class="col-12 col-md-6 col-lg-4 mb-4">
-								<a class="product-item" asp-page="/DetailsTea" asp-route-id="@item.TeaID">
-									<img src="@item.Image" class="img-fluid product-thumbnail">
-									<h3 class="product-title">@item.TeaName</h3>
-									<h3 class="product-title">@item.TeaDescription</h3>
-									<strong class="product-price">@item.Price</strong>
+							@if (item.Status == true)
+							{
+								<div class="col-12 col-md-6 col-lg-4 mb-4">
+									<a class="product-item" asp-page="/DetailsTea" asp-route-id="@item.TeaID">
+										<img src="@item.Image" class="img-fluid product-thumbnail">
+										<h3 class="product-title">@item.TeaName</h3>
+										<h3 class="product-title">@item.TeaDescription</h3>
+										<strong class="product-price">@item.Price</strong>
 
-								</a>
-								<button class="btn btn-info" onclick="addToCart(@item.TeaID, 1)">Add to cart</button>
-							</div>
+									</a>
+									@if(item.Estimation == 0)
+									{
+										<p class="btn btn-info" style="color: #dc3545;">Out of stock</p>
+									}else{
+									<button class="btn btn-info" onclick="addToCart(@item.TeaID, 1)">Add to cart</button>
+									}
+								</div>
+							}
 						}
 					</div>
 				</div>
@@ -291,16 +296,18 @@
 				const data = await response.json();
 
 				if (response.ok) {
-					console.log(data.message); // Hiển thị thông báo thành công
+					alert(data.message); // Hiển thị thông báo thành công
+				} else if (response.status === 403) {
+					alert('Error: Your account is locked. You cannot add items to the cart.');
 				} else if (response.status === 404) {
-					console.error('Error: Tea not found');
+					alert('Error: Tea not found');
 				} else if (response.status === 400) {
-					console.error('Error:', data);
+					alert('Error:', data);
 				} else {
-					console.error('An unexpected error occurred');
+					alert('An unexpected error occurred');
 				}
 			} catch (error) {
-				console.error('Error:', error);
+				alert('Error:', error);
 			}
 		}
 	</script>

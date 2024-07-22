@@ -22,6 +22,26 @@ namespace MilkTeaStore.Controllers.UserController
             _config = config;
         }
 
+        [HttpGet]
+        [Route("CheckAccountStatus")]
+        public async Task<IActionResult> CheckAccountStatus(string email)
+        {
+            try
+            {
+                var user = _userServices.GetUserByEmail(email);
+                if (user == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                return Ok(new { IsLocked = !user.Status });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginVM userLogin)
