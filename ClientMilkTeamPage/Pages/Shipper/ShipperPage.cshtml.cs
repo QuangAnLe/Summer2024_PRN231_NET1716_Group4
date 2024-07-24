@@ -12,9 +12,9 @@ namespace ClientMilkTeamPage.Pages.Shipper
     {
         private readonly HttpClient client;
 
-        public ShipperPageModel()
+        public ShipperPageModel(HttpClient client)
         {
-            client = new HttpClient();
+            this.client = client;
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             TaskUserVM = new List<TaskUserVM>(); // Initialize to avoid null reference
@@ -44,7 +44,11 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                TaskUserVM = JsonSerializer.Deserialize<List<TaskUserVM>>(strData, options) ?? new List<TaskUserVM>();
+                var allTasks = JsonSerializer.Deserialize<List<TaskUserVM>>(strData, options) ?? new List<TaskUserVM>();
+
+                // Filter tasks by the current shipper's ID
+                var shipperId = GetCurrentShipperId(); // Implement this to get the logged-in shipper's ID
+                TaskUserVM = allTasks.Where(t => t.UserID == shipperId).ToList();
             }
             else
             {
@@ -108,5 +112,25 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 await OnGetAsync();
             }
         }
+
+        // This method should implement the logic to get the current shipper's ID
+        private int GetCurrentShipperId()
+        {
+            // Ensure the user is authenticated
+            if (User.Identity.IsAuthenticated)
+            {
+                // Retrieve the user ID from the claims
+                // You may need to adjust the claim type depending on your setup
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+                if (int.TryParse(userIdClaim, out int userId))
+                {
+                    return userId;
+                }
+            }
+
+            // Return a default value or handle the case where the user is not authenticated
+            return 0; // Or handle as needed
+        }
+
     }
 }
