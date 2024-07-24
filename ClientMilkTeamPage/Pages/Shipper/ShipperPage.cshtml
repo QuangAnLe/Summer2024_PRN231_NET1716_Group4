@@ -1,26 +1,25 @@
 ﻿@page
 @model ClientMilkTeamPage.Pages.Shipper.ShipperPageModel
 @{
-    ViewData["Title"] = "Task List";
+    if (Model.TaskUserVM.Any())
+    {
+        ViewData["Title"] = "Task List";
+    }
+    else
+    {
+        ViewData["Title"] = "No Tasks Available";
+    }
 }
 
-<h1>Task List</h1>
+<h1>@ViewData["Title"]</h1>
 
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].WorkName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].WorkDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].UserID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskUserVM[0].OrderID)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.TaskUserVM[0].WorkName)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUserVM[0].WorkDescription)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUserVM[0].UserID)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskUserVM[0].OrderID)</th>
             <th>Status</th>
         </tr>
     </thead>
@@ -28,24 +27,16 @@
         @foreach (var item in Model.TaskUserVM)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WorkName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WorkDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderID)
-                </td>
+                <td>@Html.DisplayFor(modelItem => item.WorkName)</td>
+                <td>@Html.DisplayFor(modelItem => item.WorkDescription)</td>
+                <td>@Html.DisplayFor(modelItem => item.UserID)</td>
+                <td>@Html.DisplayFor(modelItem => item.OrderID)</td>
                 <td>
                     <form method="post" asp-page-handler="UpdateStatus">
                         <input type="hidden" name="TaskId" value="@item.TaskId" />
                         <input type="radio" name="Status" value="Success" /> Success
                         <input type="radio" name="Status" value="Failed" /> Failed
-                        <button type="submit">Update</button>
+                        <button type="submit" onclick="return validateForm()">Update</button>
                     </form>
                 </td>
             </tr>
@@ -53,10 +44,9 @@
     </tbody>
 </table>
 
-<!-- Modal for inputting reason (rendered conditionally) -->
 @if (Model.ShowModal)
 {
-    <div id="failureReasonModal" class="modal" style="display: block;">
+    <div id="failureReasonModal" class="modal show">
         <div class="modal-content">
             <h2>Enter Reason for Failure</h2>
             <form method="post" asp-page-handler="SubmitFailureReason">
@@ -79,6 +69,10 @@
         height: 100%;
         overflow: auto;
         background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal.show {
+        display: block;
     }
 
     .modal-content {
