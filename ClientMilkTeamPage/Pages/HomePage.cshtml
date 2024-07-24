@@ -302,12 +302,12 @@
 				} else if (response.status === 404) {
 					alert('Error: Tea not found');
 				} else if (response.status === 400) {
-					alert('Error:', data);
+					alert('Error: Your account is locked. You cannot add items to the cart.');
 				} else {
 					alert('An unexpected error occurred');
 				}
 			} catch (error) {
-				alert('Error:', error);
+				alert('Error: Your account is locked. You cannot add items to the cart.', error);
 			}
 		}
 	</script>
