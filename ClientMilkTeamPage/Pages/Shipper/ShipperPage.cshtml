@@ -4,6 +4,10 @@
     ViewData["Title"] = "Task List";
 }
 
+@{
+    ViewData["Title"] = "Task List";
+}
+
 <h1>Task List</h1>
 
 <table class="table">
@@ -62,8 +66,9 @@
         <div class="modal-content">
             <h2>Enter Reason for Failure</h2>
             <form method="post" asp-page-handler="SubmitFailureReason">
-                <textarea name="FailureReason" required></textarea>
-                <button type="submit">Submit</button>
+                <input type="hidden" asp-for="TaskId" />
+                <textarea asp-for="FailureReason"></textarea>
+                <button type="submit">Submit Failure Reason</button>
             </form>
         </div>
     </div>
