@@ -1,5 +1,4 @@
 using ClientMilkTeamPage.ViewModel;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
@@ -25,10 +24,11 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
         public async Task OnGetAsync()
         {
-            await RefreshCompletedTaskList();
+            int currentShipperId = GetCurrentShipperId(); // Obtain the current shipper's ID
+            await RefreshCompletedTaskList(currentShipperId);
         }
 
-        private async Task RefreshCompletedTaskList()
+        private async Task RefreshCompletedTaskList(int shipperId)
         {
             try
             {
@@ -45,7 +45,11 @@ namespace ClientMilkTeamPage.Pages.Shipper
                     var taskUserList = JsonSerializer.Deserialize<List<TaskUserVM>>(responseData, options) ?? new List<TaskUserVM>();
 
                     // Filter tasks where Status is true (Success) or false (Failed)
-                    TaskUserVM = taskUserList.FindAll(t => t.Status.HasValue && (t.Status.Value == true || t.Status.Value == false));
+                    // and the task is assigned to the current shipper
+                    TaskUserVM = taskUserList.FindAll(t =>
+                        t.Status.HasValue &&
+                        (t.Status.Value == true || t.Status.Value == false) &&
+                        t.UserID == shipperId);
                 }
                 else
                 {
@@ -55,7 +59,28 @@ namespace ClientMilkTeamPage.Pages.Shipper
             catch (Exception ex)
             {
                 Console.WriteLine($"Error refreshing completed TaskUser list: {ex.Message}");
+                TaskUserVM = new List<TaskUserVM>(); // Optionally, set an error message or status for the view
             }
         }
+
+        // This method should implement the logic to get the current shipper's ID
+        private int GetCurrentShipperId()
+        {
+            // Ensure the user is authenticated
+            if (User.Identity.IsAuthenticated)
+            {
+                // Retrieve the user ID from the claims
+                // You may need to adjust the claim type depending on your setup
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+                if (int.TryParse(userIdClaim, out int userId))
+                {
+                    return userId;
+                }
+            }
+
+            // Return a default value or handle the case where the user is not authenticated
+            return 0; // Or handle as needed
+        }
+
     }
 }
