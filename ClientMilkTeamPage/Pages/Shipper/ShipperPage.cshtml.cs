@@ -1,5 +1,4 @@
 using ClientMilkTeamPage.DTO;
-using ClientMilkTeamPage.DTO.CommentDTO;
 using ClientMilkTeamPage.DTO.TaskUserDTO;
 using ClientMilkTeamPage.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -63,29 +62,28 @@ namespace ClientMilkTeamPage.Pages.Shipper
                 return Page();
             }
 
-            await UpdateTaskStatusAsync(TaskId, Status == "Success");
+            await UpdateTaskStatusAsync(TaskId, true);
             return RedirectToPage("/UserPage/MyOrder/OrderList");
         }
 
         public async Task<IActionResult> OnPostSubmitFailureReasonAsync()
         {
-            var commentCreateDTO = new CommentCreateDTO
+            var taskUpdateStatusDTO = new TaskUserUpdateReasonDTO
             {
-                Content = FailureReason,
-                CommentDate = DateTime.UtcNow,
-                Rating = 0, // Adjust as necessary
-                TeaID = 0, // Adjust as necessary
-                UserID = 0 // Adjust as necessary
+                TaskId = TaskId,
+                Status = false,
+                FailureReason = FailureReason
             };
 
-            string apiUrl = "https://localhost:7112/odata/Comment";
-            string strData = JsonSerializer.Serialize(commentCreateDTO);
+            string apiUrl = $"https://localhost:7112/odata/TaskUser/{TaskId}/updatestatus/failure";
+            string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
             var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
-            HttpResponseMessage commentResponse = await client.PostAsync(apiUrl, contentData);
+            var response = await client.PatchAsync(apiUrl, contentData);
 
-            if (commentResponse.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                await UpdateTaskStatusAsync(TaskId, false);
+                // Fetch the updated data
+                await OnGetAsync();
             }
 
             return RedirectToPage("/UserPage/MyOrder/OrderList");
@@ -93,13 +91,13 @@ namespace ClientMilkTeamPage.Pages.Shipper
 
         private async Task UpdateTaskStatusAsync(int taskId, bool status)
         {
-            var taskUpdateStatusDTO = new TaskUserUpdateStatusDTO
+            var taskUpdateStatusDTO = new TaskUserUpdateSuccessDTO
             {
                 TaskId = taskId,
                 Status = status
             };
 
-            string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}";
+            string apiUrl = $"https://localhost:7112/odata/TaskUser/{taskId}/updatestatus/success";
             string strData = JsonSerializer.Serialize(taskUpdateStatusDTO);
             var contentData = new StringContent(strData, System.Text.Encoding.UTF8, "application/json");
             var response = await client.PatchAsync(apiUrl, contentData);

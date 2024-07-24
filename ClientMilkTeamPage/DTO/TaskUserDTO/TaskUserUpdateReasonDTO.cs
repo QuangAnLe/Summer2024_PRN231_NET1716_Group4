@@ -1,6 +1,6 @@
-﻿namespace MilkTeaStore.DTO.Update
+﻿namespace ClientMilkTeamPage.DTO.TaskUserDTO
 {
-    public class TaskUserUpdateStatusDTO
+    public class TaskUserUpdateReasonDTO
     {
         public int TaskId { get; set; }
         public bool? Status { get; set; }

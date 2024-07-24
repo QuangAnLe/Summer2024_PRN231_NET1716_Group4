@@ -45,8 +45,6 @@
                 <td>
                     <form method="post" asp-page-handler="UpdateStatus">
                         <input type="hidden" name="TaskId" value="@item.TaskId" />
-                        <input type="hidden" name="TeaID" value="@item.OrderID" /> <!-- Assuming OrderID is TeaID -->
-                        <input type="hidden" name="UserID" value="@item.UserID" />
                         <input type="radio" name="Status" value="Success" /> Success
                         <input type="radio" name="Status" value="Failed" /> Failed
                         <button type="submit">Update</button>
@@ -93,4 +91,5 @@
         width: 80%;
     }
 </style>
+
 <a asp-page="https://localhost:7097/Shipper/TaskHistory">Go to Task History</a>

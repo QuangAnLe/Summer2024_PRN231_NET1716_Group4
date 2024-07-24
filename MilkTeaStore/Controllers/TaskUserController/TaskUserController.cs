@@ -127,6 +127,11 @@ namespace MilkTeaStore.Controllers
         {
             try
             {
+                if (taskUpdateStatus.TaskId != id)
+                {
+                    return BadRequest("ID in the route does not match the ID in the request body.");
+                }
+
                 var taskUser = await _taskUserServices.Get(id);
                 if (taskUser == null)
                 {
@@ -134,8 +139,70 @@ namespace MilkTeaStore.Controllers
                 }
 
                 taskUser.Status = taskUpdateStatus.Status ?? false; // Assign false if status is null
-
                 await _taskUserServices.Update(taskUser);
+
+                if (taskUser.OrderID > 0)
+                {
+                    var order =  _orderService.get(taskUser.OrderID);
+                    if (order != null)
+                    {
+                        order.Status = taskUpdateStatus.Status ?? false;
+                        _orderService.update(order);
+                    }
+                    else
+                    {
+                        return NotFound("Associated Order not found.");
+                    }
+                }
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPatch("{id}/updatestatus/success")]
+        [EnableQuery]
+        public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateSuccessDTO taskUserUpdateSuccessDTO)
+        {
+            try
+            {
+                if (taskUserUpdateSuccessDTO.TaskId != id)
+                {
+                    return BadRequest("ID in the route does not match the ID in the request body.");
+                }
+
+                if (taskUserUpdateSuccessDTO.Status != true)
+                {
+                    return BadRequest("This endpoint only handles successful status updates.");
+                }
+
+                var taskUser = await _taskUserServices.Get(taskUserUpdateSuccessDTO.TaskId);
+                if (taskUser == null)
+                {
+                    return NotFound();
+                }
+
+                // Update TaskUser status to true
+                taskUser.Status = true;
+                await _taskUserServices.Update(taskUser);
+
+                // Check if there is an associated Order and update its status to true
+                if (taskUser.OrderID > 0)
+                {
+                    var order = _orderService.get(taskUser.OrderID);
+                    if (order != null)
+                    {
+                        order.Status = true;
+                        _orderService.update(order);
+                    }
+                    else
+                    {
+                        return NotFound("Associated Order not found.");
+                    }
+                }
 
                 return Ok("Update Successfully");
             }
@@ -147,9 +214,9 @@ namespace MilkTeaStore.Controllers
 
 
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}/updatestatus/failure")]
         [EnableQuery]
-        public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] TaskUserUpdateStatusDTO taskUserUpdateStatusDTO)
+        public async Task<IActionResult> UpdateFailureReason([FromRoute] int id, [FromBody] TaskUserUpdateReasonDTO taskUserUpdateStatusDTO)
         {
             try
             {
@@ -210,9 +277,5 @@ namespace MilkTeaStore.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
-
-
     }
 }

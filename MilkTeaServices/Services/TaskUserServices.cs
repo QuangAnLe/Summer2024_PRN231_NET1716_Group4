@@ -29,7 +29,8 @@ namespace MilkTeaServices.Services
 
         public Task Delete(int id) => _taskUserRepo.Delete(id);
 
-        public Task UpdateTaskStatus(int taskId, bool status, string failureReason) => _taskUserRepo.UpdateTaskStatus(taskId, status, failureReason);
+        public Task UpdateTaskStatus(int taskId, bool status) => _taskUserRepo.UpdateTaskStatus(taskId, status);
+        public Task UpdateTaskFailureReason(int taskId,  string failureReason) => _taskUserRepo.UpdateTaskFailureReason(taskId, failureReason);
 
         public Task UpdateStatusOfTask(int taskId, bool status) => _taskUserRepo.UpdateStatusOfTask(taskId, status);
     }

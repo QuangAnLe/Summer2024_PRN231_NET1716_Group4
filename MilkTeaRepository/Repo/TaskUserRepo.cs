@@ -20,8 +20,11 @@ namespace MilkTeaRepository.Repo
 
         public Task Delete(int id) => _dao.DeleteAsync(id);
 
-        public Task UpdateTaskStatus(int taskId, bool status, string failureReason) =>
-            _dao.UpdateTaskStatusAsync(taskId, status, failureReason);
+        public Task UpdateTaskStatus(int taskId, bool status) =>
+            _dao.UpdateTaskStatusAsync(taskId, status);
+
+        public Task UpdateTaskFailureReason(int taskId, string failureReason) =>
+            _dao.UpdateTaskFailureReasonAsync(taskId, failureReason);
 
         public TaskUser GetByOrderID(int orderId)
         {

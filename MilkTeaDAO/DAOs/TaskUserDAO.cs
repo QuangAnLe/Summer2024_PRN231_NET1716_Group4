@@ -96,7 +96,7 @@ namespace MilkTeaDAO.DAOs
             }
         }
 
-        public async Task UpdateTaskStatusAsync(int taskId, bool status, string failureReason)
+        public async Task UpdateTaskStatusAsync(int taskId, bool status)
         {
             try
             {
@@ -105,19 +105,16 @@ namespace MilkTeaDAO.DAOs
                 {
                     existingTask.Status = status;
 
-                    if (!status)
+                    // Clear work description if status is true
+                    if (status)
                     {
-                        existingTask.WorkDescription = failureReason; // Update work description with failure reason
-                    }
-                    else
-                    {
-                        existingTask.WorkDescription = null; // Clear work description if status is true
+                        existingTask.WorkDescription = null;
                     }
 
                     // Update the associated order's status
                     if (existingTask.Order != null)
                     {
-                        existingTask.Order.Status = status; // Update Order status based on TaskUser status
+                        existingTask.Order.Status = status;
                     }
 
                     await _context.SaveChangesAsync();
@@ -132,6 +129,39 @@ namespace MilkTeaDAO.DAOs
                 throw new Exception("Error updating TaskUser status.", ex);
             }
         }
+
+
+        public async Task UpdateTaskFailureReasonAsync(int taskId, string failureReason)
+        {
+            try
+            {
+                var existingTask = await _context.TaskUsers.Include(t => t.Order).SingleOrDefaultAsync(t => t.TaskId == taskId);
+                if (existingTask != null)
+                {
+                    existingTask.Status = false; // Explicitly set status to false
+                    existingTask.WorkDescription = failureReason; // Update work description with failure reason
+
+                    // Update the associated order's status
+                    if (existingTask.Order != null)
+                    {
+                        existingTask.Order.Status = false; // Update Order status based on TaskUser status
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new Exception("Task not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error updating TaskUser failure reason.", ex);
+            }
+        }
+
+
+
 
         public async Task UpdateStatusOfTaskAsync(int taskId, bool status)
         {
