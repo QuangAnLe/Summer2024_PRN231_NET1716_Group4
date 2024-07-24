@@ -24,17 +24,23 @@ namespace MilkTeaStore.Controllers.UserController
 
         [HttpGet]
         [Route("CheckAccountStatus")]
-        public async Task<IActionResult> CheckAccountStatus(string email)
+        public async Task<IActionResult> CheckAccountStatus()
         {
             try
             {
-                var user = _userServices.GetUserByEmail(email);
+                var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(userEmail))
+                {
+                    return Unauthorized("Invalid token");
+                }
+
+                var user = _userServices.GetUserByEmail(userEmail);
                 if (user == null)
                 {
                     return NotFound("User not found");
                 }
 
-                return Ok(new { IsLocked = !user.Status });
+                return Ok(new { IsLocked = user.Status });
             }
             catch (Exception ex)
             {
