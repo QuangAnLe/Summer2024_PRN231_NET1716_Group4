@@ -34,7 +34,7 @@ namespace ClientMilkTeamPage.Controllers
             }
 
             var accountStatus = await CheckAccountStatus(token);
-            if (accountStatus.IsLocked)
+            if (!accountStatus.IsLocked)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Your account is locked. You cannot add items to the cart.");
             }
