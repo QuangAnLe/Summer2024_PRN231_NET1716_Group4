@@ -113,14 +113,13 @@ namespace ClientMilkTeamPage.Pages.Shipper
             }
         }
 
-        // This method should implement the logic to get the current shipper's ID
         private int GetCurrentShipperId()
         {
             // Ensure the user is authenticated
             if (User.Identity.IsAuthenticated)
             {
                 // Retrieve the user ID from the claims
-                // You may need to adjust the claim type depending on your setup
+               
                 var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
                 if (int.TryParse(userIdClaim, out int userId))
                 {
@@ -129,7 +128,7 @@ namespace ClientMilkTeamPage.Pages.Shipper
             }
 
             // Return a default value or handle the case where the user is not authenticated
-            return 0; // Or handle as needed
+            return 0; 
         }
 
     }

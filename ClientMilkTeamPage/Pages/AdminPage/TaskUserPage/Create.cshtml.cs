@@ -49,7 +49,7 @@ namespace ClientMilkTeamPage.Pages.AdminPage.TaskUserPage
                 var users = JsonSerializer.Deserialize<List<UserVM>>(strData, options);
 
                 // Handle case where users might be null
-                var customerUsers = users?.Where(u => u.RoleName == "Customer").ToList();
+                var customerUsers = users?.Where(u => u.RoleName == "Shipper").ToList();
 
                 Users = customerUsers?.ConvertAll(u => new SelectListItem
                 {
